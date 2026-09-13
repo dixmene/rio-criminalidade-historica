@@ -1,8 +1,8 @@
 # 📌 STATUS DO PROJETO — ONDE PARAMOS
 **Data do Registro**: 13 de Setembro de 2026  
 **Repositório Remoto**: [GitHub (Privado) — `dixmene/rio-criminalidade-historica`](https://github.com/dixmene/rio-criminalidade-historica)  
-**Branch Atual**: `main`  
-**Último Commit**: `ce8e033` (Polígonos 1.671 Áreas)  
+**Branch Atual**: `preview-designer` (Refatoração Visual) / `main` (Núcleo Histórico & DQ)  
+**Últimos Commits**: `f163d62` (Branch `preview-designer` — Atlas Editorial) | `4779c9a` (`main` — Ciclo 1 1950-1979 + DQ)  
 **Qualidade Técnica**: 26/26 Testes Automatizados Aprovados (`pytest`)
 
 
@@ -137,12 +137,36 @@ Executada a reestruturação profunda do modelo conceitual e relacional antes da
 
 | Entidade | Dados Históricos Reais (`is_demo=False`) | Dados Técnicos de Teste (`is_demo=True`) | Total |
 | :--- | :---: | :---: | :---: |
-| **Eventos Históricos** | **31** | 10 | **41** |
-| **Fontes Documentais** | **173** | 6 | **179** |
+| **Eventos Históricos** | **36** | 10 | **46** |
+| **Fontes Documentais** | **182** | 6 | **188** |
 | **Regiões / Territórios** | **19** | 10 | **29** |
 | **Polígonos Cartográficos Vetoriais** | **1.671** | 0 | **1.671** |
-| **Organizações** | **14** | 6 | **20** |
-| **Pessoas / Biografias** | **22** | 5 | **27** |
+| **Organizações** | **15** | 6 | **21** |
+| **Pessoas / Biografias** | **26** | 5 | **31** |
+| **Claims Atômicos** | **4** | 0 | **4** |
+| **Posturas de Fontes (Apoia/Contesta/Matiza)** | **6** | 0 | **6** |
+
+---
+
+### H. Motor de Qualidade de Dados (DQ) e Fila de Pesquisa Autônoma
+1. **Auditoria Automatizada de Integridade (`scripts/dq/calculate_data_quality.py`)**:
+   - 17 métricas de integridade executadas em lote.
+   - Relatórios gerados em markdown (`reports/data_quality_latest.md`) e série temporal JSON (`reports/data_quality_history.json`).
+   - 100% dos eventos reais com fontes vinculadas e trecho textual literal (`excerpt`).
+   - 0% de coordenadas sintéticas inventadas.
+2. **Fila de Pesquisa Histórica (`docs/research_queue.md`)**:
+   - 10 lacunas documentadas nos 6 ciclos cronológicos.
+   - Ciclo 1 (1950–1979) iniciado com a execução de Mineirinho (1962), Cara de Cavalo (1964), LSN DL 898 (1969), Galeria B / Fundão (1970–1971) e Massacre da Falange Jacaré (1977).
+
+---
+
+### I. Redesign Visual: Direção "Atlas Editorial" (Branch `preview-designer`)
+Em resposta à crítica sobre a estética "SaaS/AI dashboard" (fundo preto `#0B1120`, gradientes radiais, neon blue e excesso de emojis), a interface foi completamente reescrita sob o conceito de **Atlas Historiográfico & Arquivo Digital**:
+1. **Paleta de Papel e Tinta**: Fundo marfim/pergaminho (`#F5F3EE`), superfícies brancas de fichamento (`#FFFFFF`), texto cinza editorial escuro (`#20201E`), bordas sutis (`#D8D3C9`) e acento em vinho encadernação (`#7A2E2E`).
+2. **Tipografia Editorial**: Títulos em serifa clássica (`Libre Baskerville` / `Georgia`), interface em sem serifa limpa (`Source Sans 3` / `Inter`), códigos e hashes em monoespaçada (`JetBrains Mono`).
+3. **Navegação Sóbria sem Emojis**: Cinco seções arquivísticas claras: *Visão Geral*, *Atlas Cartográfico*, *Linha do Tempo*, *Acervo Documental*, *Metodologia & Dados*.
+4. **Faixa Estatística Editorial**: Substituição de múltiplos cards de KPI por uma barra de contagem contínua e elegante.
+5. **O Mapa como Protagonista & Dossiê Lateral**: Mapa com proporção visual ampliada (OpenStreetMap limpo e vetores de 1.671 áreas) e gaveta lateral de "Dossiê do Registro Selecionado" com claims atômicos (`[APOIA]`, `[CONTESTA]`, `[MATIZA]`) e citações textuais literais entre aspas com indicação de página.
 
 ---
 
