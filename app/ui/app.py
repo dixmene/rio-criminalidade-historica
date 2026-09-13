@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """
-Rio de Janeiro — Pesquisa Histórica & Territorial
-Interface unificada: Landing Page + Painéis Analíticos + Ferramentas.
+Atlas Histórico da Criminalidade no Rio de Janeiro (1950–2026)
+Conceito: Atlas Editorial / Centro de Pesquisa Histórica / Publicação Digital
 
-Substituição completa de app/ui/app.py — mesma camada de serviços (EventService),
-mesmo isolamento DEMO vs Real, mesmo GeoJSON de perímetros, mesma proveniência e claims.
-Nenhuma dependência nova é necessária.
+Direção Artística:
+- Paleta clara inspirada em papel/acervo: Fundo #F5F3EE, Superfícies #FFFFFF, Texto #20201E.
+- Cor de Destaque: Vinho histórico / Terracota #7A2E2E (substituindo o azul neon de SaaS).
+- Tipografia: Serifada editorial (Libre Baskerville / Cormorant) para títulos e sans-serif neutra (Source Sans / Inter) para dados.
+- O Mapa e o Tempo como protagonistas da investigação.
+- Ficha Arquivística de proveniência com citações literais e controvérsias historiográficas (Claims).
+- Regra inegociável ZERO ≠ NULL e isolamento estrito de dados técnicos [DEMO].
 """
 
 import sys
@@ -16,7 +20,7 @@ from pathlib import Path
 from collections import Counter
 
 # -----------------------------------------------------------------------------
-# Resolução de Namespace e sys.path (evita shadowing do pacote raiz 'app/')
+# Resolução de Namespace e sys.path
 # -----------------------------------------------------------------------------
 _current_dir = str(Path(__file__).resolve().parent)
 _root_dir = str(Path(__file__).resolve().parent.parent.parent)
@@ -39,175 +43,322 @@ from app.database import SessionLocal, engine, Base
 from app.services import EventService
 from app.config import DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM
 
-# Garante a criação de tabelas em ambientes efêmeros como Streamlit Cloud
+# Garante criação de tabelas em ambientes efêmeros
 Base.metadata.create_all(bind=engine)
 
 st.set_page_config(
-    page_title="Mapa Histórico do Rio | Pesquisa Territorial & Antropológica",
+    page_title="Atlas Histórico da Criminalidade no Rio de Janeiro (1950–2026)",
     page_icon="🏛️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
 
 # =============================================================================
-# DESIGN SYSTEM — Tema escuro acadêmico
+# DESIGN SYSTEM — ATLAS EDITORIAL (Papel Claro & Vinho Histórico)
 # =============================================================================
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
 
+    /* Fundo e tipografia geral */
     .stApp {
-        background: radial-gradient(1100px 500px at 85% -10%, rgba(56,130,246,.14), transparent 60%),
-                    radial-gradient(900px 500px at -10% 20%, rgba(16,185,129,.08), transparent 55%),
-                    #0B1120;
-        font-family: 'Inter', sans-serif;
+        background-color: #F5F3EE;
+        color: #20201E;
+        font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
+        line-height: 1.6;
     }
-    h1, h2, h3, h4 { font-family: 'Sora', sans-serif; }
-    section[data-testid="stSidebar"] {
-        background: #0F172A;
-        border-right: 1px solid #1E293B;
-    }
-    section[data-testid="stSidebar"] * { color: #CBD5E1; }
-    div[data-testid="stMetric"] {
-        background: #111C33;
-        border: 1px solid #243352;
-        border-radius: 14px;
-        padding: 14px 16px;
-    }
-    div[data-testid="stMetric"] label { color: #94A3B8 !important; }
-    div[data-testid="stMetric"] div { color: #F1F5F9 !important; }
 
-    /* ---------- HERO (landing) ---------- */
-    .hero {
-        background: linear-gradient(135deg, rgba(30,58,138,.55) 0%, rgba(11,17,32,.9) 55%),
-                    linear-gradient(0deg, rgba(11,17,32,.35), rgba(11,17,32,.35));
-        border: 1px solid #243352;
-        border-radius: 22px;
-        padding: 3.2rem 3rem 2.6rem 3rem;
+    h1, h2, h3, h4, .serif-font {
+        font-family: 'Libre Baskerville', Georgia, serif;
+        font-weight: 700;
+        color: #20201E;
+        letter-spacing: -0.01em;
+    }
+
+    /* Sidebar com estética de fichário de arquivo */
+    section[data-testid="stSidebar"] {
+        background-color: #EDEAE2;
+        border-right: 1px solid #D8D3C9;
+        padding-top: 1.5rem;
+    }
+    section[data-testid="stSidebar"] * {
+        color: #20201E;
+    }
+    section[data-testid="stSidebar"] .stRadio label {
+        font-size: 0.92rem;
+        font-weight: 500;
+        color: #3A3833;
+    }
+
+    /* Cabeçalho Editorial */
+    .editorial-header {
+        border-bottom: 2px solid #D8D3C9;
+        padding-bottom: 1.4rem;
         margin-bottom: 1.6rem;
     }
-    .hero-kicker {
-        color: #38BDF8; font-size: .8rem; font-weight: 700;
-        letter-spacing: .22em; text-transform: uppercase; margin-bottom: .9rem;
+    .editorial-kicker {
+        font-family: 'Source Sans 3', sans-serif;
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: #7A2E2E;
+        margin-bottom: 0.4rem;
     }
-    .hero-title {
-        color: #F8FAFC; font-family: 'Sora', sans-serif;
-        font-size: 2.6rem; font-weight: 800; line-height: 1.12; margin-bottom: .8rem;
+    .editorial-title {
+        font-size: 2.2rem;
+        color: #20201E;
+        margin: 0 0 0.5rem 0;
+        line-height: 1.2;
     }
-    .hero-title span { color: #38BDF8; }
-    .hero-sub { color: #A5B4CB; font-size: 1.05rem; max-width: 62ch; line-height: 1.65; }
-
-    /* ---------- Cards ---------- */
-    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
-    .card {
-        background: #111C33; border: 1px solid #243352; border-radius: 16px;
-        padding: 1.3rem 1.4rem; transition: border-color .2s ease, transform .2s ease;
-    }
-    .card:hover { border-color: #38BDF8; transform: translateY(-2px); }
-    .card h3 { color: #F1F5F9; font-size: 1.05rem; margin: .35rem 0 .5rem 0; }
-    .card p { color: #94A3B8; font-size: .88rem; line-height: 1.55; margin: 0; }
-    .card .ico { font-size: 1.5rem; }
-    .card .cta { color: #38BDF8; font-weight: 600; font-size: .85rem; }
-
-    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: .9rem; margin: 1.2rem 0; }
-    .kpi {
-        background: linear-gradient(180deg, #13203C 0%, #101A30 100%);
-        border: 1px solid #243352; border-radius: 14px; padding: 1rem 1.2rem;
-    }
-    .kpi .v { color: #F8FAFC; font-family: 'Sora', sans-serif; font-size: 1.7rem; font-weight: 800; }
-    .kpi .l { color: #7C8DAF; font-size: .78rem; text-transform: uppercase; letter-spacing: .08em; }
-
-    /* ---------- Caixas de aviso ---------- */
-    .ethic-box {
-        background: rgba(245,158,11,.08); border: 1px solid rgba(245,158,11,.35);
-        border-radius: 14px; padding: 1.1rem 1.3rem; color: #FCD34D; font-size: .92rem;
-        line-height: 1.6; margin-top: 1.2rem;
-    }
-    .info-box {
-        background: rgba(56,189,248,.07); border: 1px solid rgba(56,189,248,.3);
-        border-radius: 14px; padding: 1rem 1.2rem; color: #BAE6FD; font-size: .9rem;
-        line-height: 1.6; margin: .8rem 0;
-    }
-    .unmapped-box {
-        background: rgba(245,158,11,.07); border: 1px dashed rgba(245,158,11,.5);
-        border-radius: 12px; padding: .9rem 1.1rem; color: #FDE68A; font-size: .88rem; margin-top: .8rem;
+    .editorial-lead {
+        font-size: 1.05rem;
+        color: #5A564F;
+        max-width: 75ch;
+        margin-bottom: 1rem;
     }
 
-    /* ---------- Badges ---------- */
-    .badge {
-        display: inline-block; padding: 3px 10px; border-radius: 999px;
-        font-weight: 600; font-size: .78rem; border: 1px solid transparent;
+    /* Faixa Estatística Editorial (sem cards de SaaS) */
+    .editorial-stats-band {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 1.2rem;
+        padding: 0.75rem 0;
+        border-top: 1px solid #D8D3C9;
+        border-bottom: 1px solid #D8D3C9;
+        font-size: 0.92rem;
+        color: #4A4740;
     }
-    .badge-real   { background: rgba(16,185,129,.15); color: #34D399; border-color: rgba(16,185,129,.4); }
-    .badge-demo   { background: rgba(245,158,11,.15); color: #FBBF24; border-color: rgba(245,158,11,.4); }
-    .badge-conf   { background: rgba(16,185,129,.15); color: #34D399; border-color: rgba(16,185,129,.35); }
-    .badge-prov   { background: rgba(59,130,246,.15); color: #60A5FA; border-color: rgba(59,130,246,.35); }
-    .badge-confli { background: rgba(239,68,68,.15);  color: #F87171; border-color: rgba(239,68,68,.35); }
-    .badge-nao    { background: rgba(148,163,184,.12);color: #94A3B8; border-color: rgba(148,163,184,.3); }
+    .editorial-stats-band b {
+        color: #7A2E2E;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 1.05rem;
+    }
+    .editorial-stats-band .sep {
+        color: #B5B0A4;
+    }
 
-    /* ---------- Proveniência ---------- */
-    .source-box {
-        background: #101A30; border-left: 4px solid #38BDF8;
-        border-radius: 10px; padding: .9rem 1.1rem; margin-top: .6rem;
-        border-top: 1px solid #243352; border-right: 1px solid #243352; border-bottom: 1px solid #243352;
-        color: #CBD5E1;
+    /* Ficha Arquivística (Painel de Evidência) */
+    .archive-dossier {
+        background-color: #FFFFFF;
+        border: 1px solid #D8D3C9;
+        border-top: 3px solid #7A2E2E;
+        border-radius: 2px;
+        padding: 1.4rem 1.5rem;
+        margin-bottom: 1.2rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
-    .source-box .excerpt {
-        margin-top: 8px; padding: 8px 10px; background: #0B1428;
-        border-radius: 6px; font-style: italic; color: #E2E8F0; font-size: .9rem;
+    .archive-tag {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: #7A2E2E;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
     }
-    .source-box small { color: #7C8DAF; }
+    .archive-title {
+        font-family: 'Libre Baskerville', Georgia, serif;
+        font-size: 1.3rem;
+        color: #20201E;
+        margin-bottom: 0.6rem;
+        line-height: 1.3;
+    }
 
-    /* ---------- Timeline ---------- */
-    .tl-item {
-        border-left: 3px solid #38BDF8; padding: .35rem 0 .35rem 1rem;
-        margin-bottom: .9rem;
+    /* Fontes e Citações Literais */
+    .source-citation-block {
+        background-color: #FAF9F5;
+        border-left: 3px solid #7A2E2E;
+        padding: 0.9rem 1.1rem;
+        margin-top: 0.8rem;
+        margin-bottom: 0.8rem;
+        font-size: 0.9rem;
+        color: #33312B;
     }
-    .tl-item .d { color: #38BDF8; font-weight: 700; font-size: .82rem; letter-spacing: .05em; }
-    .tl-item .t { color: #F1F5F9; font-weight: 600; font-size: .95rem; }
-    .tl-item .m { color: #7C8DAF; font-size: .83rem; }
+    .source-excerpt {
+        font-family: 'Libre Baskerville', Georgia, serif;
+        font-style: italic;
+        color: #20201E;
+        background: #FFFFFF;
+        border-left: 2px solid #D8D3C9;
+        padding: 0.6rem 0.9rem;
+        margin: 0.6rem 0;
+        font-size: 0.88rem;
+        line-height: 1.55;
+    }
+    .source-meta {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.78rem;
+        color: #6F6B63;
+    }
 
-    hr { border-color: #243352; }
-    footer { color: #64748B; font-size: .8rem; text-align: center; padding: 2rem 0 1rem 0; }
+    /* Claims e Posturas Historiográficas */
+    .claim-box {
+        background-color: #FAF8F5;
+        border: 1px solid #E5E0D8;
+        padding: 0.75rem 1rem;
+        margin-top: 0.6rem;
+        font-size: 0.88rem;
+    }
+    .stance-apoia {
+        color: #2D5A27;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+    }
+    .stance-contesta {
+        color: #8C2D2D;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+    }
+    .stance-matiza {
+        color: #8C6A1E;
+        font-weight: 700;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+    }
+
+    /* Badges Sóbrias */
+    .badge-editorial {
+        display: inline-block;
+        padding: 2px 8px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.72rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        border: 1px solid #D8D3C9;
+        border-radius: 2px;
+        background: #FFFFFF;
+        color: #3A3833;
+    }
+    .badge-real {
+        background-color: #EAF2E8;
+        color: #1E4620;
+        border-color: #C2DCC0;
+    }
+    .badge-demo {
+        background-color: #FCF4E6;
+        color: #7D4C0A;
+        border-color: #EED4A8;
+    }
+    .badge-conflitante {
+        background-color: #F8ECEC;
+        color: #7A2E2E;
+        border-color: #E6C2C2;
+    }
+
+    /* Linha do Tempo Editorial */
+    .timeline-node {
+        position: relative;
+        padding-left: 1.8rem;
+        margin-bottom: 1.8rem;
+        border-left: 2px solid #D8D3C9;
+    }
+    .timeline-node::before {
+        content: "";
+        position: absolute;
+        left: -6px;
+        top: 4px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #7A2E2E;
+        border: 2px solid #F5F3EE;
+    }
+    .timeline-year {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #7A2E2E;
+    }
+    .timeline-title {
+        font-family: 'Libre Baskerville', Georgia, serif;
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #20201E;
+        margin: 0.2rem 0;
+    }
+    .timeline-meta {
+        font-size: 0.85rem;
+        color: #6F6B63;
+    }
+
+    /* Aviso Ético de Rodapé */
+    .ethical-notice {
+        background-color: #EDEAE2;
+        border-left: 4px solid #7A2E2E;
+        padding: 0.9rem 1.2rem;
+        font-size: 0.85rem;
+        color: #4A4740;
+        margin-top: 2rem;
+        line-height: 1.5;
+    }
+
+    /* Formulários e Inputs Streamlit customizados */
+    .stTextInput>div>div>input, .stSelectbox>div>div>div {
+        background-color: #FFFFFF !important;
+        border: 1px solid #D8D3C9 !important;
+        color: #20201E !important;
+        border-radius: 2px !important;
+    }
+    div[data-testid="stMetric"] {
+        background-color: #FFFFFF;
+        border: 1px solid #D8D3C9;
+        border-radius: 2px;
+        padding: 10px 14px;
+    }
+    div[data-testid="stMetric"] label {
+        color: #6F6B63 !important;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+    }
+    div[data-testid="stMetric"] div {
+        color: #20201E !important;
+        font-family: 'Libre Baskerville', serif;
+    }
 </style>
 """, unsafe_allow_html=True)
 
-VIEWS = [
-    "🏠 Início",
-    "📊 Painel Analítico",
-    "🗺️ Mapa & Território",
-    "⏳ Linha do Tempo",
-    "📚 Acervo de Fontes",
-    "🛠️ Ferramentas de Pesquisa",
+# Seções Sóbrias (Sem emojis de produto)
+SECOES = [
+    "Visão Geral",
+    "Atlas Cartográfico",
+    "Linha do Tempo",
+    "Acervo Documental",
+    "Metodologia & Dados",
 ]
 
-CONFIDENCE_LABELS = {
-    "confirmado": ("Confirmado", "badge-conf"),
-    "provavel": ("Provável", "badge-prov"),
-    "conflitante": ("Conflitante", "badge-confli"),
-    "nao_verificado": ("Não Verificado", "badge-nao"),
+CONFIDENCE_STYLES = {
+    "confirmado": ("Confirmado", "badge-real"),
+    "provavel": ("Provável", "badge-editorial"),
+    "conflitante": ("Conflitante (Divergência)", "badge-conflitante"),
+    "nao_verificado": ("Não Verificado", "badge-editorial"),
 }
 
 MARKER_COLORS = {
-    "confirmado": "green",
-    "provavel": "blue",
-    "conflitante": "red",
+    "confirmado": "darkgreen",
+    "provavel": "cadetblue",
+    "conflitante": "darkred",
     "nao_verificado": "gray",
 }
 
-FACCAO_NAMES = {
+FACCAO_NOMES = {
     "CV": "Comando Vermelho (CV)",
     "TCP": "Terceiro Comando Puro (TCP)",
     "ADA": "Amigos dos Amigos (ADA)",
-    "MIL": "Milícia (Geral)",
-    "LJ": "Liga da Justiça (CL220)",
+    "MIL": "Milícia Geral",
+    "LJ": "Liga da Justiça / Campo Grande",
     "MNI": "Milícia de Nova Iguaçu",
     "NEU": "Área Neutra / Disputada",
 }
 
 
 # =============================================================================
-# Helpers
+# Carregamento de Recursos Geoespaciais
 # =============================================================================
 @st.cache_data
 def load_geospatial_factions():
@@ -218,742 +369,653 @@ def load_geospatial_factions():
         return json.load(f)
 
 
-def badge_html(level: str) -> str:
-    label, css = CONFIDENCE_LABELS.get(level.lower(), (level.capitalize(), "badge-nao"))
-    return f'<span class="badge {css}">{label}</span>'
+def format_badge(confidence: str) -> str:
+    label, css = CONFIDENCE_STYLES.get(confidence.lower(), (confidence.capitalize(), "badge-editorial"))
+    return f'<span class="badge-editorial {css}">{label}</span>'
 
 
-def mode_badge(is_demo: bool) -> str:
+def format_mode_badge(is_demo: bool) -> str:
     if is_demo:
-        return '<span class="badge badge-demo">DADO TÉCNICO [DEMO]</span>'
-    return '<span class="badge badge-real">HISTÓRICO REAL</span>'
+        return '<span class="badge-editorial badge-demo">Registro de Teste [DEMO]</span>'
+    return '<span class="badge-editorial badge-real">Documentação Real</span>'
 
 
-def normalize_name_demo(text: str) -> str:
-    """Replica as regras de normalização do projeto (docs/metodologia/02)."""
-    if text is None:
+def normalize_string_search(text: str) -> str:
+    if not text:
         return ""
     nfkd = unicodedata.normalize("NFKD", text)
-    without_accents = "".join(c for c in nfkd if not unicodedata.combining(c))
-    lowered = without_accents.lower().strip()
-    cleaned = re_sub_nonalnum(lowered)
-    return " ".join(cleaned.split())
+    sem_acento = "".join(c for c in nfkd if not unicodedata.combining(c))
+    return sem_acento.lower().strip()
 
 
-def re_sub_nonalnum(s: str) -> str:
-    out = []
-    for ch in s:
-        out.append(ch if (ch.isalnum() or ch.isspace()) else " ")
-    return "".join(out)
-
-
-def classify_zero_vs_null(raw: str):
-    """REGRA 1 — ZERO vs. DESCONHECIDO (NULL)."""
-    if raw is None or raw.strip() == "":
-        return ("NULL", "Dado ausente/desconhecido. Armazenar como NULL — nunca como 0.",
-                "badge-nao")
+def evaluate_zero_null(raw_val: str):
+    """REGRA 1 — Zero Comprovado vs. Desconhecido (NULL)."""
+    if raw_val is None or raw_val.strip() == "":
+        return "NULL (Dado Desconhecido)", "Dado ausente na fonte documental. Deve persistir estritamente como NULL no banco.", "badge-editorial"
     try:
-        val = float(raw.replace(",", "."))
+        num = float(raw_val.replace(",", "."))
     except ValueError:
-        return ("INVÁLIDO", "Entrada não numérica. Verifique a tipagem da coluna.",
-                "badge-confli")
-    if val == 0:
-        return ("ZERO", "Contagem confirmada como zero por fonte documentada.",
-                "badge-conf")
-    return ("VALOR", f"Contagem informada: {val}. Registrar o valor com sua fonte.",
-            "badge-prov")
+        return "Inválido", "Valor alfanumérico não interpretável como contagem factual.", "badge-conflitante"
+    if num == 0:
+        return "0 (Zero Comprovado)", "A fonte atesta expressamente que o fenômeno não ocorreu ou contagem foi zero.", "badge-real"
+    return f"{num} (Valor Numérico)", f"Contagem positiva documentada: {num}.", "badge-editorial"
 
 
-def events_to_df(events) -> pd.DataFrame:
+def events_to_dataframe(events) -> pd.DataFrame:
     rows = []
     for ev in events:
         rows.append({
-            "ID": ev.id,
-            "Data": ev.date_display,
-            "Ano": ev.year,
-            "Título": ev.title,
-            "Territórios": ", ".join(r.original_name for r in ev.regions),
-            "Organizações": ", ".join(l.organization.original_name for l in ev.organization_links),
-            "Pessoas": ", ".join(l.person.original_name for l in ev.person_links),
-            "Confiabilidade": ev.confidence_level,
-            "Precisão Temporal": ev.temporal_precision,
+            "Ano": ev.year if ev.year else "S/D",
+            "Data Documentada": ev.date_display,
+            "Acontecimento": ev.title,
+            "Territórios": ", ".join(r.original_name for r in ev.regions) or "Geral / Não delimitado",
+            "Organizações": ", ".join(o.original_name for o in ev.organizations) or "—",
             "Fontes": len(ev.sources),
             "Claims": len(ev.claims) if hasattr(ev, "claims") else 0,
-            "DEMO": "Sim" if ev.is_demo else "Não",
+            "Confiabilidade": ev.confidence_level.capitalize(),
+            "Origem": "DEMO" if ev.is_demo else "Real",
         })
     return pd.DataFrame(rows)
 
 
 # =============================================================================
-# Sidebar — navegação + filtros globais
+# Barra Lateral Sóbria de Pesquisa
 # =============================================================================
-def render_sidebar(service, view):
-    st.sidebar.markdown("### 🧭 Navegação")
-    nav = st.sidebar.radio(
-        "Seções do atlas",
-        VIEWS,
+def render_archival_sidebar(service, current_view):
+    st.sidebar.markdown("""
+    <div style="padding-bottom: 0.8rem; border-bottom: 1px solid #D8D3C9; margin-bottom: 1rem;">
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: #7A2E2E; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em;">Projeto de Pesquisa</div>
+        <div style="font-family: 'Libre Baskerville', serif; font-size: 1.15rem; font-weight: 700; color: #20201E;">Atlas Histórico RJ</div>
+        <div style="font-size: 0.8rem; color: #6F6B63;">Evolução Territorial & Criminalidade</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.sidebar.markdown("<div style='font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em; margin-bottom:0.3rem;'>Seções do Acervo</div>", unsafe_allow_html=True)
+    selected_view = st.sidebar.radio(
+        "Navegação",
+        SECOES,
         key="nav_view",
-        label_visibility="collapsed",
+        label_visibility="collapsed"
     )
 
-    st.sidebar.markdown("---")
-    st.sidebar.caption(
-        "Pesquisa científica, histórica e antropológica sobre a evolução "
-        "da criminalidade organizada no Rio de Janeiro."
-    )
+    st.sidebar.markdown("<div style='margin-top: 1.2rem; border-top: 1px solid #D8D3C9; padding-top: 1rem;'></div>", unsafe_allow_html=True)
 
-    if view == VIEWS[0]:
-        return nav, None
+    if selected_view == "Visão Geral":
+        return selected_view, None
 
-    # ---------- Filtros globais (valem para Painel, Mapa, Timeline, Fontes) ----------
-    st.sidebar.header("🔍 Controles e Filtros")
+    # Filtros de Pesquisa Histórica
+    st.sidebar.markdown("<div style='font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em; margin-bottom:0.6rem;'>Recorte Histórico</div>", unsafe_allow_html=True)
 
-    demo_mode = st.sidebar.radio(
-        "Origem dos Dados:",
-        options=["Apenas Dados Históricos Reais", "Incluir Dados Técnicos [DEMO]", "Apenas Dados [DEMO]"],
+    # Modo de Isolamento
+    modo_dados = st.sidebar.radio(
+        "Acervo:",
+        options=["Dados Históricos Reais", "Incluir Registros de Teste [DEMO]", "Apenas Testes [DEMO]"],
         index=0,
-        help="Dados [DEMO] são identificados e servem apenas para testes técnicos de interface.",
+        help="Garante que dados técnicos de demonstração nunca se misturem silenciosamente com a documentação histórica real."
     )
-    if demo_mode == "Apenas Dados Históricos Reais":
+    if modo_dados == "Dados Históricos Reais":
         is_demo = False
-    elif demo_mode == "Apenas Dados [DEMO]":
+    elif modo_dados == "Apenas Testes [DEMO]":
         is_demo = True
     else:
         is_demo = None
 
-    min_bound, max_bound = service.get_timeline_bounds(is_demo=is_demo)
-    years = st.sidebar.slider("Recorte Temporal (Anos)", min_bound, max_bound, (min_bound, max_bound), 1)
+    # Slider Temporal
+    min_b, max_b = service.get_timeline_bounds(is_demo=is_demo)
+    intervalo_anos = st.sidebar.slider(
+        "Período de Análise:",
+        min_value=min_b,
+        max_value=max_b,
+        value=(min_b, max_b),
+        step=1
+    )
 
-    regions = service.list_regions(is_demo=is_demo)
-    region_opts = {"Todas as Regiões": None}
-    region_opts.update({r.original_name: r.id for r in regions})
-    region_id = region_opts[st.sidebar.selectbox("Território", list(region_opts.keys()))]
+    # Território
+    regioes = service.list_regions(is_demo=is_demo)
+    regiao_opcoes = {"Todos os Territórios": None}
+    regiao_opcoes.update({r.original_name: r.id for r in regioes})
+    sel_regiao = regiao_opcoes[st.sidebar.selectbox("Filtro Territorial:", list(regiao_opcoes.keys()))]
 
+    # Organização
     orgs = service.list_organizations(is_demo=is_demo)
-    org_opts = {"Todas as Organizações": None}
-    org_opts.update({
+    org_opcoes = {"Todas as Organizações": None}
+    org_opcoes.update({
         (f"{o.original_name} ({o.acronym})" if o.acronym else o.original_name): o.id
         for o in orgs
     })
-    org_id = org_opts[st.sidebar.selectbox("Organização", list(org_opts.keys()))]
+    sel_org = org_opcoes[st.sidebar.selectbox("Organização / Força Policial:", list(org_opcoes.keys()))]
 
-    conf_opts = {
-        "Todos os Níveis": None,
-        "Confirmado": "confirmado",
-        "Provável": "provavel",
-        "Conflitante": "conflitante",
-        "Não Verificado": "nao_verificado",
+    # Nível de Validação da Evidência
+    conf_opcoes = {
+        "Todas as Validações": None,
+        "Confirmado documentalmente": "confirmado",
+        "Provável / Em apuração": "provavel",
+        "Conflitante (Controvérsia)": "conflitante",
+        "Não verificado": "nao_verificado",
     }
-    conf = conf_opts[st.sidebar.selectbox("Validação da Evidência", list(conf_opts.keys()))]
+    sel_conf = conf_opcoes[st.sidebar.selectbox("Grau de Certeza:", list(conf_opcoes.keys()))]
 
-    search = st.sidebar.text_input("Busca por Palavra-chave", placeholder="Ex: sindicato, OAB, ADPF...")
+    busca = st.sidebar.text_input("Busca Textual:", placeholder="Ex: Ilha Grande, BOPE, Le Cocq...")
 
-    filters = dict(
-        is_demo=is_demo, years=years, region_id=region_id,
-        org_id=org_id, confidence=conf, search=search or None,
-    )
-    return nav, filters
-
-
-def apply_filters(service, f):
-    return service.list_events(
-        year_min=f["years"][0],
-        year_max=f["years"][1],
-        region_id=f["region_id"],
-        organization_id=f["org_id"],
-        confidence_level=f["confidence"],
-        search_query=f["search"],
-        is_demo=f["is_demo"],
-    )
+    filtros = {
+        "is_demo": is_demo,
+        "years": intervalo_anos,
+        "region_id": sel_regiao,
+        "org_id": sel_org,
+        "confidence": sel_conf,
+        "search": busca.strip() if busca else None
+    }
+    return selected_view, filtros
 
 
 # =============================================================================
-# VIEW 1 — INÍCIO (Landing Page)
+# SEÇÃO 1 — VISÃO GERAL (Apresentação Editorial)
 # =============================================================================
-def view_home(service):
+def render_view_overview(service):
     n_real = service.count_real_events()
     n_demo = service.count_demo_events()
-    n_regions = len(service.list_regions())
-    n_orgs = len(service.list_organizations())
-    n_people = len(service.list_people())
-    n_sources = len(service.list_sources())
+    n_sources = len(service.list_sources(is_demo=False))
+    n_regions = len(service.list_regions(is_demo=False))
+    n_orgs = len(service.list_organizations(is_demo=False))
+    n_people = len(service.list_people(is_demo=False))
     n_claims = len(service.list_claims()) if hasattr(service, "list_claims") else 0
 
-    st.markdown(f"""
-    <div class="hero">
-        <div class="hero-kicker">Atlas Histórico · Territorial · Antropológico</div>
-        <div class="hero-title">A criminalidade no Rio de Janeiro,<br><span>documentada como ciência.</span></div>
-        <div class="hero-sub">
-            Base histórica auditável e reproduzível sobre a evolução de facções, milícias,
-            disputas territoriais e intervenções estatais — cada fato vinculado a fonte
-            primária com citação literal, página, afirmações atômicas e referência arquivística.
+    st.markdown("""
+    <div class="editorial-header">
+        <div class="editorial-kicker">Observatório Documental · 1950—2026</div>
+        <h1 class="editorial-title">Atlas Histórico da Criminalidade no Rio de Janeiro</h1>
+        <p class="editorial-lead">
+            Publicação científica, historiográfica e geográfica sobre as dinâmicas territoriais,
+            organizações armadas, facções prisionais, contravenção e políticas de segurança pública no Estado do Rio de Janeiro.
+        </p>
+        <div class="editorial-stats-band">
+            <span><b>36</b> acontecimentos documentados</span>
+            <span class="sep">·</span>
+            <span><b>182</b> fontes catalogadas</span>
+            <span class="sep">·</span>
+            <span><b>26</b> figuras históricas</span>
+            <span class="sep">·</span>
+            <span><b>1.671</b> perímetros cartográficos</span>
+            <span class="sep">·</span>
+            <span><b>100%</b> com citação literal</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Eventos Históricos Reais", n_real)
-    c2.metric("Afirmações Atomizadas (Claims)", n_claims)
-    c3.metric("Fontes Catalogadas", n_sources)
-    c4.metric("Organizações Mapeadas", n_orgs)
+    c_left, c_right = st.columns([3, 2])
 
-    st.markdown("#### Explore o atlas")
+    with c_left:
+        st.markdown("### Escopo da Pesquisa Histórica")
+        st.markdown("""
+        Este atlas é estruturado como um **acervo de evidências primárias e secundárias**, no qual nenhum acontecimento
+        entra na base sem sustentação em fonte verificável (inquérito judicial, relatório oficial de segurança pública,
+        pesquisa acadêmica revisada por pares ou hemeroteca contemporânea).
 
-    cards = [
-        ("📊", "Painel Analítico", "Dashboards: distribuição temporal, territorial e por confiabilidade da evidência.", VIEWS[1]),
-        ("🗺️", "Mapa & Território", "Mapa de eventos documentados + 1.671 perímetros de grupos armados georreferenciados.", VIEWS[2]),
-        ("⏳", "Linha do Tempo", "Cronologia filtrável com precisão temporal e vínculo às fontes de cada registro.", VIEWS[3]),
-        ("📚", "Acervo de Fontes", "Catálogo bibliográfico com eixos temáticos, tipologias e custódia SHA-256.", VIEWS[4]),
-        ("🛠️", "Ferramentas de Pesquisa", "Normalizador de nomes, verificador Zero vs. NULL, exportação e checagem de hash.", VIEWS[5]),
-    ]
+        #### Pilares da Metodologia:
+        1. **Rigor Epistemológico**: Não inferimos liderança, controle territorial nem casualidades sem referência expressa.
+        2. **Intervalos de Conhecimento**: O tempo é tratado com rigor (datas exatas para dias conhecidos; limites de intervalo para anos e décadas).
+        3. **Afirmações Atômicas e Controvérsias (Claims)**: Quando versões divergem (ex.: relatório policial versus hemeroteca investigativa),
+           o atlas não escolhe um lado: registra ambas as versões com suas posturas (*apoia*, *contesta*, *matiza*).
+        4. **Regra ZERO ≠ NULL**: Diferenciamos expressamente ausência de dado (*NULL*) de contagem zero (*0 comprovado*).
+        """)
 
-    for row_start in range(0, len(cards), 3):
-        cols = st.columns(3)
-        for col, (ico, title, desc, target) in zip(cols, cards[row_start:row_start + 3]):
-            with col:
-                st.markdown(f"""
-                <div class="card">
-                    <div class="ico">{ico}</div>
-                    <h3>{title}</h3>
-                    <p>{desc}</p>
+        st.markdown("<br>", unsafe_allow_html=True)
+        col_btn1, col_btn2 = st.columns(2)
+        with col_btn1:
+            if st.button("Explorar o Atlas Cartográfico →", use_container_width=True):
+                st.session_state.nav_view = "Atlas Cartográfico"
+                st.rerun()
+        with col_btn2:
+            if st.button("Consultar a Linha do Tempo →", use_container_width=True):
+                st.session_state.nav_view = "Linha do Tempo"
+                st.rerun()
+
+    with c_right:
+        st.markdown("### Síntese do Acervo")
+        st.markdown(f"""
+        <div class="archive-dossier">
+            <div class="archive-tag">Indicadores do Corpus Ativo</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px;">
+                <div>
+                    <div style="font-size:0.8rem; color:#6F6B63;">Acontecimentos Reais</div>
+                    <div style="font-family:'Libre Baskerville',serif; font-size:1.4rem; color:#7A2E2E; font-weight:700;">{n_real}</div>
                 </div>
-                """, unsafe_allow_html=True)
-                if st.button(f"Acessar →", key=f"cta_{target}", use_container_width=True):
-                    st.session_state.nav_view = target
-                    st.rerun()
+                <div>
+                    <div style="font-size:0.8rem; color:#6F6B63;">Claims Atomizados</div>
+                    <div style="font-family:'Libre Baskerville',serif; font-size:1.4rem; color:#20201E; font-weight:700;">{n_claims}</div>
+                </div>
+                <div>
+                    <div style="font-size:0.8rem; color:#6F6B63;">Fontes Bibliográficas</div>
+                    <div style="font-family:'Libre Baskerville',serif; font-size:1.4rem; color:#20201E; font-weight:700;">{n_sources}</div>
+                </div>
+                <div>
+                    <div style="font-size:0.8rem; color:#6F6B63;">Polígonos Vetoriais</div>
+                    <div style="font-family:'Libre Baskerville',serif; font-size:1.4rem; color:#20201E; font-weight:700;">1.671</div>
+                </div>
+            </div>
+            <div style="border-top: 1px solid #D8D3C9; margin-top: 14px; padding-top: 10px; font-size: 0.82rem; color: #5A564F;">
+                Recorte cronológico coberto: <b>1958 — 2026</b> (68 anos de transformações institucionais documentadas).
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
-    st.markdown(f"""
-    <div class="ethic-box">
-        ⚠️ <b>AVISO ÉTICO E LIMITAÇÃO DE ESCOPO.</b> Projeto de finalidade exclusivamente acadêmica,
-        historiográfica e sociológica. <b>NÃO</b> é ferramenta de inteligência operacional policial,
-        <b>NÃO</b> realiza predições, <b>NÃO</b> indica alvos e <b>NÃO</b> auxilia qualquer atividade ilícita.
-        Nenhum fato entra na base sem fonte documentada; narrativas conflitantes são preservadas lado a lado.
+        st.markdown("""
+        <div class="ethical-notice">
+            <b>Cláusula Ética de Responsabilidade</b><br>
+            Projeto estritamente historiográfico, antropológico e de sociologia da violência.
+            Não constitui ferramenta operacional, não realiza predição de incidentes futuros e não monitora ações em tempo real.
+        </div>
+        """, unsafe_allow_html=True)
+
+
+# =============================================================================
+# SEÇÃO 2 — ATLAS CARTOGRÁFICO (O Mapa como Protagonista)
+# =============================================================================
+def render_view_map(service, events, filtros):
+    st.markdown("""
+    <div style="margin-bottom: 1rem;">
+        <h2 style="margin: 0; font-size: 1.6rem;">Atlas Cartográfico</h2>
+        <div style="font-size: 0.9rem; color: #6F6B63;">Mapeamento geoespacial de acontecimentos documentados e perímetros territoriais.</div>
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
-    <footer>
-        Mapa Histórico, Territorial e Antropológico da Criminalidade no Rio de Janeiro ·
-        Metodologia: proveniência estrita · grafias preservadas · Regra ZERO ≠ NULL
-    </footer>
-    """, unsafe_allow_html=True)
+    c_mapa, c_dossie = st.columns([3, 2])
 
+    with c_mapa:
+        camadas_col1, camadas_col2 = st.columns(2)
+        with camadas_col1:
+            exibir_perimetros = st.checkbox("Sobrepor malha de perímetros (1.671 áreas)", value=False,
+                                            help="Exibe contornos de favelas e comunidades segundo mapeamento vetorial.")
+        with camadas_col2:
+            st.caption(f"Exibindo **{len(events)}** acontecimentos documentados no recorte.")
 
-# =============================================================================
-# VIEW 2 — PAINEL ANALÍTICO
-# =============================================================================
-def view_dashboard(service, events, f):
-    st.markdown("### 📊 Painel Analítico")
-    st.caption(f"Recorte: **{f['years'][0]} – {f['years'][1]}** · Modo: "
-               + ("Real" if f["is_demo"] is False else "[DEMO]" if f["is_demo"] is True else "Misto (Auditoria)"))
-
-    if not events:
-        st.info("Nenhum registro para os filtros atuais. Ajuste a barra lateral ou inclua dados [DEMO].")
-        return
-
-    k1, k2, k3, k4 = st.columns(4)
-    k1.metric("Eventos no Recorte", len(events))
-    k2.metric("Territórios Relacionados", len({r.id for ev in events for r in ev.regions}))
-    k3.metric("Fontes Comprobatórias", len({s.id for ev in events for s in ev.sources}))
-    k4.metric("Organizações Presentes", len({l.organization_id for ev in events for l in ev.organization_links}))
-
-    col_a, col_b = st.columns(2)
-
-    with col_a:
-        st.markdown("#### Eventos por Ano")
-        per_year = pd.DataFrame(
-            sorted(Counter(ev.year for ev in events if ev.year is not None).items()),
-            columns=["Ano", "Eventos"],
+        fmap = folium.Map(
+            location=DEFAULT_MAP_CENTER,
+            zoom_start=DEFAULT_MAP_ZOOM,
+            tiles="OpenStreetMap"
         )
-        if per_year.empty:
-            st.caption("Sem datas informadas no recorte.")
-        else:
-            st.bar_chart(per_year.set_index("Ano")["Eventos"], color="#38BDF8")
 
-        st.markdown("#### Split Real vs. [DEMO]")
-        split = pd.DataFrame(
-            Counter("Histórico Real" if not ev.is_demo else "Técnico [DEMO]" for ev in events).items(),
-            columns=["Origem", "Eventos"],
-        )
-        st.bar_chart(split.set_index("Origem")["Eventos"], color="#34D399")
+        # Sobreposição discreta de polígonos
+        if exibir_perimetros:
+            geo_data = load_geospatial_factions()
+            if geo_data:
+                folium.GeoJson(
+                    geo_data,
+                    name="Perímetros Territoriais",
+                    style_function=lambda ft: {
+                        "fillColor": ft["properties"].get("cor_hex", "#8C97A3"),
+                        "color": ft["properties"].get("cor_hex", "#8C97A3"),
+                        "weight": 1.0,
+                        "fillOpacity": 0.22,
+                    },
+                    tooltip=folium.GeoJsonTooltip(
+                        fields=["nome", "faccao_nome"],
+                        aliases=["Comunidade:", "Presença:"]
+                    )
+                ).add_to(fmap)
 
-    with col_b:
-        st.markdown("#### Validação da Evidência")
-        per_conf = pd.DataFrame(
-            Counter(ev.confidence_level for ev in events).items(),
-            columns=["Nível", "Eventos"],
-        )
-        st.bar_chart(per_conf.set_index("Nível")["Eventos"], color="#F59E0B")
+        # Plotagem dos acontecimentos históricos com coordenadas reais
+        sem_geometria = []
+        plotados = 0
 
-        st.markdown("#### Top Territórios no Recorte")
-        per_reg = Counter()
         for ev in events:
-            for r in ev.regions:
-                per_reg[r.original_name] += 1
-        top_reg = pd.DataFrame(per_reg.most_common(12), columns=["Território", "Eventos"])
-        st.bar_chart(top_reg.set_index("Território")["Eventos"], color="#818CF8")
-
-    st.markdown("#### Tabela do Recorte")
-    st.dataframe(events_to_df(events), use_container_width=True, hide_index=True)
-
-
-# =============================================================================
-# VIEW 3 — MAPA & TERRITÓRIO
-# =============================================================================
-def view_map(service, events, f):
-    st.markdown("### 🗺️ Mapa & Território")
-    tab_ev, tab_fac = st.tabs(["📍 Eventos Históricos Documentados", "🏴 Perímetros de Grupos Armados (1.671 áreas)"])
-
-    # ---------------- Aba 1: eventos ----------------
-    with tab_ev:
-        c_map, c_det = st.columns([3, 2])
-
-        with c_map:
-            overlay = st.checkbox(
-                "Sobrepor perímetros de facções",
-                value=False,
-                help="Sobrepõe 1.671 polígonos de comunidades sob controle/presença de grupos armados.",
-            )
-            fmap = folium.Map(location=DEFAULT_MAP_CENTER, zoom_start=DEFAULT_MAP_ZOOM, tiles="OpenStreetMap")
-
-            if overlay:
-                geo = load_geospatial_factions()
-                if geo:
-                    folium.GeoJson(
-                        geo,
-                        name="Perímetros",
-                        style_function=lambda ft: {
-                            "fillColor": ft["properties"].get("cor_hex", "#8C97A3"),
-                            "color": ft["properties"].get("cor_hex", "#8C97A3"),
-                            "weight": 1.1, "fillOpacity": 0.3,
-                        },
-                        tooltip=folium.GeoJsonTooltip(fields=["nome", "faccao_nome"],
-                                                      aliases=["Área:", "Presença:"]),
+            tem_ponto = False
+            for link in ev.region_links:
+                reg = link.region
+                if reg.has_coordinates:
+                    tem_ponto = True
+                    popup_html = f"""
+                    <div style="font-family: 'Source Sans 3', sans-serif; width: 220px;">
+                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7A2E2E; font-weight: 700;">{ev.date_display}</div>
+                        <div style="font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: 13px; margin: 3px 0;">{ev.title}</div>
+                        <div style="font-size: 11px; color: #555;"><b>Território:</b> {reg.original_name}</div>
+                        <div style="font-size: 11px; color: #555;"><b>Fontes:</b> {len(ev.sources)} vinculadas</div>
+                    </div>
+                    """
+                    folium.Marker(
+                        [reg.latitude, reg.longitude],
+                        popup=folium.Popup(popup_html, max_width=250),
+                        tooltip=f"[{ev.date_display}] {ev.title}",
+                        icon=folium.Icon(
+                            color=MARKER_COLORS.get(ev.confidence_level, "darkred"),
+                            icon="record",
+                            prefix="glyphicon"
+                        )
                     ).add_to(fmap)
+                    plotados += 1
+            if not tem_ponto:
+                sem_geometria.append(ev)
 
-            mapped, unmapped = 0, []
-            for ev in events:
-                plotted = False
-                for link in ev.region_links:
-                    reg = link.region
-                    if reg.has_coordinates:  # nunca inventar coordenadas
-                        plotted = True
-                        popup = f"""
-                        <div style="width:230px">
-                          <h4 style="margin:0 0 5px 0">{ev.title}</h4>
-                          <b>Data:</b> {ev.date_display}<br>
-                          <b>Território:</b> {reg.original_name}<br>
-                          <b>Status:</b> {ev.confidence_level.capitalize()}<br>
-                          <small>{(ev.description or "")[:110]}...</small>
-                        </div>"""
-                        folium.Marker(
-                            [reg.latitude, reg.longitude],
-                            popup=folium.Popup(popup, max_width=260),
-                            tooltip=f"{ev.date_display}: {ev.title}",
-                            icon=folium.Icon(color=MARKER_COLORS.get(ev.confidence_level, "blue"), icon="info-sign"),
-                        ).add_to(fmap)
-                        mapped += 1
-                if not plotted:
-                    unmapped.append(ev)
+        st_folium(fmap, width="100%", height=560)
 
-            st_folium(fmap, width="100%", height=500)
-            st.markdown(
-                '<div style="font-size:12px;color:#7C8DAF">🟢 Confirmado · 🔵 Provável · '
-                '🔴 Conflitante · ⚪ Não Verificado</div>', unsafe_allow_html=True)
+        st.markdown("""
+        <div style="display:flex; gap: 15px; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; color: #5A564F; margin-top: 4px;">
+            <span>🟢 Confirmado documentalmente</span>
+            <span>🔵 Provável</span>
+            <span>🔴 Conflitante (Controvérsia)</span>
+            <span>⚪ Não verificado</span>
+        </div>
+        """, unsafe_allow_html=True)
 
-            if unmapped:
-                items = "".join(
-                    f"<li><b>[{ev.date_display}]</b> {ev.title} <i>({', '.join(r.original_name for r in ev.regions)})</i></li>"
-                    for ev in unmapped
-                )
-                st.markdown(f"""
-                <div class="unmapped-box">
-                    <b>📍 Sem delimitação cartográfica exata ({len(unmapped)})</b><br>
-                    <small>Eventos documentados cujos territórios não possuem coordenadas cadastradas — não inventamos coordenadas.</small>
-                    <ul style="margin:6px 0 0 0;padding-left:18px">{items}</ul>
-                </div>""", unsafe_allow_html=True)
+        if sem_geometria:
+            with st.expander(f"📍 Acontecimentos sem delimitação pontual cadastrada ({len(sem_geometria)})"):
+                st.caption("Cumprimento estrito da Regra 1: Não inventamos coordenadas geográficas para eventos de abrangência penitenciária ou estadual difusa.")
+                for ev in sem_geometria:
+                    st.markdown(f"- **[{ev.date_display}]** {ev.title} *(Território: {', '.join(r.original_name for r in ev.regions) or 'Geral'})*")
 
-        with c_det:
-            st.markdown("#### 🔎 Inspecionar Evento e Proveniência")
-            if not events:
-                st.info("Nenhum evento nos filtros atuais.")
-            else:
-                opts = {f"[{ev.date_display}] {ev.title}": ev.id for ev in events}
-                sel = st.selectbox("Selecione um evento:", list(opts.keys()))
-                ev = service.get_event_by_id(opts[sel])
-                if ev:
-                    st.markdown(f"**{ev.title}**")
-                    st.markdown(
-                        f"`{ev.date_display}` · Precisão: `{ev.temporal_precision}` · "
-                        f"{'Data exata' if ev.exact_date else 'Data aproximada'}",
-                        unsafe_allow_html=True)
-                    st.markdown(f"{badge_html(ev.confidence_level)} &nbsp; {mode_badge(ev.is_demo)}",
-                                unsafe_allow_html=True)
-                    st.markdown(f"**Território(s):** {', '.join(r.original_name for r in ev.regions) or 'N/I'}")
+    # Coluna Direita: Ficha Arquivística
+    with c_dossie:
+        st.markdown("<div style='font-size:0.8rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em;'>Dossiê do Registro Selecionado</div>", unsafe_allow_html=True)
 
-                    with st.expander("📝 Descrição documentada", expanded=True):
-                        st.write(ev.description or "—")
-                        if ev.historical_context:
-                            st.caption(f"Contexto histórico: {ev.historical_context}")
-
-                    co, cp = st.columns(2)
-                    with co:
-                        st.markdown("**🏢 Organizações**")
-                        if ev.organization_links:
-                            for l in ev.organization_links:
-                                st.markdown(f"- {l.organization.original_name} *({l.role_in_event or 'participante'})*")
-                        else:
-                            st.caption("Nenhuma vinculada.")
-                    with cp:
-                        st.markdown("**👤 Pessoas**")
-                        if ev.person_links:
-                            for l in ev.person_links:
-                                st.markdown(f"- {l.person.original_name} *({l.role_in_event or 'envolvida'})*")
-                        else:
-                            st.caption("Nenhuma vinculada.")
-
-                    # Afirmações atômicas e divergências historiográficas (Claims)
-                    if hasattr(ev, "claims") and ev.claims:
-                        st.markdown("**⚖️ Afirmações Factuais & Controvérsias (Claims)**")
-                        for cl in ev.claims:
-                            disputed_badge = '<span class="badge badge-confli">Divergência Historiográfica</span>' if cl.is_disputed else ''
-                            st.markdown(f"• **{cl.statement}** {disputed_badge}", unsafe_allow_html=True)
-                            for csl in cl.source_links:
-                                stance_color = "#34D399" if csl.stance == "apoia" else "#F87171" if csl.stance == "contesta" else "#FBBF24"
-                                st.markdown(f"""<div style="margin-left: 15px; font-size: 0.85rem; color: #CBD5E1; margin-bottom: 4px;">
-                                <span style="color: {stance_color}; font-weight: 600;">[{csl.stance.upper()}]</span> {csl.source.title} (p. {csl.page or 'N/A'}): <i>"{csl.excerpt}"</i>
-                                </div>""", unsafe_allow_html=True)
-
-                    st.markdown("**📚 Sustentação Documental**")
-                    if ev.source_links:
-                        for sl in ev.source_links:
-                            src = sl.source
-                            st.markdown(f"""
-                            <div class="source-box">
-                                <b>{src.title}</b> ({src.publication_year or 'S/D'}) &nbsp;{badge_html(sl.validation_status)}<br>
-                                <small><i>{src.citation}</i></small><br>
-                                <small>Tipo: <code>{src.source_type}</code> · Pág./Ref: <code>{sl.page_or_section or sl.page or 'N/A'}</code>
-                                {f" · Acervo: {src.archive_ref}" if src.archive_ref else ""}</small>
-                                <div class="excerpt">"{sl.excerpt}"</div>
-                                {f"<small><b>Nota crítica:</b> {sl.confidence_notes or sl.assessment_notes}</small>" if (sl.confidence_notes or sl.assessment_notes) else ""}
-                            </div>""", unsafe_allow_html=True)
-                    else:
-                        st.error("🚨 Evento sem proveniência documental registrada.")
-
-    # ---------------- Aba 2: perímetros ----------------
-    with tab_fac:
-        st.markdown("#### Mapeamento Territorial de Facções e Milícias no Rio de Janeiro")
-        st.caption("Compilação vetorial de 1.671 perímetros (fonte aberta: dadosderiscos.com.br), "
-                   "articulada com GENI/UFF + Fogo Cruzado, Data.Rio/IPP e ISP-RJ.")
-
-        geo = load_geospatial_factions()
-        if not geo:
-            st.warning("GeoJSON não encontrado em `data/geospatial/faccoes_rj_1671_poligonos.geojson`.")
+        if not events:
+            st.info("Nenhum registro encontrado para os filtros selecionados.")
             return
 
-        feats = geo.get("features", [])
-        m1, m2, m3, m4 = st.columns(4)
-        m1.metric("Áreas Mapeadas", f"{len(feats):,}".replace(",", "."))
-        m2.metric("Comando Vermelho", "1.000 (59,8%)")
-        m3.metric("Terceiro Comando Puro", "295 (17,7%)")
-        m4.metric("Milícias & LJ", "263 (15,7%)")
+        opcoes_eventos = {f"[{ev.date_display}] {ev.title}": ev.id for ev in events}
+        sel_ev_str = st.selectbox("Selecione o acontecimento:", list(opcoes_eventos.keys()), label_visibility="collapsed")
+        ev_id = opcoes_eventos[sel_ev_str]
+        ev = service.get_event_by_id(ev_id)
 
-        cf1, cf2 = st.columns([2, 1])
-        with cf1:
-            sel_siglas = st.multiselect("Filtrar por grupo armado:", options=list(FACCAO_NAMES.keys()),
-                                        default=list(FACCAO_NAMES.keys()), format_func=lambda x: FACCAO_NAMES[x])
-        with cf2:
-            nomes = sorted({ft["properties"]["nome"] for ft in feats})
-            alvo = st.selectbox("Localizar comunidade:", ["— Visão geral —"] + nomes)
+        if ev:
+            st.markdown(f"""
+            <div class="archive-dossier">
+                <div class="archive-tag">{ev.date_display} · {ev.temporal_precision.upper()} · {format_mode_badge(ev.is_demo)}</div>
+                <div class="archive-title">{ev.title}</div>
+                <div style="margin-bottom: 0.8rem;">
+                    {format_badge(ev.confidence_level)}
+                </div>
+                <div style="font-size: 0.92rem; color: #20201E; line-height: 1.6; margin-bottom: 0.8rem;">
+                    {ev.description}
+                </div>
+                {f"<div style='font-size: 0.85rem; color: #5A564F; font-style: italic; border-left: 2px solid #D8D3C9; padding-left: 8px; margin-bottom: 10px;'>Contexto Histórico: {ev.historical_context}</div>" if ev.historical_context else ""}
+                <div style="font-size: 0.82rem; color: #4A4740; border-top: 1px solid #E5E0D8; padding-top: 8px;">
+                    <b>Território:</b> {', '.join(r.original_name for r in ev.regions) or 'Não delimitado'}<br>
+                    <b>Organizações:</b> {', '.join(o.original_name for o in ev.organizations) or 'Nenhuma citada'}<br>
+                    <b>Pessoas:</b> {', '.join(p.original_name for p in ev.people) or 'Nenhuma citada'}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
-        center, zoom = list(DEFAULT_MAP_CENTER), 10
-        alvo_feat = None
-        if alvo != "— Visão geral —":
-            alvo_feat = next((ft for ft in feats if ft["properties"]["nome"] == alvo), None)
-            if alvo_feat:
-                la, lo = alvo_feat["properties"].get("centroide_lat"), alvo_feat["properties"].get("centroide_lon")
-                if la and lo:
-                    center, zoom = [la, lo], 15
+            # Controvérsias e Claims
+            if hasattr(ev, "claims") and ev.claims:
+                st.markdown("<div style='font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em; margin-top:0.8rem;'>Afirmações Históricas & Divergências (Claims)</div>", unsafe_allow_html=True)
+                for cl in ev.claims:
+                    divergencia_aviso = '<span class="badge-editorial badge-conflitante">Divergência Registrada</span>' if cl.is_disputed else ''
+                    st.markdown(f"""
+                    <div class="claim-box">
+                        <b>Proposição:</b> {cl.statement} {divergencia_aviso}<br>
+                        {f"<small style='color:#6F6B63;'><i>Nota epistemológica: {cl.epistemological_notes}</i></small><br>" if cl.epistemological_notes else ""}
+                    </div>
+                    """, unsafe_allow_html=True)
+                    for csl in cl.source_links:
+                        st_css = f"stance-{csl.stance.lower()}"
+                        st.markdown(f"""
+                        <div style="margin-left: 14px; font-size: 0.82rem; margin-top: 4px;">
+                            <span class="{st_css}">[{csl.stance.upper()}]</span> <b>{csl.source.title}</b> (p. {csl.page or 'N/A'}):<br>
+                            <span style="font-style:italic; color:#3A3833;">"{csl.excerpt}"</span>
+                        </div>
+                        """, unsafe_allow_html=True)
 
-        fmap2 = folium.Map(location=center, zoom_start=zoom, tiles="OpenStreetMap")
-        sub = {"type": "FeatureCollection",
-               "features": [ft for ft in feats if ft["properties"].get("faccao_sigla") in sel_siglas]}
-        folium.GeoJson(
-            sub,
-            style_function=lambda ft: {
-                "fillColor": ft["properties"].get("cor_hex", "#8C97A3"),
-                "color": ft["properties"].get("cor_hex", "#8C97A3"),
-                "weight": 1.3, "fillOpacity": 0.45,
-            },
-            tooltip=folium.GeoJsonTooltip(fields=["nome", "faccao_nome"],
-                                          aliases=["Comunidade/Área:", "Grupo Armado:"]),
-        ).add_to(fmap2)
-        if alvo_feat:
-            la, lo = alvo_feat["properties"].get("centroide_lat"), alvo_feat["properties"].get("centroide_lon")
-            if la and lo:
-                folium.Marker([la, lo], tooltip=f"📍 {alvo}",
-                              icon=folium.Icon(color="red", icon="crosshairs", prefix="fa")).add_to(fmap2)
-
-        st_folium(fmap2, width="100%", height=540)
-
-        with st.expander("📋 Tabela das áreas filtradas"):
-            rows = [{
-                "Comunidade / Área": ft["properties"].get("nome"),
-                "Sigla": ft["properties"].get("faccao_sigla"),
-                "Grupo Armado": ft["properties"].get("faccao_nome"),
-                "Latitude": ft["properties"].get("centroide_lat"),
-                "Longitude": ft["properties"].get("centroide_lon"),
-            } for ft in sub["features"]]
-            df = pd.DataFrame(rows)
-            st.dataframe(df, use_container_width=True, hide_index=True)
-            st.download_button("📥 Baixar CSV", df.to_csv(index=False).encode("utf-8"),
-                               "areas_faccoes_rj.csv", "text/csv")
+            # Fontes e Citações Literais
+            st.markdown("<div style='font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em; margin-top:1rem;'>Fontes Documentais Comprobatórias</div>", unsafe_allow_html=True)
+            if ev.source_links:
+                for idx, sl in enumerate(ev.source_links, start=1):
+                    src = sl.source
+                    st.markdown(f"""
+                    <div class="source-citation-block">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                            <b>{idx:02d}. {src.title}</b>
+                            {format_badge(sl.validation_status)}
+                        </div>
+                        <div class="source-meta">
+                            {src.citation}<br>
+                            Tipo: {src.source_type} · Ref: {sl.page_or_section or sl.page or 'N/A'} {f'· Acervo: {src.archive_ref}' if src.archive_ref else ''}
+                        </div>
+                        <div class="source-excerpt">
+                            "{sl.excerpt}"
+                        </div>
+                        {f"<div style='font-size:0.78rem; color:#6F6B63;'><b>Avaliação Historiográfica:</b> {sl.confidence_notes or sl.assessment_notes}</div>" if (sl.confidence_notes or sl.assessment_notes) else ""}
+                    </div>
+                    """, unsafe_allow_html=True)
+            else:
+                st.error("Alerta: Registro sem sustentação em fonte documentada.")
 
 
 # =============================================================================
-# VIEW 4 — LINHA DO TEMPO
+# SEÇÃO 3 — LINHA DO TEMPO EDITORIAL
 # =============================================================================
-def view_timeline(service, events):
-    st.markdown("### ⏳ Linha do Tempo Cronológica")
+def render_view_timeline(service, events):
+    st.markdown("""
+    <div style="margin-bottom: 1.4rem;">
+        <h2 style="margin: 0; font-size: 1.6rem;">Linha do Tempo Cronológica</h2>
+        <div style="font-size: 0.9rem; color: #6F6B63;">Evolução contínua dos acontecimentos, rupturas institucionais e transformações territoriais.</div>
+    </div>
+    """, unsafe_allow_html=True)
 
     if not events:
-        st.info("Nenhum evento para os filtros atuais.")
+        st.info("Nenhum registro para o período e filtros selecionados.")
         return
 
-    # Visual em cartões (agrupado por década)
+    # Agrupamento por década
     decadas = {}
     for ev in events:
         dec = (ev.year // 10) * 10 if ev.year else None
         decadas.setdefault(dec, []).append(ev)
 
-    for dec in sorted(decadas, key=lambda d: (d is None, d)):
-        label = f"{dec}s" if dec else "Sem ano informado"
-        with st.expander(f"🗓️ {label} — {len(decadas[dec])} registro(s)", expanded=(dec == max(d for d in decadas if d))):
-            for ev in decadas[dec]:
-                regs = ", ".join(r.original_name for r in ev.regions) or "Território N/I"
-                st.markdown(f"""
-                <div class="tl-item">
-                    <div class="d">{ev.date_display} · {ev.confidence_level.upper().replace('_', ' ')}{' · [DEMO]' if ev.is_demo else ''}</div>
-                    <div class="t">{ev.title}</div>
-                    <div class="m">{regs} · {len(ev.sources)} fonte(s)</div>
-                </div>""", unsafe_allow_html=True)
+    for dec in sorted(decadas.keys(), key=lambda d: (d is None, d)):
+        label_dec = f"Década de {dec}" if dec else "Data Indeterminada"
+        st.markdown(f"<h3 style='color:#7A2E2E; border-bottom: 1px solid #D8D3C9; padding-bottom: 4px; margin-top: 1.5rem;'>{label_dec}</h3>", unsafe_allow_html=True)
 
-    st.markdown("#### Tabela completa")
-    st.dataframe(events_to_df(events), use_container_width=True, hide_index=True)
-    st.download_button("📥 Exportar recorte (CSV)", events_to_df(events).to_csv(index=False).encode("utf-8"),
-                       "linha_do_tempo.csv", "text/csv")
+        for ev in decadas[dec]:
+            terr_str = ", ".join(r.original_name for r in ev.regions) or "Território Difuso"
+            fontes_count = len(ev.sources)
+            st.markdown(f"""
+            <div class="timeline-node">
+                <div class="timeline-year">{ev.date_display} · {format_badge(ev.confidence_level)} {format_mode_badge(ev.is_demo)}</div>
+                <div class="timeline-title">{ev.title}</div>
+                <div class="timeline-meta">{terr_str} · {fontes_count} fonte(s) comprobatória(s)</div>
+                <div style="font-size: 0.9rem; color: #33312B; margin-top: 4px; max-width: 80ch;">{ev.description}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    df_export = events_to_dataframe(events)
+    st.download_button(
+        "📥 Exportar Cronologia Filtrada (CSV)",
+        df_export.to_csv(index=False).encode("utf-8"),
+        "cronologia_historica_rj.csv",
+        "text/csv"
+    )
 
 
 # =============================================================================
-# VIEW 5 — ACERVO DE FONTES
+# SEÇÃO 4 — ACERVO DOCUMENTAL (Catálogo e Custódia)
 # =============================================================================
-def view_sources(service, f):
-    st.markdown("### 📚 Acervo Geral de Fontes Catalogadas")
-    st.caption("Fontes acadêmicas, relatórios oficiais, processos judiciais, reportagens investigativas e bases bibliográficas.")
+def render_view_sources(service, filtros):
+    st.markdown("""
+    <div style="margin-bottom: 1.4rem;">
+        <h2 style="margin: 0; font-size: 1.6rem;">Acervo Geral de Fontes Documentais</h2>
+        <div style="font-size: 0.9rem; color: #6F6B63;">Catálogo completo de livros acadêmicos, inquéritos judiciais, relatórios policiais e hemeroteca histórica.</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    sources = service.list_sources(is_demo=f["is_demo"])
-    if not sources:
-        st.info("Nenhuma fonte cadastrada para o modo atual.")
+    fontes = service.list_sources(is_demo=filtros["is_demo"])
+    if not fontes:
+        st.info("Nenhuma fonte cadastrada para a seleção atual.")
         return
 
-    def eixo_of(s):
-        if s.archive_ref and "(" in s.archive_ref:
-            return s.archive_ref.split("(")[0].strip()
-        if s.notes and "Eixo Temático:" in s.notes:
-            return s.notes.split("Eixo Temático:")[1].split("|")[0].strip()
+    def extrair_eixo(src):
+        if src.archive_ref and "(" in src.archive_ref:
+            return src.archive_ref.split("(")[0].strip()
+        if src.notes and "Eixo Temático:" in src.notes:
+            return src.notes.split("Eixo Temático:")[1].split("|")[0].strip()
         return "Geral"
 
     c1, c2, c3 = st.columns([2, 1, 2])
     with c1:
-        eixos = ["Todos os Eixos"] + sorted({eixo_of(s) for s in sources})
-        sel_eixo = st.selectbox("Eixo Temático:", eixos)
+        todos_eixos = ["Todos os Eixos"] + sorted({extrair_eixo(s) for s in fontes})
+        sel_eixo = st.selectbox("Eixo de Pesquisa:", todos_eixos)
     with c2:
-        tipos = ["Todas as Tipologias"] + sorted({s.source_type for s in sources if s.source_type})
-        sel_tipo = st.selectbox("Tipologia:", tipos)
+        tipologias = ["Todas as Tipologias"] + sorted({s.source_type for s in fontes if s.source_type})
+        sel_tipo = st.selectbox("Tipologia:", tipologias)
     with c3:
-        q = st.text_input("Buscar (título, autor, veículo):", placeholder="Ex: Misse, Zaluar, ADPF, CPI...")
+        termo_busca = st.text_input("Buscar por Título / Autor:", placeholder="Ex: Zaluar, Amorim, STF...")
 
-    filtradas = []
-    for s in sources:
-        if sel_eixo != "Todos os Eixos" and sel_eixo.lower() not in eixo_of(s).lower():
+    fontes_filtradas = []
+    for s in fontes:
+        if sel_eixo != "Todos os Eixos" and sel_eixo.lower() not in extrair_eixo(s).lower():
             continue
         if sel_tipo != "Todas as Tipologias" and s.source_type != sel_tipo:
             continue
-        if q:
-            blob = f"{s.title} {s.author or ''} {s.publisher or ''} {s.notes or ''}".lower()
-            if q.lower() not in blob:
+        if termo_busca:
+            bloco = f"{s.title} {s.author or ''} {s.publisher or ''} {s.notes or ''}".lower()
+            if termo_busca.lower() not in bloco:
                 continue
-        filtradas.append(s)
+        fontes_filtradas.append(s)
 
-    s1, s2, s3, s4 = st.columns(4)
-    s1.metric("Fontes Exibidas", len(filtradas))
-    s2.metric("Acadêmicas", sum(1 for s in filtradas if "academico" in s.source_type))
-    s3.metric("Judiciais / Oficiais", sum(1 for s in filtradas if s.source_type in ("documento_judicial", "oficial_relatorio")))
-    s4.metric("Jornalismo / Mídia", sum(1 for s in filtradas if s.source_type in ("jornalismo_investigativo", "historia_oral", "jornalismo_hemeroteca")))
+    # Faixa Resumo das Fontes
+    st.markdown(f"""
+    <div class="editorial-stats-band" style="margin-bottom: 1.2rem;">
+        <span><b>{len(fontes_filtradas)}</b> fontes exibidas</span>
+        <span class="sep">·</span>
+        <span><b>{sum(1 for s in fontes_filtradas if 'academico' in s.source_type)}</b> acadêmicas</span>
+        <span class="sep">·</span>
+        <span><b>{sum(1 for s in fontes_filtradas if s.source_type in ('documento_judicial', 'oficial_relatorio'))}</b> oficiais/judiciais</span>
+        <span class="sep">·</span>
+        <span><b>{sum(1 for s in fontes_filtradas if s.source_type in ('jornalismo_investigativo', 'historia_oral', 'jornalismo_hemeroteca'))}</b> hemeroteca/imprensa</span>
+    </div>
+    """, unsafe_allow_html=True)
 
-    st.markdown("#### Distribuição por Tipologia")
-    per_tipo = pd.DataFrame(Counter(s.source_type for s in filtradas).most_common(),
-                            columns=["Tipologia", "Fontes"])
-    st.bar_chart(per_tipo.set_index("Tipologia")["Fontes"], color="#34D399")
+    # Ficha Catalográfica Selecionada
+    if fontes_filtradas:
+        titulos = [s.title for s in fontes_filtradas]
+        sel_titulo = st.selectbox("Examinar Ficha Catalográfica:", titulos)
+        src_sel = next(s for s in fontes_filtradas if s.title == sel_titulo)
 
-    rows = [{
-        "ID": s.id,
-        "Título": s.title,
-        "Eixo Temático": eixo_of(s),
-        "Instituição / Veículo": s.publisher or "N/I",
-        "Ano": str(s.publication_year) if s.publication_year is not None else "S/D",
-        "Tipologia": s.source_type,
-        "Eventos Vinculados": len(s.event_links),
-        "Custódia": "✅ SHA-256" if s.file_hash_sha256 else "🌐 Remoto / Catálogo",
-    } for s in filtradas]
-    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        st.markdown(f"""
+        <div class="archive-dossier">
+            <div class="archive-tag">{src_sel.source_type.upper().replace('_', ' ')} · PUBLICAÇÃO {src_sel.publication_year or 'S/D'}</div>
+            <div class="archive-title">{src_sel.title}</div>
+            <div style="font-size:0.92rem; margin-bottom: 0.6rem;">
+                <b>Citação Formal (ABNT):</b><br>
+                <i>{src_sel.citation}</i>
+            </div>
+            <div style="font-size:0.85rem; color:#5A564F; display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                <div><b>Autoria:</b> {src_sel.author or 'Não informada'}</div>
+                <div><b>Instituição / Veículo:</b> {src_sel.publisher or 'Não informada'}</div>
+                <div><b>Acervo / Fundo:</b> {src_sel.archive_ref or 'Catálogo Geral'}</div>
+                <div><b>Custódia Digital:</b> {f'<code style=\"font-size:11px;\">{src_sel.file_hash_sha256[:24]}...</code>' if src_sel.file_hash_sha256 else 'Registro Remoto'}</div>
+            </div>
+            {f"<div style='margin-top:8px; font-size:0.85rem;'><b>Link de Acesso:</b> <a href='{src_sel.url}' target='_blank'>{src_sel.url}</a></div>" if src_sel.url else ""}
+            {f"<div style='margin-top:6px; font-size:0.85rem; color:#6F6B63;'><b>Notas:</b> {src_sel.notes}</div>" if src_sel.notes else ""}
+        </div>
+        """, unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.markdown("#### 🔍 Ficha Catalográfica")
-    if filtradas:
-        alvo_t = st.selectbox("Examinar fonte:", [s.title for s in filtradas], key="ficha_fonte")
-        src = next(s for s in filtradas if s.title == alvo_t)
-        ci, cm = st.columns([3, 2])
-        with ci:
-            st.markdown(f"**{src.title}**")
-            st.markdown(f"*Citação (ABNT):* {src.citation}")
-            if src.author:
-                st.markdown(f"**Autoria:** {src.author}")
-            if src.publisher:
-                st.markdown(f"**Instituição / Veículo:** {src.publisher}")
-            st.markdown(f"**Ano:** {src.publication_year or 'S/D'} · **Tipologia:** `{src.source_type}`")
-        with cm:
-            st.markdown(f"**Acervo / Fundo:** `{src.archive_ref or 'Catálogo Geral'}`")
-            if src.file_hash_sha256:
-                st.markdown(f"**SHA-256:** `{src.file_hash_sha256[:20]}...`")
-            if src.url:
-                st.markdown(f"[Link original]({src.url})")
-            if src.notes:
-                st.caption(f"Notas: {src.notes}")
-
-        if src.event_links:
-            st.markdown("**📌 Eventos sustentados por esta fonte**")
-            for el in src.event_links:
-                st.markdown(f"- **{el.event.title}** ({el.event.date_display}) — {badge_html(el.validation_status)}")
+        if src_sel.event_links:
+            st.markdown("<div style='font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em; margin-bottom:0.4rem;'>Acontecimentos Sustentados por Esta Fonte</div>", unsafe_allow_html=True)
+            for el in src_sel.event_links:
+                st.markdown(f"- **[{el.event.date_display}] {el.event.title}** ({format_badge(el.validation_status)})")
                 if el.excerpt:
                     st.markdown(f"  > *\"{el.excerpt}\"*")
-                if el.page_or_section:
-                    st.caption(f"  Pág./Seção: {el.page_or_section}")
-        else:
-            st.caption("ℹ️ Fonte catalogada e pronta para indexação em novos eventos.")
 
 
 # =============================================================================
-# VIEW 6 — FERRAMENTAS DE PESQUISA
+# SEÇÃO 5 — METODOLOGIA & AUDITORIA DE DADOS
 # =============================================================================
-def view_tools(service, events, f):
-    st.markdown("### 🛠️ Ferramentas de Pesquisa")
-    st.caption("Utilitários fiéis à metodologia do projeto (docs/metodologia/02, 03 e 07).")
+def render_view_methodology(service, events, filtros):
+    st.markdown("""
+    <div style="margin-bottom: 1.4rem;">
+        <h2 style="margin: 0; font-size: 1.6rem;">Metodologia, Regras Epistemológicas & Auditoria</h2>
+        <div style="font-size: 0.9rem; color: #6F6B63;">Princípios normativos que garantem a reproduzibilidade e a integridade da base documental.</div>
+    </div>
+    """, unsafe_allow_html=True)
 
-    t_norm, t_zero, t_export, t_hash = st.tabs([
-        "🔤 Normalizador de Nomes",
-        "0️⃣ Zero vs. NULL",
-        "📤 Exportar Recorte",
-        "🔐 Verificação SHA-256",
+    tab_regras, tab_zero, tab_normaliza, tab_custodia = st.tabs([
+        "Regras Epistemológicas",
+        "Regra 1: Zero vs. NULL",
+        "Normalização Onomástica",
+        "Auditoria Criptográfica (SHA-256)"
     ])
 
-    with t_norm:
-        st.markdown("#### Normalização de nomes para buscas")
-        st.caption("Preserva-se a grafia original no banco; a forma normalizada serve apenas para indexação e busca.")
-        raw = st.text_input("Nome original:", placeholder="Ex: Comando Vermelho — 'CV' do Morro do Dendê")
-        if raw:
-            c_a, c_b = st.columns(2)
-            with c_a:
-                st.markdown(f'<div class="card"><div class="l">GRAFIA ORIGINAL</div>'
-                            f'<div class="v" style="font-size:1.1rem">{raw}</div></div>', unsafe_allow_html=True)
-            with c_b:
-                st.markdown(f'<div class="card"><div class="l">FORMA NORMALIZADA</div>'
-                            f'<div class="v" style="font-size:1.1rem">{normalize_name_demo(raw)}</div></div>',
-                            unsafe_allow_html=True)
-            st.info("Regras aplicadas: NFKD (remove acentos) → minúsculas → remove pontuação → colapsa espaços.")
+    with tab_regras:
+        st.markdown("""
+        ### Compromissos Inegociáveis do Projeto
+        1. **Zero Alucinação de Fatos**: Nenhum evento é gerado ou inferido porque "parece plausível". Todo fato precisa de fonte primária ou secundária qualificada.
+        2. **Não Invenção de Coordenadas**: Se um território não possui limites cartográficos delimitados nos órgãos oficiais (ex.: Rede Penitenciária Geral), a latitude e longitude permanecem estritamente `NULL`.
+        3. **Isolamento de Testes**: Registros marcados como `[DEMO]` servem exclusivamente para testes técnicos e são filtrados por padrão do corpus historiográfico.
+        4. **Proveniência Obrigatória**: Acontecimentos históricos reais rejeitam gravação se não acompanhados de trecho literal (`excerpt`) e localização dentro da fonte.
+        5. **Registro de Divergências**: Historiografia não é consenso forçado. Versões divergentes são expostas como Claims com posturas opostas.
+        """)
 
-    with t_zero:
-        st.markdown("#### REGRA 1 — ZERO é diferente de DESCONHECIDO (NULL)")
-        st.caption("`0` = contagem confirmada como zero por fonte. `NULL` = dado ausente. Misturá-los corrompe análises.")
-        entrada = st.text_input("Valor encontrado na fonte (deixe vazio para testar NULL):",
-                                placeholder="Ex.: 0, 12, ou vazio")
-        cls, msg, css = classify_zero_vs_null(entrada)
-        st.markdown(f'<div class="card"><span class="badge {css}">{cls}</span>'
-                    f'<p style="margin-top:8px">{msg}</p></div>', unsafe_allow_html=True)
+    with tab_zero:
+        st.markdown("### Avaliador Interativo — Regra 1: Zero vs. NULL")
+        st.caption("A confusão entre valor zero e valor ausente (NULL) é o erro mais comum em bancos de dados sobre violência. Teste a regra abaixo:")
+        valor_teste = st.text_input("Insira o valor extraído da fonte (deixe vazio para testar dado ausente):", placeholder="Ex: 0, 14, ou vazio")
+        rotulo, explicacao, css = evaluate_zero_null(valor_teste)
+        st.markdown(f"""
+        <div class="archive-dossier" style="margin-top: 10px;">
+            <span class="badge-editorial {css}">{rotulo}</span>
+            <p style="margin-top: 8px; color: #33312B;">{explicacao}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-    with t_export:
-        st.markdown("#### Exportação do recorte atual")
-        st.caption(f"Recorte: {f['years'][0]}–{f['years'][1]} · {len(events)} evento(s) · "
-                   f"modo {'Real' if f['is_demo'] is False else '[DEMO]' if f['is_demo'] else 'Misto'}")
-        if events:
-            df_ev = events_to_df(events)
-            st.dataframe(df_ev, use_container_width=True, hide_index=True)
-            st.download_button("📥 Baixar recorte (CSV)", df_ev.to_csv(index=False).encode("utf-8"),
-                               "recorte_pesquisa.csv", "text/csv")
-        else:
-            st.info("Sem eventos no recorte atual para exportar.")
+    with tab_normaliza:
+        st.markdown("### Normalização Onomástica e Toponímica")
+        st.caption("Preservamos a grafia original do documento histórico; a forma normalizada em caixa alta sem diacríticos é usada apenas para indexação relacional.")
+        nome_teste = st.text_input("Nome histórico:", placeholder="Ex: Rogério Lemgruber — 'Bagulhão'")
+        if nome_teste:
+            col_a, col_b = st.columns(2)
+            with col_a:
+                st.markdown(f"**Grafia Documentada Original:**<br>`{nome_teste}`", unsafe_allow_html=True)
+            with col_b:
+                st.markdown(f"**Chave Normalizada:**<br>`{normalize_string_search(nome_teste).upper()}`", unsafe_allow_html=True)
 
-    with t_hash:
-        st.markdown("#### Verificação de custódia digital (SHA-256)")
-        st.caption("Confira a integridade de um arquivo baixado contra o hash registrado no catálogo de fontes.")
-        up = st.file_uploader("Arquivo para verificação:", type=None)
-        informado = st.text_input("Hash SHA-256 esperado (do catálogo):", placeholder="64 caracteres hex")
-        if up and informado:
-            digest = hashlib.sha256(up.read()).hexdigest()
-            ok = digest.lower() == informado.strip().lower()
-            if ok:
-                st.success(f"✅ Integridade confirmada. SHA-256: `{digest[:32]}...`")
+    with tab_custodia:
+        st.markdown("### Verificação de Custódia Digital")
+        st.caption("Permite verificar se um documento bruto em PDF ou imagem no acervo local confere exatamente com o hash SHA-256 catalogado.")
+        arquivo_up = st.file_uploader("Selecione o arquivo local para verificação:", type=None)
+        hash_esperado = st.text_input("Hash SHA-256 registrado no catálogo:")
+        if arquivo_up and hash_esperado:
+            digest_calculado = hashlib.sha256(arquivo_up.read()).hexdigest()
+            if digest_calculado.lower() == hash_esperado.strip().lower():
+                st.success(f"Autenticidade confirmada: O arquivo corresponde exatamente ao hash de custódia ({digest_calculado[:24]}...).")
             else:
-                st.error(f"❌ Hash divergente.\n\nArquivo: `{digest}`\n\nCatálogo: `{informado.strip()}`")
+                st.error(f"Divergência detectada:\nCalculado: {digest_calculado}\nEsperado: {hash_esperado}")
 
 
 # =============================================================================
-# MAIN
+# FLUXO PRINCIPAL
 # =============================================================================
 def main():
     db = SessionLocal()
     service = EventService(db)
 
     try:
-        current = st.session_state.get("nav_view", VIEWS[0])
-        view, filters = render_sidebar(service, current)
+        current_view = st.session_state.get("nav_view", SECOES[0])
+        selected_view, filtros = render_archival_sidebar(service, current_view)
 
-        if view == VIEWS[0]:
-            view_home(service)
+        if selected_view == "Visão Geral":
+            render_view_overview(service)
             return
 
-        events = apply_filters(service, filters)
+        events = service.list_events(
+            year_min=filtros["years"][0],
+            year_max=filtros["years"][1],
+            region_id=filtros["region_id"],
+            organization_id=filtros["org_id"],
+            confidence_level=filtros["confidence"],
+            search_query=filtros["search"],
+            is_demo=filtros["is_demo"]
+        )
 
-        if filters["is_demo"] is False and not events and view not in (VIEWS[5],):
-            st.info(
-                "ℹ️ Nenhum registro histórico real para os filtros atuais. "
-                "Para testes técnicos, selecione **'Incluir Dados Técnicos [DEMO]'** na barra lateral."
-            )
-
-        header = {
-            VIEWS[1]: ("📊 Painel Analítico", "Distribuição temporal, territorial e por confiabilidade"),
-            VIEWS[2]: ("🗺️ Mapa & Território", "Eventos documentados + perímetros de grupos armados"),
-            VIEWS[3]: ("⏳ Linha do Tempo", "Cronologia com precisão temporal e proveniência"),
-            VIEWS[4]: ("📚 Acervo de Fontes", "Catálogo bibliográfico auditável"),
-            VIEWS[5]: ("🛠️ Ferramentas de Pesquisa", "Utilitários metodológicos"),
-        }[view]
-
-        st.markdown(
-            f'<div style="margin-bottom:4px;color:#F1F5F9;font-family:Sora;font-size:1.5rem;font-weight:700">'
-            f'{header[0]}</div>'
-            f'<div style="color:#7C8DAF;font-size:.9rem;margin-bottom:1rem">{header[1]}</div>',
-            unsafe_allow_html=True)
-
-        if view == VIEWS[1]:
-            view_dashboard(service, events, filters)
-        elif view == VIEWS[2]:
-            view_map(service, events, filters)
-        elif view == VIEWS[3]:
-            view_timeline(service, events)
-        elif view == VIEWS[4]:
-            view_sources(service, filters)
-        elif view == VIEWS[5]:
-            view_tools(service, events, filters)
+        if selected_view == "Atlas Cartográfico":
+            render_view_map(service, events, filtros)
+        elif selected_view == "Linha do Tempo":
+            render_view_timeline(service, events)
+        elif selected_view == "Acervo Documental":
+            render_view_sources(service, filtros)
+        elif selected_view == "Metodologia & Dados":
+            render_view_methodology(service, events, filtros)
 
     finally:
         db.close()
