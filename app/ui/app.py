@@ -327,12 +327,43 @@ st.markdown("""
         line-height: 1.5;
     }
 
-    /* Formulários e Inputs Streamlit customizados */
-    .stTextInput>div>div>input, .stSelectbox>div>div>div {
+    /* Formulários, Inputs e Selects Streamlit customizados (Imune a colisões de tema escuro) */
+    .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
         background-color: #FFFFFF !important;
         border: 1px solid #D8D3C9 !important;
-        color: #20201E !important;
-        border-radius: 2px !important;
+        color: #1C1B18 !important;
+        border-radius: 3px !important;
+    }
+    .stSelectbox div[data-baseweb="select"] span {
+        color: #1C1B18 !important;
+    }
+    .stSelectbox label, .stTextInput label, .stSlider label {
+        color: #1C1B18 !important;
+        font-family: 'Source Sans 3', sans-serif !important;
+        font-weight: 600 !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* Botões editoriais explícitos com alto contraste */
+    .stButton > button {
+        background-color: #FFFFFF !important;
+        color: #1C1B18 !important;
+        border: 1px solid #B5AEA0 !important;
+        border-radius: 3px !important;
+        font-family: 'Source Sans 3', sans-serif !important;
+        font-weight: 600 !important;
+        padding: 8px 18px !important;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
+        transition: all 0.15s ease-in-out !important;
+    }
+    .stButton > button:hover {
+        background-color: #F7EBEB !important;
+        border-color: #7A2E2E !important;
+        color: #7A2E2E !important;
+    }
+    .stButton > button:active {
+        background-color: #7A2E2E !important;
+        color: #FFFFFF !important;
     }
     div[data-testid="stMetric"] {
         background-color: #FFFFFF;
@@ -922,24 +953,26 @@ def render_view_sources(service, filtros):
         sel_titulo = st.selectbox("Examinar Ficha Catalográfica:", titulos)
         src_sel = next(s for s in fontes_filtradas if s.title == sel_titulo)
 
-        st.markdown(f"""
-        <div class="archive-dossier">
-            <div class="archive-tag">{src_sel.source_type.upper().replace('_', ' ')} · PUBLICAÇÃO {src_sel.publication_year or 'S/D'}</div>
-            <div class="archive-title">{src_sel.title}</div>
-            <div style="font-size:0.92rem; margin-bottom: 0.6rem;">
-                <b>Citação Formal (ABNT):</b><br>
-                <i>{src_sel.citation}</i>
-            </div>
-            <div style="font-size:0.85rem; color:#5A564F; display:grid; grid-template-columns: 1fr 1fr; gap: 8px;">
-                <div><b>Autoria:</b> {src_sel.author or 'Não informada'}</div>
-                <div><b>Instituição / Veículo:</b> {src_sel.publisher or 'Não informada'}</div>
-                <div><b>Acervo / Fundo:</b> {src_sel.archive_ref or 'Catálogo Geral'}</div>
-                <div><b>Custódia Digital:</b> {f'<code style=\"font-size:11px;\">{src_sel.file_hash_sha256[:24]}...</code>' if src_sel.file_hash_sha256 else 'Registro Remoto'}</div>
-            </div>
-            {f"<div style='margin-top:8px; font-size:0.85rem;'><b>Link de Acesso:</b> <a href='{src_sel.url}' target='_blank'>{src_sel.url}</a></div>" if src_sel.url else ""}
-            {f"<div style='margin-top:6px; font-size:0.85rem; color:#6F6B63;'><b>Notas:</b> {src_sel.notes}</div>" if src_sel.notes else ""}
-        </div>
-        """, unsafe_allow_html=True)
+        url_html = f"<div style='margin-top:8px; font-size:0.85rem;'><b>Link de Acesso:</b> <a href='{src_sel.url}' target='_blank'>{src_sel.url}</a></div>" if src_sel.url else ""
+        notes_html = f"<div style='margin-top:6px; font-size:0.85rem; color:#6F6B63;'><b>Notas:</b> {src_sel.notes}</div>" if src_sel.notes else ""
+        hash_html = f"<code style='font-size:11px;'>{src_sel.file_hash_sha256[:24]}...</code>" if src_sel.file_hash_sha256 else "Registro Remoto"
+
+        st.markdown(
+            f"<div class='archive-dossier'>"
+            f"<div class='archive-tag'>{src_sel.source_type.upper().replace('_', ' ')} · PUBLICAÇÃO {src_sel.publication_year or 'S/D'}</div>"
+            f"<div class='archive-title'>{src_sel.title}</div>"
+            f"<div style='font-size:0.92rem; margin-bottom: 0.6rem;'><b>Citação Formal (ABNT):</b><br><i>{src_sel.citation}</i></div>"
+            f"<div style='font-size:0.85rem; color:#5A564F; display:grid; grid-template-columns: 1fr 1fr; gap: 8px;'>"
+            f"<div><b>Autoria:</b> {src_sel.author or 'Não informada'}</div>"
+            f"<div><b>Instituição / Veículo:</b> {src_sel.publisher or 'Não informada'}</div>"
+            f"<div><b>Acervo / Fundo:</b> {src_sel.archive_ref or 'Catálogo Geral'}</div>"
+            f"<div><b>Custódia Digital:</b> {hash_html}</div>"
+            f"</div>"
+            f"{url_html}"
+            f"{notes_html}"
+            f"</div>",
+            unsafe_allow_html=True
+        )
 
         if src_sel.event_links:
             st.markdown("<div style='font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em; margin-bottom:0.4rem;'>Acontecimentos Sustentados por Esta Fonte</div>", unsafe_allow_html=True)
