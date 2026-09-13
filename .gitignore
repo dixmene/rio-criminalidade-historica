@@ -43,6 +43,7 @@ wheels/
 *.sqlite
 *.sqlite3
 *.db
+!data/rio_historico.db
 !data/geospatial/seeds/*.db
 data/raw/
 !data/raw/.gitkeep

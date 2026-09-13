@@ -24,9 +24,12 @@ from streamlit_folium import st_folium
 import pandas as pd
 import json
 
-from app.database import SessionLocal
+from app.database import SessionLocal, engine, Base
 from app.services import EventService
 from app.config import DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM
+
+# Garante a criação de tabelas em ambientes efêmeros como Streamlit Cloud
+Base.metadata.create_all(bind=engine)
 
 
 @st.cache_data
