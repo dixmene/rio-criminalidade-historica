@@ -395,23 +395,137 @@ def main():
 
         with tab_sources:
             st.subheader("📚 Acervo Geral de Fontes Catalogadas")
+            st.markdown(
+                "Catálogo abrangente de fontes acadêmicas, relatórios oficiais, processos judiciais, "
+                "reportagens investigativas e bases de dados bibliográficas."
+            )
             all_s = service.list_sources(is_demo=filter_is_demo)
             if all_s:
-                s_rows = []
+                # Extrair eixos temáticos únicos
+                axes_set = set()
                 for s in all_s:
+                    if s.archive_ref and "(" in s.archive_ref:
+                        axis_cand = s.archive_ref.split("(")[0].strip()
+                        if axis_cand and not axis_cand.startswith("Acervo"):
+                            axes_set.add(axis_cand)
+                    elif s.notes and "Eixo Temático:" in s.notes:
+                        try:
+                            axis_cand = s.notes.split("Eixo Temático:")[1].split("|")[0].strip()
+                            if axis_cand:
+                                axes_set.add(axis_cand)
+                        except Exception:
+                            pass
+                
+                sorted_axes = ["Todos os Eixos"] + sorted(list(axes_set))
+
+                col_f1, col_f2, col_f3 = st.columns([2, 1, 2])
+                with col_f1:
+                    selected_src_axis = st.selectbox("Eixo Temático de Pesquisa:", sorted_axes)
+                with col_f2:
+                    typologies = ["Todas as Tipologias"] + sorted(list(set(s.source_type for s in all_s if s.source_type)))
+                    selected_src_type = st.selectbox("Tipologia:", typologies)
+                with col_f3:
+                    src_search = st.text_input("Buscar no Acervo (Título, Autor, Veículo):", placeholder="Ex: Misse, Zaluar, ADPF, CPI...")
+
+                # Filtragem
+                filtered_s = []
+                for s in all_s:
+                    # Filtro por Eixo
+                    if selected_src_axis != "Todos os Eixos":
+                        s_axis = ""
+                        if s.archive_ref and "(" in s.archive_ref:
+                            s_axis = s.archive_ref.split("(")[0].strip()
+                        elif s.notes and "Eixo Temático:" in s.notes:
+                            s_axis = s.notes.split("Eixo Temático:")[1].split("|")[0].strip()
+                        if selected_src_axis.lower() not in s_axis.lower():
+                            continue
+
+                    # Filtro por Tipologia
+                    if selected_src_type != "Todas as Tipologias" and s.source_type != selected_src_type:
+                        continue
+
+                    # Filtro por Busca
+                    if src_search:
+                        q = src_search.lower()
+                        blob = f"{s.title} {s.author or ''} {s.publisher or ''} {s.notes or ''}".lower()
+                        if q not in blob:
+                            continue
+
+                    filtered_s.append(s)
+
+                # Métricas do Acervo
+                sm1, sm2, sm3, sm4 = st.columns(4)
+                sm1.metric("Fontes Exibidas", len(filtered_s))
+                sm2.metric("Acadêmicas", sum(1 for s in filtered_s if "academico" in s.source_type))
+                sm3.metric("Judiciais / Oficiais", sum(1 for s in filtered_s if s.source_type in ("documento_judicial", "oficial_relatorio")))
+                sm4.metric("Jornalismo / Mídia", sum(1 for s in filtered_s if s.source_type in ("jornalismo_investigativo", "historia_oral")))
+
+                # Tabela Consolidada
+                s_rows = []
+                for s in filtered_s:
+                    eixo_str = "Geral"
+                    if s.archive_ref and "(" in s.archive_ref:
+                        eixo_str = s.archive_ref.split("(")[0].strip()
+                    elif s.notes and "Eixo Temático:" in s.notes:
+                        eixo_str = s.notes.split("Eixo Temático:")[1].split("|")[0].strip()
+
                     s_rows.append({
                         "ID": s.id,
                         "Título": s.title,
-                        "Autor": s.author or "N/I",
-                        "Editora/Veículo": s.publisher or "N/I",
+                        "Eixo Temático": eixo_str,
+                        "Instituição / Veículo": s.publisher or "N/I",
                         "Ano": s.publication_year if s.publication_year is not None else "S/D",
                         "Tipologia": s.source_type,
-                        "Acervo / Arquivo": s.archive_ref or "N/I",
-                        "Eventos Sustentados": len(s.event_links),
-                        "DEMO": "Sim" if s.is_demo else "Não",
+                        "Eventos Vinculados": len(s.event_links),
+                        "Custódia Local": "✅ SHA-256" if s.file_hash_sha256 else "🌐 Remoto / Catálogo",
                     })
                 df_s = pd.DataFrame(s_rows)
                 st.dataframe(df_s, use_container_width=True, hide_index=True)
+
+                # Detalhes da Fonte Selecionada
+                st.markdown("---")
+                st.subheader("🔍 Ficha Catalográfica e Metadados da Fonte")
+                if filtered_s:
+                    selected_source_title = st.selectbox(
+                        "Selecione uma fonte para examinar metadados completos:",
+                        options=[s.title for s in filtered_s],
+                        key="source_detail_selector"
+                    )
+                    target_source = next((s for s in filtered_s if s.title == selected_source_title), None)
+
+                    if target_source:
+                        c_info1, c_info2 = st.columns([3, 2])
+                        with c_info1:
+                            st.markdown(f"### {target_source.title}")
+                            st.markdown(f"**Citação Formal (ABNT):** *{target_source.citation}*")
+                            if target_source.author:
+                                st.markdown(f"**Autoria:** {target_source.author}")
+                            if target_source.publisher:
+                                st.markdown(f"**Instituição / Veículo:** {target_source.publisher}")
+                            st.markdown(f"**Ano:** {target_source.publication_year or 'Sem data informada'}")
+                            st.markdown(f"**Tipologia:** `{target_source.source_type}`")
+
+                        with c_info2:
+                            st.markdown(f"**Acervo / Fundo:** `{target_source.archive_ref or 'Catálogo Geral'}`")
+                            if target_source.file_hash_sha256:
+                                st.markdown(f"**Hash SHA-256 (Custódia Digital):** `{target_source.file_hash_sha256[:16]}...`")
+                            if target_source.url:
+                                st.markdown(f"**Link Original:** [{target_source.url}]({target_source.url})")
+                            if target_source.notes:
+                                st.info(f"**Metadados / Notas:**\n\n{target_source.notes}")
+
+                        # Eventos que utilizam esta fonte
+                        if target_source.event_links:
+                            st.markdown("#### 📌 Eventos Históricos Sustentados por Esta Fonte:")
+                            for el in target_source.event_links:
+                                badge = get_confidence_badge_html(el.validation_status)
+                                st.markdown(f"- **{el.event.title}** ({el.event.date_display}) — {badge}")
+                                if el.excerpt:
+                                    st.markdown(f"  > *\"{el.excerpt}\"*")
+                                if el.page_or_section:
+                                    st.caption(f"  Página/Seção: {el.page_or_section}")
+                        else:
+                            st.caption("ℹ️ Esta fonte está catalogada no acervo bibliográfico e pronta para indexação em novos eventos.")
             else:
                 st.info("Nenhuma fonte cadastrada.")
 
