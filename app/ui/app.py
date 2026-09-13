@@ -60,10 +60,40 @@ st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
 
+    :root {
+        --bg-canvas: #F5F3EE;
+        --bg-surface: #FFFFFF;
+        --bg-subtle: #EBE7DF;
+        --border-subtle: #D8D3C9;
+        --border-strong: #B5AEA0;
+        --text-primary: #1C1B18;
+        --text-secondary: #5A564F;
+        --text-tertiary: #827D72;
+        --accent-action: #7A2E2E;
+        --accent-action-hover: #5C2222;
+        --accent-subtle: #F7EBEB;
+        --status-error-text: #9E2A2B;
+        --status-error-bg: #FDF2F2;
+        --status-success-text: #2D5A27;
+        --status-success-bg: #F0F6F0;
+        --status-warning-text: #8C580E;
+        --status-warning-bg: #FEF9EE;
+    }
+
+    /* Travamento do contêiner principal para evitar espalhamento em monitores ultrawide */
+    .main .block-container {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding-top: 1.5rem;
+        padding-bottom: 3rem;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
+
     /* Fundo e tipografia geral */
     .stApp {
-        background-color: #F5F3EE;
-        color: #20201E;
+        background-color: var(--bg-canvas);
+        color: var(--text-primary);
         font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
         line-height: 1.6;
     }
@@ -71,7 +101,7 @@ st.markdown("""
     h1, h2, h3, h4, .serif-font {
         font-family: 'Libre Baskerville', Georgia, serif;
         font-weight: 700;
-        color: #20201E;
+        color: var(--text-primary);
         letter-spacing: -0.01em;
     }
 
