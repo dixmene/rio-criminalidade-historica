@@ -285,6 +285,20 @@ def seed_full_corpus():
                 "publication_year": 2022,
                 "source_type": "academico_artigo",
                 "notes": "Mapeamento dos 110 remanescentes fabris na Zona Norte e da ociosidade de mais de 53% dos galpões históricos."
+            },
+            {
+                "key": "dadosderiscos_2026",
+                "title": "Mapa de Facções RJ: Compilação Cartográfica de 1.671 Áreas com Presença de Grupos Armados",
+                "citation": "DADOS DE RISCOS. Mapa de Facções RJ — GPS com Alerta de Proximidade: 1.671 áreas mapeadas. Rio de Janeiro: Dados de Riscos, 2026. Disponível em: https://dadosderiscos.com.br/mapa-rj-risco-faccoes.html.",
+                "author": "Dados de Riscos",
+                "publisher": "Dados de Riscos",
+                "publication_year": 2026,
+                "publication_date": "2026-09-13",
+                "source_type": "cartografia_digital",
+                "url": "https://dadosderiscos.com.br/mapa-rj-risco-faccoes.html",
+                "archive_ref": "data/geospatial/faccoes_rj_1671_poligonos.geojson",
+                "file_hash_sha256": "c0ea0aed7aab3768974028162be3a99415a555b471fa90b1daa23d0d755d1b6d",
+                "notes": "Compilação georreferenciada de 1.671 polígonos delimitando áreas sob influência do CV (1.000), TCP (295), LJ (130), ADA (92), Milícias (91), MNI (42) e Neutras (21)."
             }
         ]
 

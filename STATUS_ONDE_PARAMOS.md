@@ -3,7 +3,7 @@
 **Repositório Remoto**: [GitHub (Privado) — `dixmene/rio-criminalidade-historica`](https://github.com/dixmene/rio-criminalidade-historica)  
 **Branch Atual**: `main`  
 **Último Commit**: `79fb522`  
-**Qualidade Técnica**: 18/18 Testes Automatizados Aprovados (`python -m pytest -v`)
+**Qualidade Técnica**: 21/21 Testes Automatizados Aprovados (`python -m pytest -v`)
 
 ---
 
@@ -85,13 +85,39 @@
 
 ---
 
+### F. Mapeamento Geoespacial Vetorial (1.671 Polígonos de Facções & Milícias)
+1. **Pipeline de Extração Automatizado (`scripts/extraction/extract_territorial_polygons.py`)**:
+   - Ingestão da base georreferenciada de perímetros territoriais aberta (`dadosderiscos.com.br`).
+   - Geração de GeoJSON RFC 7946 enriquecido com centroides aproximados, nomes de comunidades e cores oficiais: `data/geospatial/faccoes_rj_1671_poligonos.geojson` (4.6 MB).
+   - Cálculo de metadados sidecar e custódia digital com hash SHA-256 (`data/geospatial/faccoes_rj_1671_meta.json`).
+   - Distribuição espacial identificada:
+     - **Comando Vermelho (CV)**: 1.000 áreas (59,8%)
+     - **Terceiro Comando Puro (TCP)**: 295 áreas (17,7%)
+     - **Liga da Justiça (LJ / CL220)**: 130 áreas (7,8%)
+     - **Amigos dos Amigos (ADA)**: 92 áreas (5,5%)
+     - **Outras Milícias (MIL)**: 91 áreas (5,4%)
+     - **Milícia de Nova Iguaçu (MNI)**: 42 áreas (2,5%)
+     - **Áreas Neutras / Disputadas (NEU)**: 21 áreas (1,3%)
+2. **Integração no Painel Streamlit (`app/ui/app.py`)**:
+   - **Camada de Sobreposição Opcional**: Toggle na aba principal do mapa para sobrepor perímetros favelares diretamente sobre os pinos históricos (1958–2026).
+   - **Nova Aba Exclusiva (`🏴 Mapeamento Territorial (1.671 Áreas)`)**:
+     - Cards de indicadores e proporção territorial dos grupos armados.
+     - Filtro dinâmico por facção/organização armada.
+     - Localizador com autocomplete para focar e dar zoom direto em qualquer uma das 1.671 favelas/comunidades.
+     - Tabela completa de exploração com exportação para CSV.
+3. **Nova Suíte de Testes Cartográficos (`tests/test_geospatial_polygons.py`)**:
+   - 3 novos testes automatizados validando presença dos arquivos, integridade de formato GeoJSON, limites geográficos no RJ e hashes SHA-256 (21/21 testes aprovados).
+
+---
+
 ## 🛑 2. Situação Atual do Banco de Dados (`data/rio_historico.db`)
 
 | Entidade | Dados Históricos Reais (`is_demo=False`) | Dados Técnicos de Teste (`is_demo=True`) | Total |
 | :--- | :---: | :---: | :---: |
 | **Eventos Históricos** | **31** | 10 | **41** |
-| **Fontes Documentais** | **172** | 6 | **178** |
+| **Fontes Documentais** | **173** | 6 | **179** |
 | **Regiões / Territórios** | **19** | 10 | **29** |
+| **Polígonos Cartográficos Vetoriais** | **1.671** | 0 | **1.671** |
 | **Organizações** | **14** | 6 | **20** |
 | **Pessoas / Biografias** | **22** | 5 | **27** |
 
@@ -99,13 +125,16 @@
 
 ## 🚀 3. Próximos Passos & Linhas de Pesquisa Disponíveis no Acervo
 
-1. **Aprofundamento Temático a partir do Acervo de 159 Fontes**:
+1. **Aprofundamento Temático a partir do Acervo de Fontes**:
    - **Economia & Desindustrialização**: Inserir eventos e dados da tese da "Estrutura Produtiva Oca" (Bruno Sobral) e o impacto dos vazios industriais na Zona Norte (AP3).
    - **Milícias & Minha Casa, Minha Vida**: Mapear a captura imobiliária na Zona Oeste (pesquisas da EMERJ e LAV-UERJ).
    - **Ruptura Nacional CV vs PCC (2016)**: Registrar o rompimento da aliança histórica nas prisões e reflexos nas favelas cariocas.
    - **Educação e Violência Armada (CESeC)**: Mapear o impacto das operações em escolas da Maré e Alemão.
-2. **Refinamento Cartográfico Vetorial (GeoJSON)**:
-   - Adicionar arquivos GeoJSON vetoriais de polígonos dos complexos favelares em `data/geospatial/`.
+2. **Integração de Novas Bases Geoespaciais e Abertas**:
+   - **GENI/UFF + Fogo Cruzado**: Incorporar a série temporal do *Mapa dos Grupos Armados* (2006–2024) para comparar a evolução territorial histórica ano a ano.
+   - **Data.Rio / IPP (Sabren)**: Ingerir limites territoriais municipais oficiais de favelas para cruzamento poligonal de sobreposição.
+   - **Fogo Cruzado API**: Integrar dados de tiroteios e disparos para análise de eventos recentes.
+   - **ISP-RJ**: Ingerir as camadas oficiais de AISP (Batalhões) e CISP (Delegacias).
 3. **Módulo de Análise de Controvérsias Historiográficas**:
    - Expor confrontos de versões em eventos com divergência (ex: ADPF 635, origens da Falange e mortes em operações).
 

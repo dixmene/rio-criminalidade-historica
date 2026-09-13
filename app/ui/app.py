@@ -22,10 +22,20 @@ import streamlit as st
 import folium
 from streamlit_folium import st_folium
 import pandas as pd
+import json
 
 from app.database import SessionLocal
 from app.services import EventService
 from app.config import DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM
+
+
+@st.cache_data
+def load_geospatial_factions():
+    geojson_path = Path("data/geospatial/faccoes_rj_1671_poligonos.geojson")
+    if not geojson_path.exists():
+        return None
+    with open(geojson_path, "r", encoding="utf-8") as f:
+        return json.load(f)
 
 st.set_page_config(
     page_title="Rio de Janeiro - Pesquisa Histórica & Territorial",
@@ -249,8 +259,9 @@ def main():
         # ---------------------------------------------------------
         # ABAS PRINCIPAIS
         # ---------------------------------------------------------
-        tab_map, tab_timeline, tab_sources = st.tabs([
+        tab_map, tab_factions, tab_timeline, tab_sources = st.tabs([
             "🗺️ Mapa Territorial & Detalhes",
+            "🏴 Mapeamento Territorial (1.671 Áreas)",
             "⏳ Linha do Tempo",
             "📚 Acervo Geral de Fontes"
         ])
@@ -261,11 +272,39 @@ def main():
             with col_map:
                 st.subheader("📍 Mapa Territorial")
 
+                col_sub_m1, col_sub_m2 = st.columns([1, 1])
+                with col_sub_m1:
+                    st.caption("Eventos históricos documentados com coordenadas.")
+                with col_sub_m2:
+                    show_faction_overlay = st.checkbox(
+                        "🏴 Sobrepor Perímetros de Facções",
+                        value=False,
+                        help="Sobrepõe 1.671 polígonos de comunidades e favelas sob controle/presença de grupos armados (dadosderiscos)."
+                    )
+
                 map_obj = folium.Map(
                     location=DEFAULT_MAP_CENTER,
                     zoom_start=DEFAULT_MAP_ZOOM,
                     tiles="OpenStreetMap"
                 )
+
+                if show_faction_overlay:
+                    factions_geo = load_geospatial_factions()
+                    if factions_geo:
+                        folium.GeoJson(
+                            factions_geo,
+                            name="Perímetros Facções RJ",
+                            style_function=lambda feat: {
+                                "fillColor": feat["properties"].get("cor_hex", "#8C97A3"),
+                                "color": feat["properties"].get("cor_hex", "#8C97A3"),
+                                "weight": 1.2,
+                                "fillOpacity": 0.35,
+                            },
+                            tooltip=folium.GeoJsonTooltip(
+                                fields=["nome", "faccao_nome"],
+                                aliases=["Comunidade/Área:", "Presença Registrada:"]
+                            )
+                        ).add_to(map_obj)
 
                 mapped_count = 0
                 unmapped_events = []
@@ -392,6 +431,149 @@ def main():
                                 """, unsafe_allow_html=True)
                         else:
                             st.error("🚨 Erro Crítico: Evento sem proveniência documental registrada.")
+
+        with tab_factions:
+            st.subheader("🏴 Mapeamento Territorial de Facções e Milícias no Rio de Janeiro")
+            st.markdown(
+                "Visualização e análise vetorial de **1.671 perímetros territoriais** compilados com base em "
+                "fontes públicas abertas (*dadosderiscos.com.br*), integrado à infraestrutura cartográfica do acervo."
+            )
+
+            factions_geo = load_geospatial_factions()
+            if not factions_geo:
+                st.warning("Arquivo GeoJSON vetorial não encontrado em `data/geospatial/faccoes_rj_1671_poligonos.geojson`.")
+            else:
+                features_list = factions_geo.get("features", [])
+
+                # Métricas do Mapeamento
+                f_m1, f_m2, f_m3, f_m4 = st.columns(4)
+                f_m1.metric("Áreas Mapeadas", f"{len(features_list):,}".replace(",", "."))
+                f_m2.metric("Comando Vermelho (CV)", "1.000 (59,8%)")
+                f_m3.metric("Terceiro Comando Puro (TCP)", "295 (17,7%)")
+                f_m4.metric("Milícias & LJ", "263 (15,7%)")
+
+                st.markdown("""
+                <div style="display: flex; gap: 12px; font-size: 12px; margin-top: 5px; margin-bottom: 15px; color: #334155; flex-wrap: wrap;">
+                    <span>🔴 <b>CV:</b> 1.000 áreas</span>
+                    <span>🟢 <b>TCP:</b> 295 áreas</span>
+                    <span>🔵 <b>Liga da Justiça (CL220):</b> 130 áreas</span>
+                    <span>🟡 <b>ADA:</b> 92 áreas</span>
+                    <span>🌐 <b>Outras Milícias:</b> 91 áreas</span>
+                    <span>🟣 <b>Milícia de Nova Iguaçu:</b> 42 áreas</span>
+                    <span>⚪ <b>Neutro/Disputa:</b> 21 áreas</span>
+                </div>
+                """, unsafe_allow_html=True)
+
+                col_fac_ctrl1, col_fac_ctrl2 = st.columns([2, 1])
+                with col_fac_ctrl1:
+                    faction_filter = st.multiselect(
+                        "Filtrar por Grupo Armado / Organização:",
+                        options=["CV", "TCP", "ADA", "MIL", "LJ", "MNI", "NEU"],
+                        default=["CV", "TCP", "ADA", "MIL", "LJ", "MNI", "NEU"],
+                        format_func=lambda x: {
+                            "CV": "Comando Vermelho (CV)",
+                            "TCP": "Terceiro Comando Puro (TCP)",
+                            "ADA": "Amigos dos Amigos (ADA)",
+                            "MIL": "Milícia (Geral)",
+                            "LJ": "Liga da Justiça (CL220)",
+                            "MNI": "Milícia de Nova Iguaçu",
+                            "NEU": "Área Neutra / Disputada"
+                        }.get(x, x)
+                    )
+                with col_fac_ctrl2:
+                    community_names = sorted(list(set(f["properties"]["nome"] for f in features_list)))
+                    community_search = st.selectbox(
+                        "🔍 Localizar Comunidade no Mapa:",
+                        options=["-- Nenhuma selecionada (Visão Geral) --"] + community_names
+                    )
+
+                # Filtragem dos polígonos
+                filtered_features = [
+                    f for f in features_list
+                    if f["properties"].get("faccao_sigla") in faction_filter
+                ]
+
+                # Centro e zoom do mapa
+                center_lat, center_lon, zoom_level = DEFAULT_MAP_CENTER[0], DEFAULT_MAP_CENTER[1], 10
+                selected_feat = None
+
+                if community_search != "-- Nenhuma selecionada (Visão Geral) --":
+                    selected_feat = next((f for f in features_list if f["properties"]["nome"] == community_search), None)
+                    if selected_feat:
+                        c_lat = selected_feat["properties"].get("centroide_lat")
+                        c_lon = selected_feat["properties"].get("centroide_lon")
+                        if c_lat and c_lon:
+                            center_lat, center_lon = c_lat, c_lon
+                            zoom_level = 15
+
+                fac_map = folium.Map(
+                    location=[center_lat, center_lon],
+                    zoom_start=zoom_level,
+                    tiles="OpenStreetMap"
+                )
+
+                filtered_geojson = {
+                    "type": "FeatureCollection",
+                    "features": filtered_features
+                }
+
+                folium.GeoJson(
+                    filtered_geojson,
+                    name="Perímetros de Facções",
+                    style_function=lambda feat: {
+                        "fillColor": feat["properties"].get("cor_hex", "#8C97A3"),
+                        "color": feat["properties"].get("cor_hex", "#8C97A3"),
+                        "weight": 1.4,
+                        "fillOpacity": 0.45,
+                    },
+                    tooltip=folium.GeoJsonTooltip(
+                        fields=["nome", "faccao_nome"],
+                        aliases=["Comunidade/Área:", "Grupo Armado:"]
+                    )
+                ).add_to(fac_map)
+
+                if selected_feat:
+                    c_lat = selected_feat["properties"].get("centroide_lat")
+                    c_lon = selected_feat["properties"].get("centroide_lon")
+                    if c_lat and c_lon:
+                        folium.Marker(
+                            location=[c_lat, c_lon],
+                            tooltip=f"📍 {selected_feat['properties']['nome']} ({selected_feat['properties']['faccao_nome']})",
+                            icon=folium.Icon(color="red", icon="crosshairs", prefix="fa")
+                        ).add_to(fac_map)
+
+                st_folium(fac_map, width="100%", height=540)
+
+                # Tabela de Exploração
+                with st.expander("📋 Ver Tabela Completa das 1.671 Áreas e Centroides", expanded=False):
+                    tbl_rows = []
+                    for f in filtered_features:
+                        p = f["properties"]
+                        tbl_rows.append({
+                            "Comunidade / Área": p.get("nome"),
+                            "Sigla": p.get("faccao_sigla"),
+                            "Grupo Armado": p.get("faccao_nome"),
+                            "Latitude": p.get("centroide_lat"),
+                            "Longitude": p.get("centroide_lon"),
+                        })
+                    df_fac = pd.DataFrame(tbl_rows)
+                    st.dataframe(df_fac, use_container_width=True, hide_index=True)
+                    csv_data = df_fac.to_csv(index=False).encode('utf-8')
+                    st.download_button(
+                        "📥 Baixar CSV das Áreas Filtradas",
+                        data=csv_data,
+                        file_name="areas_faccoes_rj.csv",
+                        mime="text/csv"
+                    )
+
+                st.info(
+                    "📌 **Nota Metodológica & Fontes Complementares:**\\n\\n"
+                    "Este mapeamento representa uma compilação de perímetros favelares georreferenciados mantidos "
+                    "pelo projeto aberto *dadosderiscos.com.br*. No acervo científico deste projeto, essa base se "
+                    "articula com as pesquisas longitudinais do **GENI/UFF + Instituto Fogo Cruzado** (*Mapa dos Grupos Armados 2006–2024*), "
+                    "com os perímetros municipais oficiais do **Data.Rio / Instituto Pereira Passos (Sabren)** "
+                    "e com os dados abertos do **ISP-RJ** (Instituto de Segurança Pública)."
+                )
 
         with tab_timeline:
             st.subheader("⏳ Linha do Tempo Cronológica")

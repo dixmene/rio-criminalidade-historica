@@ -1,0 +1,20 @@
+{
+  "arquivo": "faccoes_rj_1671_poligonos.geojson",
+  "formato": "GeoJSON (RFC 7946)",
+  "total_poligonos": 1671,
+  "sha256_geojson": "c0ea0aed7aab3768974028162be3a99415a555b471fa90b1daa23d0d755d1b6d",
+  "sha256_html_original": "e86563001e2f5f6ed98dbb6bf8fbef9e252634b015fd30185c7a2c36eba97990",
+  "tamanho_bytes": 4615438,
+  "data_extracao": "2026-09-13T12:43:49.322267",
+  "url_origem": "https://dadosderiscos.com.br/mapa-rj-risco-faccoes.html",
+  "distribuicao_faccoes": {
+    "CV (Comando Vermelho)": 1000,
+    "TCP (Terceiro Comando Puro)": 295,
+    "LJ (Liga da Justiça (CL220))": 130,
+    "ADA (Amigos dos Amigos)": 92,
+    "MIL (Milícia (Geral))": 91,
+    "MNI (Milícia de Nova Iguaçu)": 42,
+    "NEU (Área Neutra / Disputada)": 21
+  },
+  "resumo_metodologico": "Compilação de 1.671 polígonos de favelas e comunidades com presença registrada de facções do tráfico e milícias no Estado do Rio de Janeiro. Extraído do projeto aberto dadosderiscos.com.br para análise cartográfica complementar ao acervo histórico."
+}
