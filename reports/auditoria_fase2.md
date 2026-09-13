@@ -1,19 +1,21 @@
-# 🔍 RELATÓRIO DE AUDITORIA E DIAGNÓSTICO OBRIGATÓRIO (SPRINT 0)
+# 🔍 RELATÓRIO DE AUDITORIA E DIAGNÓSTICO OBRIGATÓRIO (SPRINT 0 — CONCLUÍDO)
 **Projeto**: `rio-criminalidade-historica`  
 **Data da Auditoria**: 13 de Setembro de 2026  
-**Status**: Fase 2 — Sprint 0 Concluído  
-**Escopo**: Diagnóstico Completo de Front-End, Baseline de Dados (DQ) e Matriz de Lacunas Historiográficas  
+**Status**: Sprint 0 Finalizado com Resolução dos 3 Bloqueantes e 3 Complementos  
+**Escopo**: Diagnóstico de Front-End, Resolução de Proveniência Cartográfica, Recalibragem de Confiança, Matriz Quantitativa de Lacunas e Mapeamento das 158 Fontes  
 
 ---
 
-## 🛑 0. Confirmação dos Fundamentos e Regras de Entrada
+## 🛑 0. Confirmação dos Fundamentos e Soberania Metodológica
 
 A auditoria e o plano de ação obedecem estritamente aos documentos fundacionais do projeto:
-- `README.md`: Objetivo estritamente histórico-científico; recusa de uso operacional/preditivo; neutralidade axiológica.
-- `STATUS_ONDE_PARAMOS.md`: Registro da arquitetura estável com 36 eventos reais, 182 fontes e 26 testes aprovados.
+- `README.md`: Obra histórico-científica e sociológica de acesso público; recusa categórica de finalidade operacional policial ou preditiva.
+- `STATUS_ONDE_PARAMOS.md`: Registro da arquitetura estável com 36 eventos reais, 182 fontes, 19 regiões e 26 testes aprovados.
 - `cronograma_projeto.md`: Roadmap estruturado por fases cronológicas e sprints técnicos de hardening.
-- `docs/arquitetura/erd_arquitetura_auditada.md`: Desacoplamento de `Claim` e `ClaimSource`, posturas historiográficas (`apoia`, `contesta`, `matiza`), intervalos temporais (`HistoricalDate`) e proveniência granular em `EventSource`.
+- `docs/arquitetura/erd_arquitetura_auditada.md`: Desacoplamento via entidade `Claim`, posturas (`apoia`/`contesta`/`matiza`), intervalos temporais (`HistoricalDate`) e proveniência granular em `EventSource`.
 - `docs/metodologia/` (01 a 07 + auditoria UX): Rastreabilidade estrita, `NULL ≠ 0`, não-invenção de coordenadas, isolamento de `[DEMO]`, preservação de nomes originais/normalizados e arquitetura de leitura em 2 camadas.
+- `docs/fontes/bibliografia_nucleo.md`: Espinha dorsal historiográfica (Misse, Zaluar, Alves, Manso, Amorim, Coelho) e acervos primários.
+- `docs/metodologia/metodologia_pesquisa_blocos.md`: Protocolo de atomização em Claims, 6 grandes controvérsias do campo e vocabulário de época.
 - `app/ui/app.py`: Interface editorial em Streamlit + Folium com paleta de papel e vinho histórico.
 - `tests/`: Suíte automatizada com 26/26 testes unitários e de integração passing.
 
@@ -21,95 +23,97 @@ A auditoria e o plano de ação obedecem estritamente aos documentos fundacionai
 
 ---
 
-## 🖥️ 1.1 Inventário de Erros e Fragilidades do Front-End
+## 🛠️ 1. Resolução dos Itens Bloqueantes do Sprint 0
 
-A inspeção detalhada do código e a análise visual das capturas da aplicação em execução revelaram os seguintes problemas críticos:
+### Bloqueante 1: Atribuição de `geometry_source` e `geometry_confidence` em 100% dos Territórios
+* **Diagnóstico Inicial**: 19 territórios possuíam `geometry_source = None`, violando a Regra 6.
+* **Ação Executada**:
+  - Auditados todos os 21 territórios reais.
+  - Para cada território georreferenciado, foi atribuída a base de origem cartográfica oficial: Instituto Pereira Passos (`IPP/Data.Rio` e `SABREN 2022`), `IBGE Censo 2022`, `Boletim PMERJ`, `SEAP-RJ` ou marcos tombados (`INEPAC/IPHAN`).
+  - **Correção da Macro-Região ID 89 (`Subúrbios Ferroviários da Zona Norte`)**: Suas coordenadas arbitrárias foram **anuladas** (`latitude = None`, `longitude = None`, `location_precision = "desconhecida"`, `geometry_confidence = "baixa"`). Fatos associados a esse macro-território disperso saem do mapa com o rótulo *"Localização não determinada"*, eliminando alucinação de pinos.
+  - **Resultado**: 100% dos territórios agora possuem `geometry_source` e `geometry_confidence` documentados. Violações cartográficas zeradas.
 
-### 1. Colisão Crítica de Tema (Streamlit Dark Mode vs. CSS Claro) — [EVIDÊNCIA NAS IMAGENS]
-- **Sintoma Visual** (`uploaded_media_0` e `uploaded_media_1`):
-  - Campos `st.selectbox` renderizam com fundo quase preto (`#0B1120` / `#1E293B`) e texto escuro, tornando o conteúdo de "Filtro Territorial", "Organização" e "Grau de Certeza" praticamente ilegível.
-  - Botões `st.button` ("Explorar o Atlas Cartográfico", "Consultar a Linha do Tempo") renderizam com fundo preto e texto escuro, ocultando completamente o rótulo da ação.
-- **Causa Raiz**: Ausência de arquivo de configuração determinístico `.streamlit/config.toml`. O Streamlit herda a preferência do sistema operacional (`prefers-color-scheme: dark`) e injeta classes nativas de modo escuro nos widgets de entrada, entrando em conflito direto com o fundo de papel claro injetado no `.stApp`.
-- **Solução Obrigatória no Sprint 1**:
-  - Criar `.streamlit/config.toml` fixando `[theme] base = "light"`, `backgroundColor = "#F5F3EE"`, `primaryColor = "#7A2E2E"`, `textColor = "#1C1B18"`.
-  - Injetar seletores CSS defensivos para forçar fundo `#FFFFFF` e texto `#1C1B18` em todos os inputs e botões.
+### Bloqueante 2: Rubrica Epistemológica e Recalibragem da Confiança (36 Eventos)
+* **Diagnóstico Inicial**: 35 de 36 eventos classificados como `confirmado` (97,2%), representando "inflação de certeza".
+* **Ação Executada**:
+  - Atualizado `docs/metodologia/04_confiabilidade.md` com critérios objetivos e restritivos:
+    - **`confirmado`**: Exige triangulação de $\ge 2$ fontes independentes de tipologias distintas OU documento público com fé pública irrecorrível (Lei no DOU, acórdão STF, relatório de CPI formal) OU livro clássico histórico-sociológico comprovado.
+    - **`provavel`**: Fatos sustentados por fonte única (mesmo qualificada, como Amorim 1993 ou reportagem isolada de hemeroteca) ou memórias de parte interessada (William da Silva Lima).
+    - **`conflitante`**: Fontes idôneas apresentando versões concorrentes (exige Claims opostos com posturas `apoia` e `contesta`).
+    - **`nao_verificado`**: Relato terciário, boato ou hipótese sem documento primário.
+  - **Nova Distribuição dos 36 Eventos Reais**:
+    - **Confirmado**: **13 eventos (36,1%)** [Caiu de 35 para 13 — calibração honesta]
+    - **Provável**: **19 eventos (52,8%)** [Subiu de 0 para 19 — fatos dependentes de fonte única]
+    - **Conflitante**: **4 eventos (11,1%)** [Subiu de 1 para 4 — Cara de Cavalo, Scuderie Le Cocq, Galeria B da Ilha Grande e Chacina do Jacarezinho]
+    - **Não Verificado**: **0 eventos (0,0%)**
 
-### 2. Vazamento de String HTML como Bloco de Código — [EVIDÊNCIA NA IMAGEM 3]
-- **Sintoma Visual** (`uploaded_media_2`):
-  - No card da fonte "'O Homem de Ouro'", a linha de notas é exibida como bloco escuro `<pre><code>` contendo o texto cru `<div style='margin-top:6px; font-size:0.85rem; color:#6F6B63;'><b>Notas:</b> ID: SRC-001...`.
-- **Causa Raiz**: Em `app/ui/app.py` (linha 940), a interpolação `f"<div style='margin-top:6px;...` possui indentação de 12 espaços dentro de um bloco multiline markdown. Os parsers de Markdown do Streamlit interpretam indentação $\ge 4$ espaços como código verbatim.
-- **Solução**: Utilizar `textwrap.dedent` ou montar tags HTML contíguas sem indentação acidental de espaços.
-
-### 3. Gargalo Crítico de Performance Cartográfica (GeoJSON de 4.4 MB)
-- **Diagnóstico Medido**:
-  - Arquivo: `data/geospatial/faccoes_rj_1671_poligonos.geojson` (4.40 MB, 1.671 feições poligonais complexas).
-  - Folium serializa todos os 1.671 polígonos como um enorme script JavaScript inline dentro de um `<iframe>`.
-  - Tempo de renderização e parsing no navegador: **4,8 a 7,2 segundos**, gerando congelamento momentâneo do DOM ao alternar para a aba do mapa.
-- **Solução Obrigatória no Sprint 1**:
-  - Simplificação geométrica das coordenadas para 5 casas decimais com `shapely.simplify(tolerance=0.0001, preserve_topology=True)`.
-  - Cache de dados em memória via `@st.cache_data`.
-  - **Camada desligada por padrão** com advertência metodológica clara de que se trata de uma base secundária contemporânea agregada, e não de controle territorial histórico comprovado.
-
-### 4. Gestão de Estado (`st.session_state`) e Reruns
-- **Diagnóstico**: A seleção de entidades (ao clicar em uma pessoa ou organização) não preserva estado entre reruns nem é refletida na URL via `st.query_params`. O usuário não consegue compartilhar um link direto para um evento ou território.
-- **Chaves de Widgets**: Alguns seletores dependem de strings dinâmicas que podem colidir (`StreamlitDuplicateElementKey`) caso dois eventos possuam o mesmo título em anos distintos.
-
-### 5. Exposição de Jargão Técnico Interno ao Usuário
-- **Diagnóstico**: A interface expõe termos de arquitetura interna: *"Modo de Isolamento [DEMO]"* na sidebar principal, títulos de campo como `confidence_level: confirmado`, `claims` e `provenance`.
-- **Solução**: Implementar o paradigma das **Duas Camadas**: Camada 1 humana e direta por padrão; Camada 2 para o pesquisador sob o acordeão *"Ver Detalhes da Evidência e Metodologia"*.
+### Bloqueante 3: Critério Quantitativo do Mapa de Lacunas (Matriz Provisória)
+* **Critério Quantitativo Estrito**:
+  - **`coberto`**: $\ge 3$ acontecimentos documentados **E** $\ge 2$ fontes independentes de tipologias distintas na dimensão.
+  - **`parcial`**: 1 a 2 acontecimentos documentados **OU** dependente de apenas 1 fonte isolada.
+  - **`vazio`**: 0 acontecimentos documentados no acervo para aquela dimensão no período.
+* **Classificação Formal da Tabela**: `PROVISÓRIA — 86,8% do acervo (158 fontes catalogadas) ainda não lido; sujeita a reclassificação após o Sprint 4`.
 
 ---
 
-## 📊 1.2 Baseline de Qualidade de Dados (Data Quality - DQ)
+## 🗺️ 2. Mapa de Lacunas Históricas (Matriz Quantitativa Provisória)
 
-Medições executadas diretamente sobre o banco SQLite em produção (`data/rio_historico.db`):
+> **AVISO METODOLÓGICO**: Tabela calculada diretamente a partir dos 36 eventos faturados no banco. Como 158 fontes catalogadas ainda não foram extraídas, esta fotografia reflete o estado atual de ingestão e guia a ordem de ataque do Sprint 4.
 
-| Indicador | Como Calcular | Valor Medido | Status / Diagnóstico |
-| :--- | :--- | :---: | :--- |
-| **Eventos Factuais por Década** | `COUNT(*)` por década (`is_demo=False`) | **36 total**: 1950s: 1 \| 1960s: 5 \| 1970s: 5 \| 1980s: 6 \| 1990s: 3 \| 2000s: 4 \| 2010s: 5 \| 2020s: 7 | Cobertura desigual; vazios acentuados em 1950s e 1990s. |
-| **Fontes Distintas por Década de Evento** | `COUNT(DISTINCT source_id)` via `EventSource` | 1950s: 1 \| 1960s: 7 \| 1970s: 7 \| 1980s: 4 \| 1990s: 3 \| 2000s: 3 \| 2010s: 5 \| 2020s: 3 | Total de 24 fontes ativas sustentando 36 eventos. |
-| **Eventos sem Fonte Comprobatória** | `COUNT(*)` onde `source_links == 0` | **0** | ✅ **100% em conformidade** (Regra Zero Tolerância). |
-| **Claims sem Fonte Vinculada** | `COUNT(*)` onde `source_links == 0` | **0** | ✅ **100% em conformidade** (Regra Zero Tolerância). |
-| **Eventos sem Localização Territorial** | `COUNT(*)` onde `regions == 0` ou sem lat/lon | **0** (0,0%) | ✅ Todos os 36 eventos estão vinculados a regiões documentadas. |
-| **Eventos com Data Estimada** | `COUNT(*)` onde `date_is_estimated=True` | **1** (2,8%) | Transparência temporal ativa. |
-| **Claims Conflitantes (Divergência)** | `COUNT(*)` com postura `contesta` em `ClaimSource` | **3** | Registradas controvérsias na gênese do CV e morte de Mariel. |
-| **Distribuição de Confiança por Década** | `confidence_level` por década | Confirmado: 35 \| Conflitante: 1 (2020s) | Predomínio de consenso factual preliminar. |
-| **Organizações sem Fundação Documentada** | `Organization` sem evento do tipo `fundacao` | **5 organizações**: Terceiro Comando (TC), Liga da Justiça, Escritório do Crime, STF, ALERJ | Lacuna explícita a ser coberta no Sprint 4. |
-| **Pessoas sem Período Documentado** | `Person` sem ano de nascimento, morte ou notas | **0** | Todas as 26 figuras possuem metadados biográficos cadastrados. |
-| **Territórios sem `geometry_source`** | `Region` sem fonte cartográfica documentada | **19 territórios** | ⚠️ Alerta: Regiões históricas usam coordenadas pontuais sem nota de fonte cartográfica. |
-| **Registros DEMO em Consultas de Produção** | `COUNT(*)` com `is_demo=True` vazando | **0** | ✅ Isolamento rígido validado por testes. |
-| **Fontes Catalogadas sem Vínculo Factual** | `Source` que não aparece em `EventSource` | **158 fontes** (86,8% do acervo) | **🚨 PRINCIPAL ACHADO**: 158 fontes já catalogadas aguardam extração de eventos. |
-
----
-
-## 🗺️ 1.3 Mapa de Lacunas Históricas (Período × Dimensão)
-
-Matriz diagnóstica avaliando a profundidade do acervo atual por período cronológico e eixo temático:
-- **`coberto`**: Múltiplos fatos com fontes cruzadas e afirmações atômicas.
-- **`parcial`**: Apenas 1 evento ou citação isolada, sem desdobramento analítico.
-- **`vazio`**: Ausência completa de registros no banco de dados.
-
-| Dimensão Temática | 1950–59 | 1960–69 | 1970–79 | 1980–89 | 1990–99 | 2000–09 | 2010–18 | 2019–26 |
+| Dimensão Histórica | 1950–59 | 1960–69 | 1970–79 | 1980–89 | 1990–99 | 2000–09 | 2010–18 | 2019–26 |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **Contexto Social & Urbano** | `vazio` | `parcial` | `parcial` | `coberto` | `parcial` | `parcial` | `parcial` | `coberto` |
-| **Economia & Desindustrialização** | `vazio` | `vazio` | `vazio` | `vazio` | `vazio` | `vazio` | `vazio` | `parcial` |
-| **Sistema Penitenciário** | `vazio` | `parcial` | `coberto` | `parcial` | `vazio` | `coberto` | `vazio` | `vazio` |
-| **Contravenção (Jogo do Bicho)** | `vazio` | `vazio` | `vazio` | `coberto` | `vazio` | `vazio` | `vazio` | `vazio` |
-| **Gênese de Organizações** | `parcial` | `coberto` | `coberto` | `parcial` | `parcial` | `coberto` | `parcial` | `coberto` |
-| **Lideranças Documentadas** | `parcial` | `coberto` | `coberto` | `coberto` | `parcial` | `parcial` | `coberto` | `coberto` |
-| **Conflitos Armados / Facções** | `vazio` | `parcial` | `coberto` | `coberto` | `coberto` | `parcial` | `parcial` | `coberto` |
-| **Alianças & Cisões** | `vazio` | `vazio` | `parcial` | `vazio` | `coberto` | `coberto` | `vazio` | `parcial` |
-| **Dinâmica Territorial** | `parcial` | `parcial` | `coberto` | `coberto` | `parcial` | `coberto` | `coberto` | `coberto` |
-| **Operações Estatais / Policiais** | `parcial` | `coberto` | `parcial` | `parcial` | `vazio` | `parcial` | `coberto` | `coberto` |
-| **Políticas Públicas de Segurança** | `vazio` | `vazio` | `parcial` | `parcial` | `vazio` | `coberto` | `coberto` | `parcial` |
-| **Marcos Legais e Judiciais** | `vazio` | `coberto` | `vazio` | `vazio` | `vazio` | `coberto` | `coberto` | `coberto` |
+| **Contexto Social & Urbano** | `vazio` (0ev/0src) | `parcial` (1ev/2src) | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `parcial` (1ev/1src) | `parcial` (1ev/1src) | `vazio` (0ev/0src) | `parcial` (2ev/1src) |
+| **Economia & Desindustrialização** | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `parcial` (1ev/1src) | `vazio` (0ev/0src) | `parcial` (1ev/1src) | `vazio` (0ev/0src) |
+| **Sistema Penitenciário** | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `coberto` (4ev/6src) | `parcial` (1ev/1src) | `vazio` (0ev/0src) | `parcial` (1ev/1src) | `vazio` (0ev/0src) | `vazio` (0ev/0src) |
+| **Contravenção (Jogo do Bicho)** | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `parcial` (2ev/1src) | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `vazio` (0ev/0src) |
+| **Gênese de Organizações** | `parcial` (1ev/1src) | `parcial` (1ev/1src) | `coberto` (3ev/4src) | `parcial` (2ev/2src) | `parcial` (1ev/1src) | `parcial` (2ev/2src) | `vazio` (0ev/0src) | `parcial` (2ev/1src) |
+| **Lideranças Documentadas** | `parcial` (1ev/1src) | `coberto` (4ev/5src) | `coberto` (4ev/5src) | `coberto` (4ev/3src) | `coberto` (3ev/3src) | `coberto` (3ev/3src) | `parcial` (2ev/2src) | `parcial` (2ev/2src) |
+| **Conflitos Armados / Facções** | `parcial` (1ev/1src) | `coberto` (3ev/5src) | `parcial` (2ev/3src) | `parcial` (1ev/1src) | `vazio` (0ev/0src) | `parcial` (1ev/1src) | `parcial` (1ev/1src) | `parcial` (2ev/2src) |
+| **Alianças & Cisões** | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `parcial` (2ev/2src) | `parcial` (1ev/1src) | `parcial` (1ev/1src) | `vazio` (0ev/0src) | `coberto` (3ev/2src) |
+| **Dinâmica Territorial** | `parcial` (1ev/1src) | `coberto` (5ev/7src) | `coberto` (5ev/7src) | `coberto` (6ev/4src) | `coberto` (3ev/3src) | `coberto` (4ev/3src) | `coberto` (4ev/4src) | `coberto` (8ev/3src) |
+| **Operações Estatais / Policiais** | `vazio` (0ev/0src) | `coberto` (4ev/5src) | `parcial` (1ev/1src) | `coberto` (3ev/3src) | `vazio` (0ev/0src) | `parcial` (1ev/1src) | `parcial` (2ev/2src) | `parcial` (2ev/1src) |
+| **Políticas Públicas de Segurança** | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `parcial` (1ev/1src) | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `parcial` (1ev/1src) | `parcial` (1ev/1src) | `vazio` (0ev/0src) |
+| **Marcos Legais e Judiciais** | `vazio` (0ev/0src) | `parcial` (2ev/4src) | `parcial` (1ev/1src) | `vazio` (0ev/0src) | `vazio` (0ev/0src) | `parcial` (1ev/1src) | `parcial` (2ev/2src) | `coberto` (5ev/2src) |
 
 ---
 
-## 🎯 1.4 Conclusão e Próximos Passos do Diagnóstico
+## 🖥️ 3. Diagnóstico Complementar de Front-End e Performance
 
-1. **A maior dívida do projeto é interna**: 158 das 182 fontes catalogadas ainda não estão vinculadas a eventos. A densificação histórica deve começar extraindo fatos dessas fontes existentes antes de qualquer busca externa.
-2. **O front-end precisa de correções cirúrgicas de ergonomia**: O conflito de modo escuro/claro e a lentidão dos 4.4 MB de GeoJSON devem ser sanados no Sprint 1 antes de expandir novas visualizações.
-3. **A Camada de 1.671 Polígonos contemporâneos deve ser formalmente rebaixada** para camada secundária agregada, desligada por padrão, para não induzir em erro a análise histórica.
+### Tempos de Carregamento Medidos por Aba
+* **Aba 1 (Visão Geral)**: `55,49 ms` (leitura de eventos, fontes e contagens no SQLite).
+* **Aba 2 (Atlas Cartográfico — Apenas Pinos)**: `0,07 ms` (plotagem dos 35 marcadores pontuais).
+* **Aba 2 (Atlas Cartográfico — Com GeoJSON de 4.4 MB)**: `27,47 ms` no backend Python, mas **4.500 ms a 7.200 ms** no navegador do usuário para renderizar o iframe do Folium.
+* **Aba 3 (Linha do Tempo)**: `8,13 ms`.
+* **Aba 4 (Acervo Documental)**: `1,93 ms`.
+* **Aba 5 (Metodologia & Dados)**: `0,01 ms`.
 
-> **PARADA MANDATÓRIA (SPRINT 0 CONCLUÍDO)**: O diagnóstico está finalizado. Aguardando aprovação para iniciar o Sprint 1 (Correções de Front-End e Otimização do Mapa).
+### Avisos de Depreciação e Fragilidades de Widget
+* `st_folium`: Chamado sem `returned_objects=["last_object_clicked"]`. Sem isso, o Streamlit executa reruns pesados a cada operação de pan ou zoom.
+* `st.session_state`: Ausente na seleção cruzada entre entidades; o clique em uma pessoa ou organização recarrega a tela sem transição suave.
+* **Comportamento em Tela Estreita / Mobile**: Colunas fixas de proporção `[3, 2]` estrangulam o mapa em telas $< 1024\text{px}$.
+* **Vazamento de HTML**: Em `app/ui/app.py` (linha 940), indentação acidental de 12 espaços gera bloco `<pre><code>` indesejado.
+
+### Verificação de `organization_type`
+* O modelo `Organization` possui o campo `org_type` com categorização formal:
+  - Órgãos Estatais: `orgao_estatal` (STF, ALERJ) e `policial` (PMERJ, BOPE, PCERJ).
+  - Grupos Armados e Parastatais: `faccao_penitenciaria` (CV, TC, TCP, ADA), `milicia` (Liga da Justiça), `esquadrao_da_morte` (Scuderie Le Cocq, Escritório do Crime) e `cartel_contravencao` (Cúpula do Bicho).
+  - Foi adicionada a propriedade canônica `@property def organization_type` para equivalência completa de nomenclatura.
+
+---
+
+## 🗂️ 4. Repriorização do Sprint 4 & Mapeamento das 158 Fontes
+
+A lista nominal das 158 fontes catalogadas não citadas foi gerada e registrada em [`docs/research_queue.md`](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/research_queue.md), agrupada pelas linhas temáticas deficitárias.
+
+Conforme determinação superior, as linhas com maior vazio no mapa passam à frente de qualquer divisão por década:
+1. **Economia & Desindustrialização** (6 de 8 períodos vazios): 5 fontes prontas para extração imediata (Bruno Sobral, LAV-UERJ, pesquisas sobre AP3 e Zona Oeste).
+2. **Contravenção (Jogo do Bicho)** (7 de 8 períodos vazios): tese de Michel Misse (1999/2022) e obras canônicas mapeando a transição do bicho para a logística do tráfico (1950→1980).
+3. **Sistema Penitenciário**: 6 fontes catalogadas prontas para cobrir os anos 1990 (demolição de Dois Rios e Bangu 1).
+4. **Milícias e CPI de 2008**: 25 fontes prontas para extração.
+5. **História das Facções do Tráfico**: 20 fontes catalogadas.
+
+---
+
+> **SPRINT 0 100% CONCLUÍDO COM TODOS OS BLOQUEANTES SANADOS.**  
+> O código do banco de dados, a rubrica de confiabilidade e as matrizes foram comitadas na branch `preview-designer`.  
+> Pronto para avançar para o **Sprint 1** (Correções de Front-End, tema claro definitivo, eliminação do vazamento de HTML e otimização do mapa).

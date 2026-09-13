@@ -35,5 +35,10 @@ class Organization(Base):
         """Compatibilidade para exibição com a grafia original."""
         return self.original_name
 
+    @property
+    def organization_type(self) -> str:
+        """Propriedade canônica de tipologia da organização."""
+        return self.org_type
+
     def __repr__(self):
         return f"<Organization(id={self.id}, name='{self.original_name}', acronym='{self.acronym}')>"

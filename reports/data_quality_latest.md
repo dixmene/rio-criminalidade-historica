@@ -1,5 +1,5 @@
 # 📊 RELATÓRIO DE QUALIDADE DE DADOS HISTÓRICOS (DATA QUALITY - DQ)
-**Gerado em**: 2026-09-13T17:04:56.899230+00:00  
+**Gerado em**: 2026-09-13T17:18:52.856379+00:00  
 **Ambiente**: Produção / Pesquisa Histórica Auditável  
 **Escopo**: Acervo de Dados Reais (`is_demo = False`)
 
@@ -57,7 +57,7 @@
 | **Inconsistências Temporais (start > end)** | ✅ OK | **0** | `0` (Zero Tolerância) |
 | **Entidades Duplicadas (Nome Normalizado)** | ✅ OK | **0** | `0` |
 | **Nomes Não Normalizados** | ✅ OK | **0** | `0` |
-| **Territórios sem Origem Cartográfica** | ⚠️ ALERTA | **18** | `0` |
+| **Territórios sem Origem Cartográfica** | ✅ OK | **0** | `0` |
 | **Eventos sem Vínculo Territorial** | ℹ️ INFO | **0** | Informacional |
 | **Fontes Disponíveis sem Vínculo Factual** | ℹ️ INFO | **158** | Fila de Exploração |
 
@@ -68,8 +68,9 @@
 - **Claims com Controvérsia Registrada**: `3`
 
 ### Níveis de Confiança dos Eventos:
-- **Confirmado**: 35 eventos
-- **Conflitante**: 1 eventos
+- **Confirmado**: 13 eventos
+- **Conflitante**: 4 eventos
+- **Provavel**: 19 eventos
 
 ### Níveis de Confiança dos Claims:
 - **Conflitante**: 3 claims
