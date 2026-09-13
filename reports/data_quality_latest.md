@@ -1,5 +1,5 @@
 # 📊 RELATÓRIO DE QUALIDADE DE DADOS HISTÓRICOS (DATA QUALITY - DQ)
-**Gerado em**: 2026-09-13T17:18:52.856379+00:00  
+**Gerado em**: 2026-09-13T17:27:21.450939+00:00  
 **Ambiente**: Produção / Pesquisa Histórica Auditável  
 **Escopo**: Acervo de Dados Reais (`is_demo = False`)
 
@@ -9,12 +9,12 @@
 
 | Indicador | Quantidade Real | Quantidade Demo | Total Banco |
 | :--- | :---: | :---: | :---: |
-| **Eventos Históricos** | **36** | 10 | 46 |
-| **Fontes Documentais** | **182** | 6 | 188 |
-| **Claims (Afirmações Factuais Atomizadas)** | **3** | 0 | 3 |
-| **Territórios / Regiões Mapeadas** | **21** | 10 | 31 |
-| **Organizações Documentadas** | **14** | 6 | 20 |
-| **Figuras e Lideranças Históricas** | **26** | 5 | 31 |
+| **Eventos Históricos** | **40** | 10 | 50 |
+| **Fontes Documentais** | **184** | 6 | 190 |
+| **Claims (Afirmações Factuais Atomizadas)** | **7** | 0 | 7 |
+| **Territórios / Regiões Mapeadas** | **22** | 10 | 32 |
+| **Organizações Documentadas** | **16** | 6 | 22 |
+| **Figuras e Lideranças Históricas** | **29** | 5 | 34 |
 
 ---
 
@@ -25,24 +25,24 @@
 ### Distribuição de Eventos Factuais por Década
 | Década | Eventos Reais | % do Acervo |
 | :---: | :---: | :---: |
-| **1950s** | 1 | 2.8% |
-| **1960s** | 5 | 13.9% |
-| **1970s** | 5 | 13.9% |
-| **1980s** | 6 | 16.7% |
-| **1990s** | 3 | 8.3% |
-| **2000s** | 4 | 11.1% |
-| **2010s** | 5 | 13.9% |
-| **2020s** | 7 | 19.4% |
+| **1950s** | 1 | 2.5% |
+| **1960s** | 5 | 12.5% |
+| **1970s** | 6 | 15.0% |
+| **1980s** | 6 | 15.0% |
+| **1990s** | 6 | 15.0% |
+| **2000s** | 4 | 10.0% |
+| **2010s** | 5 | 12.5% |
+| **2020s** | 7 | 17.5% |
 
 ### Distribuição de Fontes Documentais por Década de Publicação
 | Década | Fontes Publicadas |
 | :---: | :---: |
 | **1960s** | 4 |
 | **1980s** | 1 |
-| **1990s** | 8 |
+| **1990s** | 9 |
 | **2000s** | 4 |
 | **2010s** | 6 |
-| **2020s** | 19 |
+| **2020s** | 20 |
 | **Sem ano** | 140 |
 
 ---
@@ -58,7 +58,7 @@
 | **Entidades Duplicadas (Nome Normalizado)** | ✅ OK | **0** | `0` |
 | **Nomes Não Normalizados** | ✅ OK | **0** | `0` |
 | **Territórios sem Origem Cartográfica** | ✅ OK | **0** | `0` |
-| **Eventos sem Vínculo Territorial** | ℹ️ INFO | **0** | Informacional |
+| **Eventos sem Vínculo Territorial** | ℹ️ INFO | **4** | Informacional |
 | **Fontes Disponíveis sem Vínculo Factual** | ℹ️ INFO | **158** | Fila de Exploração |
 
 ---
@@ -68,12 +68,13 @@
 - **Claims com Controvérsia Registrada**: `3`
 
 ### Níveis de Confiança dos Eventos:
-- **Confirmado**: 13 eventos
+- **Confirmado**: 17 eventos
 - **Conflitante**: 4 eventos
 - **Provavel**: 19 eventos
 
 ### Níveis de Confiança dos Claims:
 - **Conflitante**: 3 claims
+- **Provavel**: 4 claims
 
 ---
 
