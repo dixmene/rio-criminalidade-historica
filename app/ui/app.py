@@ -57,6 +57,7 @@ from app.map import (
     EVIDENCE_LEVELS,
 )
 from scripts.classifier_pautas import classify_legislative_text, TAXONOMIA_PAUTAS_SENSIVEIS
+from app.ui.isp_lab import render_isp_analytics_laboratory
 
 # Garante criação de tabelas em ambientes efêmeros
 Base.metadata.create_all(bind=engine)
@@ -791,12 +792,16 @@ def render_view_analytics(service, events, filtros):
         st.info("Nenhum registro encontrado para os filtros selecionados. Ajuste os filtros na barra lateral para visualizar as métricas analíticas.")
         return
 
-    tab_cronologia, tab_faccoes, tab_confianca, tab_territorios = st.tabs([
+    tab_isp_lab, tab_cronologia, tab_faccoes, tab_confianca, tab_territorios = st.tabs([
+        "📊 Laboratório ISP: Séries & Correlações (2003–2026)",
         "Evolução Cronológica",
         "Grupos Armados & Facções",
         "Grau de Certeza & Claims",
         "Topografia da Violência"
     ])
+
+    with tab_isp_lab:
+        render_isp_analytics_laboratory()
 
     with tab_cronologia:
         st.markdown("### Acontecimentos por Década")

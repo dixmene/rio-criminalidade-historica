@@ -1,0 +1,1163 @@
+{
+  "metadata": {
+    "gerado_em": "2026-09-13T21:17:03.186418+00:00",
+    "fonte": "Instituto de Segurança Pública do Estado do Rio de Janeiro (ISP-RJ)",
+    "arquivos_fonte": [
+      "BaseDPEvolucaoMensalCisp.csv",
+      "ArmasApreendidasEvolucaoCisp.csv"
+    ],
+    "periodo_criminalidade": "2003 a 2026",
+    "periodo_armas": "2007 a 2026",
+    "total_registros_consolidados": 12385,
+    "metodologia": "Microdados agregados por somatório canônico preservando distinção entre 0 e valor não coletado (NaN). Análises temporais com defasagem lag t+1 (mês seguinte)."
+  },
+  "testes_de_hipotese": {
+    "hipotese_1_letalidade_policial_vs_homicidio_doloso": {
+      "descricao": "Testa se a letalidade policial reduz homicídios dolosos no mesmo mês (t) ou no mês seguinte (t+1).",
+      "mesmo_periodo_t": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.153,
+          "p_value": 0.0099322,
+          "ci_95_low": 0.0371,
+          "ci_95_high": 0.2649,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.2168,
+          "p_value": 0.00023867,
+          "significativo_p05": true
+        }
+      },
+      "defasagem_t_mais_1": {
+        "n_observacoes": 282,
+        "pearson": {
+          "r": 0.0956,
+          "p_value": 0.10925,
+          "ci_95_low": -0.0215,
+          "ci_95_high": 0.21,
+          "significativo_p05": false
+        },
+        "spearman": {
+          "rho": 0.164,
+          "p_value": 0.0057812,
+          "significativo_p05": true
+        }
+      },
+      "reacao_policial_hom_t_letalidade_t_mais_1": {
+        "n_observacoes": 282,
+        "pearson": {
+          "r": 0.2023,
+          "p_value": 0.00063019,
+          "ci_95_low": 0.0876,
+          "ci_95_high": 0.3118,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.2649,
+          "p_value": 6.5221e-06,
+          "significativo_p05": true
+        }
+      },
+      "conclusao_estatistica": "No nível agregado estadual, a correlação contemporânea é positiva (Pearson r=0.153, p=0.0099322; Spearman rho=0.2168). Com defasagem de 1 mês (t+1), o efeito dissuasório não se confirma (Pearson r=0.0956, p=0.10925). Portanto, os microdados refutam a hipótese de que o aumento de mortes por intervenção policial produza redução subsequente de homicídios dolosos."
+    },
+    "hipotese_2_letalidade_policial_vs_roubos": {
+      "descricao": "Testa se incursões letais produzem dissuasão sobre crimes patrimoniais (carga, veículos, transeunte, rua).",
+      "roubo_carga": {
+        "mesmo_periodo_t": {
+          "n_observacoes": 283,
+          "pearson": {
+            "r": 0.2649,
+            "p_value": 6.2542e-06,
+            "ci_95_low": 0.153,
+            "ci_95_high": 0.3701,
+            "significativo_p05": true
+          },
+          "spearman": {
+            "rho": 0.3007,
+            "p_value": 2.517e-07,
+            "significativo_p05": true
+          }
+        },
+        "defasagem_t_mais_1": {
+          "n_observacoes": 282,
+          "pearson": {
+            "r": 0.2378,
+            "p_value": 5.5046e-05,
+            "ci_95_low": 0.1244,
+            "ci_95_high": 0.345,
+            "significativo_p05": true
+          },
+          "spearman": {
+            "rho": 0.2863,
+            "p_value": 1.0157e-06,
+            "significativo_p05": true
+          }
+        }
+      },
+      "roubo_veiculo": {
+        "mesmo_periodo_t": {
+          "n_observacoes": 283,
+          "pearson": {
+            "r": 0.3469,
+            "p_value": 2.0054e-09,
+            "ci_95_low": 0.24,
+            "ci_95_high": 0.4455,
+            "significativo_p05": true
+          },
+          "spearman": {
+            "rho": 0.3593,
+            "p_value": 4.777e-10,
+            "significativo_p05": true
+          }
+        },
+        "defasagem_t_mais_1": {
+          "n_observacoes": 282,
+          "pearson": {
+            "r": 0.2984,
+            "p_value": 3.2849e-07,
+            "ci_95_low": 0.1882,
+            "ci_95_high": 0.4013,
+            "significativo_p05": true
+          },
+          "spearman": {
+            "rho": 0.3075,
+            "p_value": 1.3768e-07,
+            "significativo_p05": true
+          }
+        }
+      },
+      "roubo_transeunte": {
+        "mesmo_periodo_t": {
+          "n_observacoes": 283,
+          "pearson": {
+            "r": 0.1456,
+            "p_value": 0.014205,
+            "ci_95_low": 0.0295,
+            "ci_95_high": 0.2578,
+            "significativo_p05": true
+          },
+          "spearman": {
+            "rho": 0.1155,
+            "p_value": 0.052177,
+            "significativo_p05": false
+          }
+        },
+        "defasagem_t_mais_1": {
+          "n_observacoes": 282,
+          "pearson": {
+            "r": 0.097,
+            "p_value": 0.10394,
+            "ci_95_low": -0.02,
+            "ci_95_high": 0.2114,
+            "significativo_p05": false
+          },
+          "spearman": {
+            "rho": 0.0752,
+            "p_value": 0.20787,
+            "significativo_p05": false
+          }
+        }
+      },
+      "roubo_rua": {
+        "mesmo_periodo_t": {
+          "n_observacoes": 283,
+          "pearson": {
+            "r": 0.2896,
+            "p_value": 7.156e-07,
+            "ci_95_low": 0.1791,
+            "ci_95_high": 0.3929,
+            "significativo_p05": true
+          },
+          "spearman": {
+            "rho": 0.2081,
+            "p_value": 0.00042477,
+            "significativo_p05": true
+          }
+        },
+        "defasagem_t_mais_1": {
+          "n_observacoes": 282,
+          "pearson": {
+            "r": 0.2334,
+            "p_value": 7.62e-05,
+            "ci_95_low": 0.1198,
+            "ci_95_high": 0.3409,
+            "significativo_p05": true
+          },
+          "spearman": {
+            "rho": 0.156,
+            "p_value": 0.0086663,
+            "significativo_p05": true
+          }
+        }
+      },
+      "conclusao_estatistica": "A letalidade policial correlaciona-se de forma fortemente positiva com roubos de veículos (r=0.3469) e roubos de carga (r=0.2649) tanto no mês t quanto em t+1. Isso demonstra que a violência letal do Estado ocorre concomitantemente a picos de criminalidade patrimonial violenta nas mesmas regiões conflagradas, sem gerar redução desfasada."
+    },
+    "hipotese_3_apreensao_armas_vs_letalidade_violenta": {
+      "descricao": "Testa a correlação entre apreensões de armas/fuzis e a letalidade violenta total.",
+      "armas_apreendidas_total": {
+        "mesmo_periodo_t": {
+          "n_observacoes": 235,
+          "pearson": {
+            "r": 0.7579,
+            "p_value": 4.106e-45,
+            "ci_95_low": 0.6976,
+            "ci_95_high": 0.8076,
+            "significativo_p05": true
+          },
+          "spearman": {
+            "rho": 0.7568,
+            "p_value": 6.3854e-45,
+            "significativo_p05": true
+          }
+        },
+        "defasagem_t_mais_1": {
+          "n_observacoes": 234,
+          "pearson": {
+            "r": 0.6659,
+            "p_value": 2.3497e-31,
+            "ci_95_low": 0.5879,
+            "ci_95_high": 0.7317,
+            "significativo_p05": true
+          },
+          "spearman": {
+            "rho": 0.6704,
+            "p_value": 6.7562e-32,
+            "significativo_p05": true
+          }
+        }
+      },
+      "fuzil_apreendido": {
+        "mesmo_periodo_t": {
+          "n_observacoes": 235,
+          "pearson": {
+            "r": -0.3017,
+            "p_value": 2.4691e-06,
+            "ci_95_low": -0.4137,
+            "ci_95_high": -0.1807,
+            "significativo_p05": true
+          },
+          "spearman": {
+            "rho": -0.297,
+            "p_value": 3.5871e-06,
+            "significativo_p05": true
+          }
+        },
+        "defasagem_t_mais_1": {
+          "n_observacoes": 234,
+          "pearson": {
+            "r": -0.3881,
+            "p_value": 7.8434e-10,
+            "ci_95_low": -0.4919,
+            "ci_95_high": -0.2735,
+            "significativo_p05": true
+          },
+          "spearman": {
+            "rho": -0.3456,
+            "p_value": 5.7423e-08,
+            "significativo_p05": true
+          }
+        }
+      },
+      "conclusao_estatistica": "A apreensão total de armas de fogo apresenta forte correlação positiva com a letalidade violenta (r=0.7579), refletindo a intensidade do confronto armado nos períodos de alta letalidade. Já a apreensão específica de fuzis apresenta correlação negativa com a série histórica longa (r=-0.3017), pois o volume expressivo de fuzis apreendidos cresceu substancialmente no ciclo 2018-2024, período em que a taxa agregada de homicídios no estado decresceu em relação aos picos dos anos 2000."
+    }
+  },
+  "matrizes_correlacao": {
+    "estado_mensal_pearson": {
+      "hom_doloso": {
+        "hom_doloso": 1.0,
+        "hom_por_interv_policial": 0.1265,
+        "letalidade_violenta": 0.9345,
+        "roubo_veiculo": 0.3836,
+        "roubo_carga": 0.2543,
+        "roubo_transeunte": 0.673,
+        "roubo_rua": 0.5028,
+        "armas_apreendidas": 0.7122,
+        "fuzil_apreendido": -0.451
+      },
+      "hom_por_interv_policial": {
+        "hom_doloso": 0.1265,
+        "hom_por_interv_policial": 1.0,
+        "letalidade_violenta": 0.4673,
+        "roubo_veiculo": 0.3467,
+        "roubo_carga": 0.287,
+        "roubo_transeunte": 0.2238,
+        "roubo_rua": 0.3842,
+        "armas_apreendidas": 0.3521,
+        "fuzil_apreendido": 0.2429
+      },
+      "letalidade_violenta": {
+        "hom_doloso": 0.9345,
+        "hom_por_interv_policial": 0.4673,
+        "letalidade_violenta": 1.0,
+        "roubo_veiculo": 0.4802,
+        "roubo_carga": 0.3371,
+        "roubo_transeunte": 0.6813,
+        "roubo_rua": 0.5916,
+        "armas_apreendidas": 0.7579,
+        "fuzil_apreendido": -0.3017
+      },
+      "roubo_veiculo": {
+        "hom_doloso": 0.3836,
+        "hom_por_interv_policial": 0.3467,
+        "letalidade_violenta": 0.4802,
+        "roubo_veiculo": 1.0,
+        "roubo_carga": 0.8431,
+        "roubo_transeunte": 0.6437,
+        "roubo_rua": 0.7846,
+        "armas_apreendidas": 0.3723,
+        "fuzil_apreendido": 0.1233
+      },
+      "roubo_carga": {
+        "hom_doloso": 0.2543,
+        "hom_por_interv_policial": 0.287,
+        "letalidade_violenta": 0.3371,
+        "roubo_veiculo": 0.8431,
+        "roubo_carga": 1.0,
+        "roubo_transeunte": 0.6607,
+        "roubo_rua": 0.7798,
+        "armas_apreendidas": 0.3149,
+        "fuzil_apreendido": 0.0741
+      },
+      "roubo_transeunte": {
+        "hom_doloso": 0.673,
+        "hom_por_interv_policial": 0.2238,
+        "letalidade_violenta": 0.6813,
+        "roubo_veiculo": 0.6437,
+        "roubo_carga": 0.6607,
+        "roubo_transeunte": 1.0,
+        "roubo_rua": 0.9363,
+        "armas_apreendidas": 0.6406,
+        "fuzil_apreendido": -0.3089
+      },
+      "roubo_rua": {
+        "hom_doloso": 0.5028,
+        "hom_por_interv_policial": 0.3842,
+        "letalidade_violenta": 0.5916,
+        "roubo_veiculo": 0.7846,
+        "roubo_carga": 0.7798,
+        "roubo_transeunte": 0.9363,
+        "roubo_rua": 1.0,
+        "armas_apreendidas": 0.5231,
+        "fuzil_apreendido": -0.1018
+      },
+      "armas_apreendidas": {
+        "hom_doloso": 0.7122,
+        "hom_por_interv_policial": 0.3521,
+        "letalidade_violenta": 0.7579,
+        "roubo_veiculo": 0.3723,
+        "roubo_carga": 0.3149,
+        "roubo_transeunte": 0.6406,
+        "roubo_rua": 0.5231,
+        "armas_apreendidas": 1.0,
+        "fuzil_apreendido": -0.1663
+      },
+      "fuzil_apreendido": {
+        "hom_doloso": -0.451,
+        "hom_por_interv_policial": 0.2429,
+        "letalidade_violenta": -0.3017,
+        "roubo_veiculo": 0.1233,
+        "roubo_carga": 0.0741,
+        "roubo_transeunte": -0.3089,
+        "roubo_rua": -0.1018,
+        "armas_apreendidas": -0.1663,
+        "fuzil_apreendido": 1.0
+      }
+    },
+    "estado_mensal_spearman": {
+      "hom_doloso": {
+        "hom_doloso": 1.0,
+        "hom_por_interv_policial": 0.1463,
+        "letalidade_violenta": 0.9219,
+        "roubo_veiculo": 0.403,
+        "roubo_carga": 0.2156,
+        "roubo_transeunte": 0.7272,
+        "roubo_rua": 0.655,
+        "armas_apreendidas": 0.7206,
+        "fuzil_apreendido": -0.4665
+      },
+      "hom_por_interv_policial": {
+        "hom_doloso": 0.1463,
+        "hom_por_interv_policial": 1.0,
+        "letalidade_violenta": 0.4971,
+        "roubo_veiculo": 0.3489,
+        "roubo_carga": 0.3158,
+        "roubo_transeunte": 0.2406,
+        "roubo_rua": 0.366,
+        "armas_apreendidas": 0.332,
+        "fuzil_apreendido": 0.2607
+      },
+      "letalidade_violenta": {
+        "hom_doloso": 0.9219,
+        "hom_por_interv_policial": 0.4971,
+        "letalidade_violenta": 1.0,
+        "roubo_veiculo": 0.4986,
+        "roubo_carga": 0.3136,
+        "roubo_transeunte": 0.7444,
+        "roubo_rua": 0.7298,
+        "armas_apreendidas": 0.7568,
+        "fuzil_apreendido": -0.297
+      },
+      "roubo_veiculo": {
+        "hom_doloso": 0.403,
+        "hom_por_interv_policial": 0.3489,
+        "letalidade_violenta": 0.4986,
+        "roubo_veiculo": 1.0,
+        "roubo_carga": 0.7727,
+        "roubo_transeunte": 0.596,
+        "roubo_rua": 0.667,
+        "armas_apreendidas": 0.4697,
+        "fuzil_apreendido": 0.2142
+      },
+      "roubo_carga": {
+        "hom_doloso": 0.2156,
+        "hom_por_interv_policial": 0.3158,
+        "letalidade_violenta": 0.3136,
+        "roubo_veiculo": 0.7727,
+        "roubo_carga": 1.0,
+        "roubo_transeunte": 0.53,
+        "roubo_rua": 0.5747,
+        "armas_apreendidas": 0.3483,
+        "fuzil_apreendido": 0.1905
+      },
+      "roubo_transeunte": {
+        "hom_doloso": 0.7272,
+        "hom_por_interv_policial": 0.2406,
+        "letalidade_violenta": 0.7444,
+        "roubo_veiculo": 0.596,
+        "roubo_carga": 0.53,
+        "roubo_transeunte": 1.0,
+        "roubo_rua": 0.9631,
+        "armas_apreendidas": 0.7115,
+        "fuzil_apreendido": -0.2726
+      },
+      "roubo_rua": {
+        "hom_doloso": 0.655,
+        "hom_por_interv_policial": 0.366,
+        "letalidade_violenta": 0.7298,
+        "roubo_veiculo": 0.667,
+        "roubo_carga": 0.5747,
+        "roubo_transeunte": 0.9631,
+        "roubo_rua": 1.0,
+        "armas_apreendidas": 0.6724,
+        "fuzil_apreendido": -0.1735
+      },
+      "armas_apreendidas": {
+        "hom_doloso": 0.7206,
+        "hom_por_interv_policial": 0.332,
+        "letalidade_violenta": 0.7568,
+        "roubo_veiculo": 0.4697,
+        "roubo_carga": 0.3483,
+        "roubo_transeunte": 0.7115,
+        "roubo_rua": 0.6724,
+        "armas_apreendidas": 1.0,
+        "fuzil_apreendido": -0.1662
+      },
+      "fuzil_apreendido": {
+        "hom_doloso": -0.4665,
+        "hom_por_interv_policial": 0.2607,
+        "letalidade_violenta": -0.297,
+        "roubo_veiculo": 0.2142,
+        "roubo_carga": 0.1905,
+        "roubo_transeunte": -0.2726,
+        "roubo_rua": -0.1735,
+        "armas_apreendidas": -0.1662,
+        "fuzil_apreendido": 1.0
+      }
+    },
+    "aisp_painel_pooled_pearson": {
+      "hom_doloso": {
+        "hom_doloso": 1.0,
+        "hom_por_interv_policial": 0.3981,
+        "letalidade_violenta": 0.9541,
+        "roubo_veiculo": 0.5704,
+        "roubo_carga": 0.4224,
+        "roubo_transeunte": 0.5915,
+        "roubo_rua": 0.5563,
+        "armas_apreendidas": 0.6472,
+        "fuzil_apreendido": 0.1202
+      },
+      "hom_por_interv_policial": {
+        "hom_doloso": 0.3981,
+        "hom_por_interv_policial": 1.0,
+        "letalidade_violenta": 0.6487,
+        "roubo_veiculo": 0.5439,
+        "roubo_carga": 0.4826,
+        "roubo_transeunte": 0.4865,
+        "roubo_rua": 0.5068,
+        "armas_apreendidas": 0.5167,
+        "fuzil_apreendido": 0.4656
+      },
+      "letalidade_violenta": {
+        "hom_doloso": 0.9541,
+        "hom_por_interv_policial": 0.6487,
+        "letalidade_violenta": 1.0,
+        "roubo_veiculo": 0.6555,
+        "roubo_carga": 0.511,
+        "roubo_transeunte": 0.6536,
+        "roubo_rua": 0.6313,
+        "armas_apreendidas": 0.7027,
+        "fuzil_apreendido": 0.2489
+      },
+      "roubo_veiculo": {
+        "hom_doloso": 0.5704,
+        "hom_por_interv_policial": 0.5439,
+        "letalidade_violenta": 0.6555,
+        "roubo_veiculo": 1.0,
+        "roubo_carga": 0.8022,
+        "roubo_transeunte": 0.839,
+        "roubo_rua": 0.8643,
+        "armas_apreendidas": 0.4955,
+        "fuzil_apreendido": 0.2918
+      },
+      "roubo_carga": {
+        "hom_doloso": 0.4224,
+        "hom_por_interv_policial": 0.4826,
+        "letalidade_violenta": 0.511,
+        "roubo_veiculo": 0.8022,
+        "roubo_carga": 1.0,
+        "roubo_transeunte": 0.6749,
+        "roubo_rua": 0.7018,
+        "armas_apreendidas": 0.4066,
+        "fuzil_apreendido": 0.2565
+      },
+      "roubo_transeunte": {
+        "hom_doloso": 0.5915,
+        "hom_por_interv_policial": 0.4865,
+        "letalidade_violenta": 0.6536,
+        "roubo_veiculo": 0.839,
+        "roubo_carga": 0.6749,
+        "roubo_transeunte": 1.0,
+        "roubo_rua": 0.981,
+        "armas_apreendidas": 0.485,
+        "fuzil_apreendido": 0.1826
+      },
+      "roubo_rua": {
+        "hom_doloso": 0.5563,
+        "hom_por_interv_policial": 0.5068,
+        "letalidade_violenta": 0.6313,
+        "roubo_veiculo": 0.8643,
+        "roubo_carga": 0.7018,
+        "roubo_transeunte": 0.981,
+        "roubo_rua": 1.0,
+        "armas_apreendidas": 0.46,
+        "fuzil_apreendido": 0.2199
+      },
+      "armas_apreendidas": {
+        "hom_doloso": 0.6472,
+        "hom_por_interv_policial": 0.5167,
+        "letalidade_violenta": 0.7027,
+        "roubo_veiculo": 0.4955,
+        "roubo_carga": 0.4066,
+        "roubo_transeunte": 0.485,
+        "roubo_rua": 0.46,
+        "armas_apreendidas": 1.0,
+        "fuzil_apreendido": 0.3833
+      },
+      "fuzil_apreendido": {
+        "hom_doloso": 0.1202,
+        "hom_por_interv_policial": 0.4656,
+        "letalidade_violenta": 0.2489,
+        "roubo_veiculo": 0.2918,
+        "roubo_carga": 0.2565,
+        "roubo_transeunte": 0.1826,
+        "roubo_rua": 0.2199,
+        "armas_apreendidas": 0.3833,
+        "fuzil_apreendido": 1.0
+      }
+    },
+    "aisp_painel_pooled_spearman": {
+      "hom_doloso": {
+        "hom_doloso": 1.0,
+        "hom_por_interv_policial": 0.4896,
+        "letalidade_violenta": 0.966,
+        "roubo_veiculo": 0.5857,
+        "roubo_carga": 0.5268,
+        "roubo_transeunte": 0.4695,
+        "roubo_rua": 0.4554,
+        "armas_apreendidas": 0.686,
+        "fuzil_apreendido": 0.3043
+      },
+      "hom_por_interv_policial": {
+        "hom_doloso": 0.4896,
+        "hom_por_interv_policial": 1.0,
+        "letalidade_violenta": 0.6566,
+        "roubo_veiculo": 0.6372,
+        "roubo_carga": 0.5596,
+        "roubo_transeunte": 0.5555,
+        "roubo_rua": 0.5746,
+        "armas_apreendidas": 0.5053,
+        "fuzil_apreendido": 0.5273
+      },
+      "letalidade_violenta": {
+        "hom_doloso": 0.966,
+        "hom_por_interv_policial": 0.6566,
+        "letalidade_violenta": 1.0,
+        "roubo_veiculo": 0.6638,
+        "roubo_carga": 0.5941,
+        "roubo_transeunte": 0.5444,
+        "roubo_rua": 0.5375,
+        "armas_apreendidas": 0.7188,
+        "fuzil_apreendido": 0.3995
+      },
+      "roubo_veiculo": {
+        "hom_doloso": 0.5857,
+        "hom_por_interv_policial": 0.6372,
+        "letalidade_violenta": 0.6638,
+        "roubo_veiculo": 1.0,
+        "roubo_carga": 0.8307,
+        "roubo_transeunte": 0.8704,
+        "roubo_rua": 0.8868,
+        "armas_apreendidas": 0.4587,
+        "fuzil_apreendido": 0.4895
+      },
+      "roubo_carga": {
+        "hom_doloso": 0.5268,
+        "hom_por_interv_policial": 0.5596,
+        "letalidade_violenta": 0.5941,
+        "roubo_veiculo": 0.8307,
+        "roubo_carga": 1.0,
+        "roubo_transeunte": 0.7532,
+        "roubo_rua": 0.7619,
+        "armas_apreendidas": 0.4272,
+        "fuzil_apreendido": 0.4366
+      },
+      "roubo_transeunte": {
+        "hom_doloso": 0.4695,
+        "hom_por_interv_policial": 0.5555,
+        "letalidade_violenta": 0.5444,
+        "roubo_veiculo": 0.8704,
+        "roubo_carga": 0.7532,
+        "roubo_transeunte": 1.0,
+        "roubo_rua": 0.9884,
+        "armas_apreendidas": 0.3699,
+        "fuzil_apreendido": 0.3975
+      },
+      "roubo_rua": {
+        "hom_doloso": 0.4554,
+        "hom_por_interv_policial": 0.5746,
+        "letalidade_violenta": 0.5375,
+        "roubo_veiculo": 0.8868,
+        "roubo_carga": 0.7619,
+        "roubo_transeunte": 0.9884,
+        "roubo_rua": 1.0,
+        "armas_apreendidas": 0.3569,
+        "fuzil_apreendido": 0.4315
+      },
+      "armas_apreendidas": {
+        "hom_doloso": 0.686,
+        "hom_por_interv_policial": 0.5053,
+        "letalidade_violenta": 0.7188,
+        "roubo_veiculo": 0.4587,
+        "roubo_carga": 0.4272,
+        "roubo_transeunte": 0.3699,
+        "roubo_rua": 0.3569,
+        "armas_apreendidas": 1.0,
+        "fuzil_apreendido": 0.3905
+      },
+      "fuzil_apreendido": {
+        "hom_doloso": 0.3043,
+        "hom_por_interv_policial": 0.5273,
+        "letalidade_violenta": 0.3995,
+        "roubo_veiculo": 0.4895,
+        "roubo_carga": 0.4366,
+        "roubo_transeunte": 0.3975,
+        "roubo_rua": 0.4315,
+        "armas_apreendidas": 0.3905,
+        "fuzil_apreendido": 1.0
+      }
+    }
+  },
+  "amostra_por_batalhao": {
+    "14": {
+      "batalhao": "14º BPM",
+      "municipio": "Rio de Janeiro",
+      "letalidade_policial_vs_hom_doloso": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.2126,
+          "p_value": 0.00031529,
+          "ci_95_low": 0.0985,
+          "ci_95_high": 0.3213,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.2144,
+          "p_value": 0.00028085,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_veiculo": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.251,
+          "p_value": 1.9328e-05,
+          "ci_95_low": 0.1385,
+          "ci_95_high": 0.3572,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.2252,
+          "p_value": 0.0001332,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_carga": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.033,
+          "p_value": 0.58068,
+          "ci_95_low": -0.0839,
+          "ci_95_high": 0.149,
+          "significativo_p05": false
+        },
+        "spearman": {
+          "rho": 0.0034,
+          "p_value": 0.9544,
+          "significativo_p05": false
+        }
+      }
+    },
+    "15": {
+      "batalhao": "15º BPM",
+      "municipio": "Duque de Caxias",
+      "letalidade_policial_vs_hom_doloso": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.1383,
+          "p_value": 0.019982,
+          "ci_95_low": 0.022,
+          "ci_95_high": 0.2508,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.1145,
+          "p_value": 0.054355,
+          "significativo_p05": false
+        }
+      },
+      "letalidade_policial_vs_roubo_veiculo": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": -0.0245,
+          "p_value": 0.68147,
+          "ci_95_low": -0.1407,
+          "ci_95_high": 0.0924,
+          "significativo_p05": false
+        },
+        "spearman": {
+          "rho": -0.0688,
+          "p_value": 0.24858,
+          "significativo_p05": false
+        }
+      },
+      "letalidade_policial_vs_roubo_carga": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.046,
+          "p_value": 0.44125,
+          "ci_95_low": -0.071,
+          "ci_95_high": 0.1617,
+          "significativo_p05": false
+        },
+        "spearman": {
+          "rho": -0.005,
+          "p_value": 0.93322,
+          "significativo_p05": false
+        }
+      }
+    },
+    "21": {
+      "batalhao": "21º BPM",
+      "municipio": "São João de Meriti",
+      "letalidade_policial_vs_hom_doloso": {
+        "n_observacoes": 280,
+        "pearson": {
+          "r": -0.2426,
+          "p_value": 4.0912e-05,
+          "ci_95_low": -0.3498,
+          "ci_95_high": -0.129,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": -0.2557,
+          "p_value": 1.484e-05,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_veiculo": {
+        "n_observacoes": 280,
+        "pearson": {
+          "r": 0.2471,
+          "p_value": 2.8945e-05,
+          "ci_95_low": 0.1338,
+          "ci_95_high": 0.3541,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.2986,
+          "p_value": 3.5672e-07,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_carga": {
+        "n_observacoes": 280,
+        "pearson": {
+          "r": 0.2371,
+          "p_value": 6.1523e-05,
+          "ci_95_low": 0.1233,
+          "ci_95_high": 0.3447,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.3292,
+          "p_value": 1.6801e-08,
+          "significativo_p05": true
+        }
+      }
+    },
+    "39": {
+      "batalhao": "39º BPM",
+      "municipio": "Belford Roxo",
+      "letalidade_policial_vs_hom_doloso": {
+        "n_observacoes": 280,
+        "pearson": {
+          "r": -0.1954,
+          "p_value": 0.0010152,
+          "ci_95_low": -0.3056,
+          "ci_95_high": -0.08,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": -0.2377,
+          "p_value": 5.8925e-05,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_veiculo": {
+        "n_observacoes": 280,
+        "pearson": {
+          "r": 0.5049,
+          "p_value": 1.625e-19,
+          "ci_95_low": 0.412,
+          "ci_95_high": 0.5873,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.4828,
+          "p_value": 9.3421e-18,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_carga": {
+        "n_observacoes": 280,
+        "pearson": {
+          "r": 0.3166,
+          "p_value": 6.1682e-08,
+          "ci_95_low": 0.2071,
+          "ci_95_high": 0.4183,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.4475,
+          "p_value": 3.3928e-15,
+          "significativo_p05": true
+        }
+      }
+    },
+    "41": {
+      "batalhao": "41º BPM",
+      "municipio": "Rio de Janeiro",
+      "letalidade_policial_vs_hom_doloso": {
+        "n_observacoes": 187,
+        "pearson": {
+          "r": 0.0656,
+          "p_value": 0.37253,
+          "ci_95_low": -0.0787,
+          "ci_95_high": 0.2071,
+          "significativo_p05": false
+        },
+        "spearman": {
+          "rho": 0.0784,
+          "p_value": 0.28626,
+          "significativo_p05": false
+        }
+      },
+      "letalidade_policial_vs_roubo_veiculo": {
+        "n_observacoes": 187,
+        "pearson": {
+          "r": 0.2654,
+          "p_value": 0.00024093,
+          "ci_95_low": 0.1268,
+          "ci_95_high": 0.3939,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.2877,
+          "p_value": 6.5361e-05,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_carga": {
+        "n_observacoes": 187,
+        "pearson": {
+          "r": 0.2035,
+          "p_value": 0.0052096,
+          "ci_95_low": 0.0618,
+          "ci_95_high": 0.3372,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.2786,
+          "p_value": 0.00011326,
+          "significativo_p05": true
+        }
+      }
+    },
+    "7": {
+      "batalhao": "7º BPM",
+      "municipio": "São Gonçalo",
+      "letalidade_policial_vs_hom_doloso": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": -0.0625,
+          "p_value": 0.29464,
+          "ci_95_low": -0.1778,
+          "ci_95_high": 0.0545,
+          "significativo_p05": false
+        },
+        "spearman": {
+          "rho": -0.0288,
+          "p_value": 0.62924,
+          "significativo_p05": false
+        }
+      },
+      "letalidade_policial_vs_roubo_veiculo": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.4486,
+          "p_value": 2.0447e-15,
+          "ci_95_low": 0.3503,
+          "ci_95_high": 0.5371,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.4986,
+          "p_value": 3.4004e-19,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_carga": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.5793,
+          "p_value": 9.2081e-27,
+          "ci_95_low": 0.4962,
+          "ci_95_high": 0.6519,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.5003,
+          "p_value": 2.5026e-19,
+          "significativo_p05": true
+        }
+      }
+    },
+    "12": {
+      "batalhao": "12º BPM",
+      "municipio": "Niterói",
+      "letalidade_policial_vs_hom_doloso": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.0553,
+          "p_value": 0.35376,
+          "ci_95_low": -0.0617,
+          "ci_95_high": 0.1708,
+          "significativo_p05": false
+        },
+        "spearman": {
+          "rho": 0.0824,
+          "p_value": 0.16695,
+          "significativo_p05": false
+        }
+      },
+      "letalidade_policial_vs_roubo_veiculo": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.1373,
+          "p_value": 0.020856,
+          "ci_95_low": 0.021,
+          "ci_95_high": 0.2499,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.1371,
+          "p_value": 0.021048,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_carga": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.294,
+          "p_value": 4.7831e-07,
+          "ci_95_low": 0.1836,
+          "ci_95_high": 0.3969,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.2773,
+          "p_value": 2.1627e-06,
+          "significativo_p05": true
+        }
+      }
+    },
+    "3": {
+      "batalhao": "3º BPM",
+      "municipio": "Rio de Janeiro",
+      "letalidade_policial_vs_hom_doloso": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.3285,
+          "p_value": 1.5157e-08,
+          "ci_95_low": 0.2204,
+          "ci_95_high": 0.4287,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.3797,
+          "p_value": 3.8924e-11,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_veiculo": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.3334,
+          "p_value": 8.9892e-09,
+          "ci_95_low": 0.2255,
+          "ci_95_high": 0.4331,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.4472,
+          "p_value": 2.5573e-15,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_carga": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.2524,
+          "p_value": 1.7354e-05,
+          "ci_95_low": 0.1399,
+          "ci_95_high": 0.3584,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.3587,
+          "p_value": 5.1097e-10,
+          "significativo_p05": true
+        }
+      }
+    },
+    "9": {
+      "batalhao": "9º BPM",
+      "municipio": "Rio de Janeiro",
+      "letalidade_policial_vs_hom_doloso": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.6955,
+          "p_value": 3.1296e-42,
+          "ci_95_low": 0.63,
+          "ci_95_high": 0.7512,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.6214,
+          "p_value": 1.2806e-31,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_veiculo": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.555,
+          "p_value": 2.8917e-24,
+          "ci_95_low": 0.4687,
+          "ci_95_high": 0.6308,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.5733,
+          "p_value": 4.0031e-26,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_carga": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.4042,
+          "p_value": 1.5012e-12,
+          "ci_95_low": 0.3019,
+          "ci_95_high": 0.4974,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.4976,
+          "p_value": 4.1346e-19,
+          "significativo_p05": true
+        }
+      }
+    },
+    "2": {
+      "batalhao": "2º BPM",
+      "municipio": "Rio de Janeiro",
+      "letalidade_policial_vs_hom_doloso": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.2215,
+          "p_value": 0.00017247,
+          "ci_95_low": 0.1077,
+          "ci_95_high": 0.3296,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.2091,
+          "p_value": 0.00039762,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_veiculo": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.1366,
+          "p_value": 0.021557,
+          "ci_95_low": 0.0203,
+          "ci_95_high": 0.2492,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.221,
+          "p_value": 0.00017888,
+          "significativo_p05": true
+        }
+      },
+      "letalidade_policial_vs_roubo_carga": {
+        "n_observacoes": 283,
+        "pearson": {
+          "r": 0.2339,
+          "p_value": 7.091e-05,
+          "ci_95_low": 0.1206,
+          "ci_95_high": 0.3412,
+          "significativo_p05": true
+        },
+        "spearman": {
+          "rho": 0.1954,
+          "p_value": 0.00095356,
+          "significativo_p05": true
+        }
+      }
+    }
+  }
+}
