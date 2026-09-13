@@ -1,9 +1,10 @@
 # 📌 STATUS DO PROJETO — ONDE PARAMOS
-**Data do Registro**: 13 de Setembro de 2026 (Madrugada)  
+**Data do Registro**: 13 de Setembro de 2026  
 **Repositório Remoto**: [GitHub (Privado) — `dixmene/rio-criminalidade-historica`](https://github.com/dixmene/rio-criminalidade-historica)  
 **Branch Atual**: `main`  
-**Último Commit**: `79fb522`  
-**Qualidade Técnica**: 21/21 Testes Automatizados Aprovados (`python -m pytest -v`)
+**Último Commit**: `ce8e033` (Polígonos 1.671 Áreas)  
+**Qualidade Técnica**: 26/26 Testes Automatizados Aprovados (`pytest`)
+
 
 ---
 
@@ -106,7 +107,29 @@
      - Localizador com autocomplete para focar e dar zoom direto em qualquer uma das 1.671 favelas/comunidades.
      - Tabela completa de exploração com exportação para CSV.
 3. **Nova Suíte de Testes Cartográficos (`tests/test_geospatial_polygons.py`)**:
-   - 3 novos testes automatizados validando presença dos arquivos, integridade de formato GeoJSON, limites geográficos no RJ e hashes SHA-256 (21/21 testes aprovados).
+   - 3 novos testes automatizados validando presença dos arquivos, integridade de formato GeoJSON, limites geográficos no RJ e hashes SHA-256.
+
+---
+
+### G. Auditoria de Fundação Arquitetural e Epistemológica
+Executada a reestruturação profunda do modelo conceitual e relacional antes da expansão de novos eventos reais, conforme os 6 pilares de rigor historiográfico:
+
+1. **Modelo Temporal Rigoroso (Intervalos de Conhecimento)**:
+   - `date_start` e `date_end` tipados como `HistoricalDate` (Date no banco), permitindo queries por sobreposição de intervalos temporais com precisão diária, mensal, anual ou decenal.
+   - Preservação da grafia original da fonte em `date_display` e flag booleana `date_is_estimated`.
+2. **Proveniência Granular em EventSource**:
+   - Campos `page`, `section`, `excerpt` (literal mandatório), `claim` (proposição factual), `source_assessment` (crítica da fonte) e `confidence_level` por ligação fonte-evento.
+3. **Desacoplamento da Confiança & Nova Entidade `Claim`**:
+   - Entidade de primeiro nível `Claim` (`EVENTO -> CLAIM -> FONTE`) permitindo cadastrar afirmações factuais atômicas e confrontar visões historiográficas divergentes.
+   - Suporte a posturas epistemológicas em `ClaimSource`: `apoia`, `contesta`, `matiza`.
+4. **Rigor Geográfico & Regra `NULL ≠ 0`**:
+   - Remoção de default artificial `Rio de Janeiro` em `Region.municipality` (ausência de dado é estritamente `NULL`).
+   - Preparação para PostGIS com vigência temporal de perímetros: `geometry_type`, `geometry_valid_from`, `geometry_valid_to`, `geometry_source`, `geometry_confidence`.
+5. **Diagrama Entidade-Relacionamento Auditado**:
+   - Criado documento de referência com diagrama Mermaid e justificativas metodológicas em `docs/arquitetura/erd_arquitetura_auditada.md`.
+6. **Suíte de Testes da Fundação (`tests/test_architectural_foundations.py`)**:
+   - 5 novos testes cobrindo intervalos de conhecimento, ausência de defaults, PostGIS readiness, proveniência detalhada e posturas conflitantes de claims.
+   - Total do projeto ampliado para **26/26 testes passando em 1.3s**.
 
 ---
 

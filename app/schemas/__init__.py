@@ -12,6 +12,14 @@ from app.schemas.event import (
     EventRegionLinkInput,
 )
 
+from app.schemas.claim import (
+    ClaimBase,
+    ClaimCreate,
+    ClaimResponse,
+    ClaimSourceLinkInput,
+    ClaimSourceResponse,
+)
+
 __all__ = [
     "SourceBase",
     "SourceCreate",
@@ -28,6 +36,11 @@ __all__ = [
     "EventBase",
     "EventCreate",
     "EventRead",
+    "ClaimBase",
+    "ClaimCreate",
+    "ClaimResponse",
+    "ClaimSourceLinkInput",
+    "ClaimSourceResponse",
     "EventSourceLinkInput",
     "EventOrganizationLinkInput",
     "EventPersonLinkInput",

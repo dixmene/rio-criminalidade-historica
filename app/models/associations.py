@@ -20,8 +20,8 @@ class ValidationStatusEnum(str, enum.Enum):
 
 class EventSource(Base):
     """
-    Tabela de Proveniência: Conecta um Evento a uma Fonte histórica.
-    Registra o trecho literal, página e nível de validação.
+    Tabela de Proveniência & Evidência Documental: Conecta um Evento a uma Fonte histórica.
+    Registra o trecho literal exato, página, seção, afirmação sustentada e avaliação crítica da fonte.
     """
     __tablename__ = "event_sources"
 
@@ -29,15 +29,30 @@ class EventSource(Base):
     event_id = Column(Integer, ForeignKey("events.id", ondelete="CASCADE"), nullable=False, index=True)
     source_id = Column(Integer, ForeignKey("sources.id", ondelete="CASCADE"), nullable=False, index=True)
     
-    page_or_section = Column(String(100), nullable=True)
-    excerpt = Column(Text, nullable=False)  # Trecho/citação textual comprobatória
-    claim_assertion = Column(Text, nullable=True)  # Afirmação sustentada
+    # Localização exata dentro da fonte
+    page = Column(String(50), nullable=True)
+    section = Column(String(100), nullable=True)
+    page_or_section = Column(String(100), nullable=True)  # Compatibilidade retroativa
+    
+    # Trecho literal mandatório e afirmação sustentada
+    excerpt = Column(Text, nullable=False)  # Citação textual literal comprobatória
+    claim = Column(Text, nullable=True)  # Proposição factual sustentada
+    claim_assertion = Column(Text, nullable=True)  # Compatibilidade retroativa
+    
+    # Avaliação historiográfica e confiança granular na ligação
+    source_assessment = Column(String(100), nullable=True)  # ex: oficial, academica, testemunhal, pericial, jornalistica
+    assessment_notes = Column(Text, nullable=True)  # Notas de análise crítica da fonte
+    confidence_level = Column(
+        String(30),
+        default=ValidationStatusEnum.CONFIRMADO.value,
+        nullable=False
+    )
     validation_status = Column(
         String(30),
         default=ValidationStatusEnum.CONFIRMADO.value,
         nullable=False
     )
-    confidence_notes = Column(Text, nullable=True)  # Divergências ou observações críticas
+    confidence_notes = Column(Text, nullable=True)  # Compatibilidade retroativa
     created_at = Column(DateTime, default=utc_now)
 
     # Relacionamentos

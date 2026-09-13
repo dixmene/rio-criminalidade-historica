@@ -1,7 +1,8 @@
-from datetime import datetime, timezone
-from sqlalchemy import Column, Integer, String, Text, Float, Boolean, DateTime
+from datetime import datetime, timezone, date
+from sqlalchemy import Column, Integer, String, Text, Float, Boolean, DateTime, Date
 from sqlalchemy.orm import relationship
 from app.database import Base
+from app.models.event import HistoricalDate
 
 
 def utc_now():
@@ -13,10 +14,11 @@ class Region(Base):
     Entidade Região/Território:
     Representa municípios, bairros, favelas, complexos ou regiões históricas.
     
-    Regra de Geolocalização:
-    - Latitude e Longitude são estritamente NULLABLE.
-    - Nenhuma coordenada pode ser inventada se a fonte não fornecer localização precisa.
+    Regra de Geolocalização & Ausência de Dados (NULL ≠ 0):
+    - Latitude, Longitude e Município são estritamente NULLABLE sem defaults artificiais.
+    - Se a fonte não informa o município ou coordenada, o valor no banco DEVE ser NULL.
     - Preserva original_name e normalized_name.
+    - Suporta evolução para PostGIS e vigência temporal de polígonos (valid_from/valid_to).
     """
     __tablename__ = "regions"
 
@@ -25,15 +27,22 @@ class Region(Base):
     normalized_name = Column(String(255), nullable=False, index=True)
     region_type = Column(String(100), nullable=False, default="bairro")
     # tipos: bairro, favela, complexo, municipio, zona, territorio_historico
-    municipality = Column(String(100), nullable=True, default="Rio de Janeiro")
+    
+    # Sem default artificial: informação ausente é estritamente NULL!
+    municipality = Column(String(100), nullable=True, default=None)
     
     # Coordenadas estritamente opcionais (não inventar coordenadas!)
     latitude = Column(Float, nullable=True)
     longitude = Column(Float, nullable=True)
     location_precision = Column(String(50), nullable=False, default="aproximada")
     # precisão: exata, aproximada, centroide, desconhecida
-    geometry_source = Column(String(100), nullable=True)  # ex: IBGE, IPP/Data.Rio, Pesquisa
+    
+    # Preparação para PostGIS e Temporalidade Espacial
+    geometry_type = Column(String(50), nullable=True)  # Point, Polygon, MultiPolygon
+    geometry_source = Column(String(100), nullable=True)  # ex: IBGE, IPP/Data.Rio, dadosderiscos
     geometry_confidence = Column(String(50), nullable=True)  # alta, media, baixa
+    geometry_valid_from = Column(HistoricalDate, nullable=True)  # Início da validade histórica do perímetro
+    geometry_valid_to = Column(HistoricalDate, nullable=True)  # Fim da validade histórica do perímetro
     
     geojson_boundary = Column(Text, nullable=True)
     description = Column(Text, nullable=True)

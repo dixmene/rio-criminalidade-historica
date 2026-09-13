@@ -71,25 +71,25 @@ def test_real_historical_corpus_integrity():
         ev_1979 = next((e for e in real_events if "Massacre" in e.title and e.year == 1979), None)
         assert ev_1979 is not None
         assert ev_1979.exact_date is True
-        assert ev_1979.date_start == "1979-09-17"
+        assert str(ev_1979.date_start) == "1979-09-17"
 
         # 2018: Assassinato de Marielle Franco e Anderson Gomes (14 de março de 2018)
         ev_marielle = next((e for e in real_events if "Marielle Franco" in e.title and e.year == 2018), None)
         assert ev_marielle is not None
         assert ev_marielle.exact_date is True
-        assert ev_marielle.date_start == "2018-03-14"
+        assert str(ev_marielle.date_start) == "2018-03-14"
 
         # 2020: Liminar da ADPF 635 (5 de junho de 2020)
         ev_adpf = next((e for e in real_events if "ADPF 635" in e.title and e.year == 2020), None)
         assert ev_adpf is not None
         assert ev_adpf.exact_date is True
-        assert ev_adpf.date_start == "2020-06-05"
+        assert str(ev_adpf.date_start) == "2020-06-05"
 
         # 2026: Condenação dos Irmãos Brazão no STF (25 de fevereiro de 2026)
         ev_brazao = next((e for e in real_events if "Brazão" in e.title and e.year == 2026), None)
         assert ev_brazao is not None
         assert ev_brazao.exact_date is True
-        assert ev_brazao.date_start == "2026-02-25"
+        assert str(ev_brazao.date_start) == "2026-02-25"
 
         # 5. Validação das Fontes Documentais e Hashes Criptográficos
         real_sources = db.query(Source).filter(Source.is_demo == False).all()

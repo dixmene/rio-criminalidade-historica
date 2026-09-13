@@ -24,7 +24,8 @@ def test_sources_catalog_coverage_and_metadata():
                 "documento_judicial",
                 "oficial_relatorio",
                 "jornalismo_investigativo",
-                "historia_oral"
+                "historia_oral",
+                "cartografia_digital"
             )
 
         # Verificar presença de eixos temáticos estruturantes

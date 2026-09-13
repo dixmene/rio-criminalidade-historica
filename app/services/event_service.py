@@ -2,6 +2,8 @@ from typing import List, Optional, Tuple
 from sqlalchemy.orm import Session, joinedload
 from app.models import (
     Event,
+    Claim,
+    ClaimSource,
     EventSource,
     EventOrganization,
     EventPerson,
@@ -30,10 +32,11 @@ class EventService:
     ) -> List[Event]:
         """
         Consulta eventos aplicando filtros temporais, geográficos e de isolamento DEMO.
-        Retorna os relacionamentos carregados por eager loading.
+        Retorna os relacionamentos carregados por eager loading (fontes, claims, regiões, etc.).
         """
         query = self.db.query(Event).options(
             joinedload(Event.source_links).joinedload(EventSource.source),
+            joinedload(Event.claims).joinedload(Claim.source_links).joinedload(ClaimSource.source),
             joinedload(Event.organization_links).joinedload(EventOrganization.organization),
             joinedload(Event.person_links).joinedload(EventPerson.person),
             joinedload(Event.region_links).joinedload(EventRegion.region),
@@ -64,11 +67,12 @@ class EventService:
         return query.order_by(Event.year.asc(), Event.date_display.asc()).all()
 
     def get_event_by_id(self, event_id: int) -> Optional[Event]:
-        """Recupera um evento por ID com todos os vínculos de fontes e entidades."""
+        """Recupera um evento por ID com todos os vínculos de fontes, afirmações (claims) e entidades."""
         return (
             self.db.query(Event)
             .options(
                 joinedload(Event.source_links).joinedload(EventSource.source),
+                joinedload(Event.claims).joinedload(Claim.source_links).joinedload(ClaimSource.source),
                 joinedload(Event.organization_links).joinedload(EventOrganization.organization),
                 joinedload(Event.person_links).joinedload(EventPerson.person),
                 joinedload(Event.region_links).joinedload(EventRegion.region),
@@ -76,6 +80,17 @@ class EventService:
             .filter(Event.id == event_id)
             .first()
         )
+
+    def list_claims(self, event_id: Optional[int] = None, is_disputed: Optional[bool] = None) -> List[Claim]:
+        """Lista afirmações históricas atomizadas, com filtro opcional por evento ou controvérsia."""
+        query = self.db.query(Claim).options(
+            joinedload(Claim.source_links).joinedload(ClaimSource.source)
+        )
+        if event_id is not None:
+            query = query.filter(Claim.event_id == event_id)
+        if is_disputed is not None:
+            query = query.filter(Claim.is_disputed == is_disputed)
+        return query.order_by(Claim.created_at.desc()).all()
 
     def get_timeline_bounds(self, is_demo: Optional[bool] = None) -> Tuple[int, int]:
         """Retorna o ano mínimo e máximo dos eventos no banco para a visualização ativa."""

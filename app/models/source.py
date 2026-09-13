@@ -38,8 +38,9 @@ class Source(Base):
     is_demo = Column(Boolean, default=False, nullable=False, index=True)
     created_at = Column(DateTime, default=utc_now)
 
-    # Relacionamento de proveniência com eventos
+    # Relacionamento de proveniência com eventos e afirmações (claims)
     event_links = relationship("EventSource", back_populates="source", cascade="all, delete-orphan")
+    claim_links = relationship("ClaimSource", back_populates="source", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Source(id={self.id}, title='{self.title[:30]}...', year={self.publication_year})>"
