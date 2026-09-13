@@ -200,9 +200,9 @@ def ingest_cycle1_contravencao():
         )
         db.add(ev1)
         db.flush()
-        ev1.regions.append(reg_centro)
-        ev1.organizations.append(org_bicho)
-        ev1.people.append(p_castor)
+        if reg_centro: db.add(EventRegion(event_id=ev1.id, region_id=reg_centro.id))
+        if org_bicho: db.add(EventOrganization(event_id=ev1.id, organization_id=org_bicho.id))
+        if p_castor: db.add(EventPerson(event_id=ev1.id, person_id=p_castor.id))
         new_events.append(ev1)
 
         # Claims de EV1
@@ -267,9 +267,12 @@ def ingest_cycle1_contravencao():
         )
         db.add(ev2)
         db.flush()
-        ev2.regions.append(reg_centro)
-        ev2.organizations.extend([org_bicho, org_tjrj])
-        ev2.people.extend([p_denise, p_castor, p_guimaraes])
+        if reg_centro: db.add(EventRegion(event_id=ev2.id, region_id=reg_centro.id))
+        if org_bicho: db.add(EventOrganization(event_id=ev2.id, organization_id=org_bicho.id))
+        if org_tjrj: db.add(EventOrganization(event_id=ev2.id, organization_id=org_tjrj.id))
+        if p_denise: db.add(EventPerson(event_id=ev2.id, person_id=p_denise.id))
+        if p_castor: db.add(EventPerson(event_id=ev2.id, person_id=p_castor.id))
+        if p_guimaraes: db.add(EventPerson(event_id=ev2.id, person_id=p_guimaraes.id))
         new_events.append(ev2)
 
         cl2 = Claim(
@@ -333,9 +336,11 @@ def ingest_cycle1_contravencao():
         )
         db.add(ev3)
         db.flush()
-        ev3.regions.append(reg_bangu)
-        ev3.organizations.extend([org_bicho, org_mprj])
-        ev3.people.extend([p_castor, p_biscaia])
+        if reg_bangu: db.add(EventRegion(event_id=ev3.id, region_id=reg_bangu.id))
+        if org_bicho: db.add(EventOrganization(event_id=ev3.id, organization_id=org_bicho.id))
+        if org_mprj: db.add(EventOrganization(event_id=ev3.id, organization_id=org_mprj.id))
+        if p_castor: db.add(EventPerson(event_id=ev3.id, person_id=p_castor.id))
+        if p_biscaia: db.add(EventPerson(event_id=ev3.id, person_id=p_biscaia.id))
         new_events.append(ev3)
 
         cl3 = Claim(
@@ -399,9 +404,10 @@ def ingest_cycle1_contravencao():
         )
         db.add(ev4)
         db.flush()
-        ev4.regions.extend([reg_bangu, reg_centro])
-        ev4.organizations.append(org_bicho)
-        ev4.people.append(p_castor)
+        if reg_bangu: db.add(EventRegion(event_id=ev4.id, region_id=reg_bangu.id))
+        if reg_centro: db.add(EventRegion(event_id=ev4.id, region_id=reg_centro.id))
+        if org_bicho: db.add(EventOrganization(event_id=ev4.id, organization_id=org_bicho.id))
+        if p_castor: db.add(EventPerson(event_id=ev4.id, person_id=p_castor.id))
         new_events.append(ev4)
 
         cl4 = Claim(

@@ -25,6 +25,8 @@ from app.models import (
     Claim,
     ClaimSource,
     EventSource,
+    EventOrganization,
+    EventRegion,
 )
 from src.normalization.rules import normalize_name
 
@@ -107,9 +109,10 @@ def ingest_cycle2_economia():
             is_demo=False,
         )
         db.add(ev1)
-        db.flush()
-        ev1.regions.append(reg_centro)
-        ev1.organizations.extend([org_govrj, org_alerj, org_pmerj])
+        if reg_centro: db.add(EventRegion(event_id=ev1.id, region_id=reg_centro.id))
+        if org_govrj: db.add(EventOrganization(event_id=ev1.id, organization_id=org_govrj.id))
+        if org_alerj: db.add(EventOrganization(event_id=ev1.id, organization_id=org_alerj.id))
+        if org_pmerj: db.add(EventOrganization(event_id=ev1.id, organization_id=org_pmerj.id))
         new_events.append(ev1)
 
         cl1 = Claim(
@@ -177,8 +180,7 @@ def ingest_cycle2_economia():
             is_demo=False,
         )
         db.add(ev2)
-        db.flush()
-        ev2.regions.append(reg_ap3)
+        if reg_ap3: db.add(EventRegion(event_id=ev2.id, region_id=reg_ap3.id))
         new_events.append(ev2)
 
         cl2 = Claim(
@@ -246,9 +248,11 @@ def ingest_cycle2_economia():
             is_demo=False,
         )
         db.add(ev3)
-        db.flush()
-        ev3.regions.extend([reg_centro, reg_ap3])
-        ev3.organizations.extend([org_govrj, org_pmerj, org_pcerj])
+        if reg_centro: db.add(EventRegion(event_id=ev3.id, region_id=reg_centro.id))
+        if reg_ap3: db.add(EventRegion(event_id=ev3.id, region_id=reg_ap3.id))
+        if org_govrj: db.add(EventOrganization(event_id=ev3.id, organization_id=org_govrj.id))
+        if org_pmerj: db.add(EventOrganization(event_id=ev3.id, organization_id=org_pmerj.id))
+        if org_pcerj: db.add(EventOrganization(event_id=ev3.id, organization_id=org_pcerj.id))
         new_events.append(ev3)
 
         cl3 = Claim(

@@ -105,6 +105,33 @@ def check_all_invariants() -> dict:
         if i10_fails:
             violations.append(f"I10 Falhou: {len(i10_fails)} organizações sem tipologia institucional")
 
+        # I11: Integridade Referencial (PRAGMA foreign_key_check)
+        raw_conn = db.connection().connection
+        cursor = raw_conn.cursor()
+        cursor.execute("PRAGMA foreign_key_check")
+        fk_errors = cursor.fetchall()
+        cursor.close()
+        results["I11_fk_violations"] = len(fk_errors)
+        if fk_errors:
+            violations.append(f"I11 Falhou: {len(fk_errors)} violações de chave estrangeira detectadas no banco")
+
+        # I12: Isolamento Estrito Demo vs Real (sem contaminação cruzada)
+        cross_contam = []
+        for e in real_events:
+            for sl in e.source_links:
+                if sl.source and sl.source.is_demo: cross_contam.append(f"Event {e.id} -> Demo Source {sl.source_id}")
+            for rl in e.region_links:
+                if rl.region and rl.region.is_demo: cross_contam.append(f"Event {e.id} -> Demo Region {rl.region_id}")
+            for ol in e.organization_links:
+                if ol.organization and ol.organization.is_demo: cross_contam.append(f"Event {e.id} -> Demo Org {ol.organization_id}")
+            for pl in e.person_links:
+                if pl.person and pl.person.is_demo: cross_contam.append(f"Event {e.id} -> Demo Person {pl.person_id}")
+            for c in e.claims:
+                if c.is_demo: cross_contam.append(f"Event {e.id} -> Demo Claim {c.id}")
+        results["I12_demo_cross_contam"] = len(cross_contam)
+        if cross_contam:
+            violations.append(f"I12 Falhou: {len(cross_contam)} ligações entre eventos reais e entidades demo")
+
     finally:
         db.close()
 

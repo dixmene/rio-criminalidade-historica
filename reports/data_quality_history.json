@@ -52,5 +52,62 @@
     "disputed_claims": 3,
     "temporal_span": 69,
     "integrity_errors": 0
+  },
+  {
+    "timestamp": "2026-09-13T17:31:15.783133+00:00",
+    "real_events": 43,
+    "real_sources": 185,
+    "real_claims": 10,
+    "disputed_claims": 3,
+    "temporal_span": 69,
+    "integrity_errors": 0
+  },
+  {
+    "timestamp": "2026-09-13T17:37:14.594199+00:00",
+    "real_events": 43,
+    "real_sources": 185,
+    "real_claims": 10,
+    "disputed_claims": 3,
+    "temporal_span": 69,
+    "integrity_errors": 0
+  },
+  {
+    "timestamp": "2026-09-13T17:38:51.885210+00:00",
+    "global_dq_score": 96.2,
+    "real_events": 43,
+    "real_sources": 185,
+    "active_sources": 27,
+    "real_claims": 10,
+    "disputed_claims": 3,
+    "temporal_span": 69,
+    "pct_confirmados": 41.9,
+    "matrix_covered_pct": 23.958333333333336,
+    "integrity_errors": 0
+  },
+  {
+    "timestamp": "2026-09-13T17:39:09.678475+00:00",
+    "global_dq_score": 96.2,
+    "real_events": 43,
+    "real_sources": 185,
+    "active_sources": 27,
+    "real_claims": 10,
+    "disputed_claims": 3,
+    "temporal_span": 69,
+    "pct_confirmados": 41.9,
+    "matrix_covered_pct": 23.958333333333336,
+    "integrity_errors": 0
+  },
+  {
+    "timestamp": "2026-09-13T17:39:20.525866+00:00",
+    "global_dq_score": 96.2,
+    "real_events": 43,
+    "real_sources": 185,
+    "active_sources": 27,
+    "real_claims": 10,
+    "disputed_claims": 3,
+    "temporal_span": 69,
+    "pct_confirmados": 41.9,
+    "matrix_covered_pct": 23.958333333333336,
+    "integrity_errors": 0
   }
 ]
