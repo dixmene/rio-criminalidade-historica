@@ -1,0 +1,11 @@
+{
+  "arquivo": "bairros_rio_166_poligonos.geojson",
+  "formato": "GeoJSON (RFC 7946) & Parquet",
+  "total_bairros": 166,
+  "sha256_geojson": "6c7b74046992ffa5115c7804a7a3612a901a6503b0d00447522b419eb148270c",
+  "tamanho_bytes": 10063152,
+  "data_extracao": "2026-09-13T17:33:29.307516",
+  "url_origem": "https://pgeo3.rio.rj.gov.br/arcgis/rest/services/Cartografia/Limites_administrativos/MapServer/4/query?where=1%3D1&outFields=*&outSR=4326&f=geojson",
+  "orgao_gestor": "Instituto Pereira Passos (IPP) / Prefeitura da Cidade do Rio de Janeiro",
+  "resumo": "Malha vetorial georreferenciada de todos os 166 bairros oficiais do Rio de Janeiro em WGS84 (EPSG:4326)."
+}

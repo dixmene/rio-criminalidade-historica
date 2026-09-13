@@ -40,10 +40,23 @@ import streamlit as st
 import folium
 from streamlit_folium import st_folium
 import pandas as pd
+import pydeck as pdk
 
 from app.database import SessionLocal, engine, Base
 from app.services import EventService, DataService
 from app.config import DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM
+from app.map import (
+    build_historical_folium_map as app_map_build_historical_folium_map,
+    build_pydeck_map,
+    load_faction_polygons,
+    load_aisp_polygons,
+    load_bairros_polygons,
+    load_aisp_dataframe,
+    load_bairros_dataframe,
+    MAP_TILES,
+    EVIDENCE_LEVELS,
+)
+from scripts.classifier_pautas import classify_legislative_text, TAXONOMIA_PAUTAS_SENSIVEIS
 
 # Garante criação de tabelas em ambientes efêmeros
 Base.metadata.create_all(bind=engine)
@@ -432,11 +445,32 @@ FACCAO_NOMES = {
 # =============================================================================
 @st.cache_data
 def load_geospatial_factions(path: Optional[str] = None):
-    geojson_path = Path(path) if path else Path("data/geospatial/faccoes_rj_1671_poligonos.geojson")
-    if not geojson_path.exists():
-        return None
-    with open(geojson_path, "r", encoding="utf-8") as f:
-        return json.load(f)
+    return load_faction_polygons(path)
+
+
+@st.cache_data
+def load_corregedoria_data() -> Optional[dict]:
+    p = Path("database/ocorrencias_corregedoria.json")
+    if p.exists():
+        with open(p, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return None
+
+
+@st.cache_data
+def load_locais_votacao_data() -> Optional[pd.DataFrame]:
+    p = Path("database/locais_votacao_rio.parquet")
+    if p.exists():
+        return pd.read_parquet(p, engine="pyarrow")
+    return None
+
+
+@st.cache_data
+def load_proposicoes_data() -> Optional[pd.DataFrame]:
+    p = Path("database/proposicoes_legislativas.csv")
+    if p.exists():
+        return pd.read_csv(p)
+    return None
 
 
 def format_badge(confidence: str) -> str:
@@ -495,87 +529,27 @@ def events_to_dataframe(events) -> pd.DataFrame:
 def build_historical_folium_map(
     events,
     show_polygons: bool = False,
-    geo_data: Optional[dict] = None
+    show_aisp: bool = False,
+    show_bairros: bool = False,
+    theme: str = "dark",
+    geo_data: Optional[dict] = None,
+    aisp_data: Optional[dict] = None,
+    bairros_data: Optional[dict] = None
 ) -> Tuple[folium.Map, List[Any], int]:
     """
     Constrói o mapa Folium de forma determinística, isolada e testável programaticamente.
-    Garante que territórios com coordenadas NULL ou inválidas não quebrem a serialização.
+    Delega para app.map.builder mantendo 100% de retrocompatibilidade com a suíte de testes.
     """
-    fmap = folium.Map(
-        location=DEFAULT_MAP_CENTER,
-        zoom_start=DEFAULT_MAP_ZOOM,
-        tiles="OpenStreetMap"
+    return app_map_build_historical_folium_map(
+        events=events,
+        show_polygons=show_polygons,
+        show_aisp=show_aisp,
+        show_bairros=show_bairros,
+        theme=theme,
+        geo_data=geo_data,
+        aisp_data=aisp_data,
+        bairros_data=bairros_data
     )
-
-    # Sobreposição discreta de polígonos GeoJSON
-    if show_polygons:
-        if geo_data is None:
-            geo_data = load_geospatial_factions()
-        if geo_data:
-            folium.GeoJson(
-                geo_data,
-                name="Perímetros Territoriais",
-                style_function=lambda ft: {
-                    "fillColor": ft.get("properties", {}).get("cor_hex", "#8C97A3"),
-                    "color": ft.get("properties", {}).get("cor_hex", "#8C97A3"),
-                    "weight": 1.0,
-                    "fillOpacity": 0.22,
-                },
-                tooltip=folium.GeoJsonTooltip(
-                    fields=["nome", "faccao_nome"],
-                    aliases=["Comunidade:", "Presença:"]
-                )
-            ).add_to(fmap)
-
-    sem_geometria = []
-    plotados = 0
-
-    for ev in events:
-        tem_ponto = False
-        region_links = getattr(ev, "region_links", [])
-        for link in region_links:
-            reg = getattr(link, "region", None)
-            if reg and getattr(reg, "has_coordinates", False):
-                lat = getattr(reg, "latitude", None)
-                lng = getattr(reg, "longitude", None)
-                if lat is not None and lng is not None:
-                    try:
-                        lat_f = float(lat)
-                        lng_f = float(lng)
-                        if math.isnan(lat_f) or math.isnan(lng_f):
-                            continue
-                    except (ValueError, TypeError):
-                        continue
-
-                    tem_ponto = True
-                    # Sanitização de caracteres HTML para o popup
-                    ev_title_safe = (ev.title or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-                    reg_name_safe = (reg.original_name or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
-                    fontes_count = len(ev.sources) if hasattr(ev, "sources") else len(getattr(ev, "source_links", []))
-
-                    popup_html = f"""
-                    <div style="font-family: 'Source Sans 3', sans-serif; width: 220px;">
-                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7A2E2E; font-weight: 700;">{ev.date_display}</div>
-                        <div style="font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: 13px; margin: 3px 0;">{ev_title_safe}</div>
-                        <div style="font-size: 11px; color: #555;"><b>Território:</b> {reg_name_safe}</div>
-                        <div style="font-size: 11px; color: #555;"><b>Fontes:</b> {fontes_count} vinculadas</div>
-                    </div>
-                    """
-                    folium.Marker(
-                        [lat_f, lng_f],
-                        popup=folium.Popup(popup_html, max_width=250),
-                        tooltip=f"[{ev.date_display}] {ev_title_safe}",
-                        icon=folium.Icon(
-                            color=MARKER_COLORS.get(getattr(ev, "confidence_level", ""), "darkred"),
-                            icon="record",
-                            prefix="glyphicon"
-                        )
-                    ).add_to(fmap)
-                    plotados += 1
-        if not tem_ponto:
-            sem_geometria.append(ev)
-
-    return fmap, sem_geometria, plotados
 
 
 # =============================================================================
@@ -923,46 +897,175 @@ def render_view_analytics(service, events, filtros):
 
 
 # =============================================================================
-# SEÇÃO 3 — MAPA HISTÓRICO & TERRITÓRIOS (O Mapa como Protagonista)
+# SEÇÃO 3 — MAPA HISTÓRICO & TERRITÓRIOS (O Mapa como Carro-Chefe)
 # =============================================================================
 def render_view_map(service, events, filtros):
     st.markdown("""
     <div style="margin-bottom: 1rem;">
         <h2 style="margin: 0; font-size: 1.6rem;">Mapa Histórico & Territórios</h2>
-        <div style="font-size: 0.9rem; color: #6F6B63;">Mapeamento geoespacial de acontecimentos documentados, inspeção territorial e perímetros faccionais.</div>
+        <div style="font-size: 0.9rem; color: #6F6B63;">Mapeamento geoespacial de acontecimentos documentados, inspeção territorial, malhas oficiais (AISP e Bairros) e perímetros faccionais.</div>
     </div>
     """, unsafe_allow_html=True)
 
-    tab_mapa, tab_inspecao = st.tabs([
-        "🗺️ Mapa & Dossiê Histórico",
-        "🔍 Inspeção Territorial (1.671 Áreas)"
+    tab_mapa, tab_inspecao, tab_batalhoes, tab_corregedoria, tab_eleitoral, tab_legislativo = st.tabs([
+        "🗺️ Atlas Cartográfico (Carro-Chefe)",
+        "🔍 Inspeção Territorial (1.671 Áreas)",
+        "🛡️ Batalhões PMERJ & AISP (39 Áreas)",
+        "⚖️ Atos da Corregedoria & GAECO",
+        "🗳️ Cruzamento Eleitoral (TSE x AISP)",
+        "📜 Pautas Sensíveis no Legislativo"
     ])
 
     with tab_mapa:
+        # Controles de Visualização no Topo do Mapa
+        st.markdown("<div style='font-size:0.8rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em; margin-bottom:0.4rem;'>Painel de Controle Cartográfico</div>", unsafe_allow_html=True)
+        c_ctrl1, c_ctrl2, c_ctrl3 = st.columns([1.5, 1.5, 2])
+
+        with c_ctrl1:
+            tema_mapa = st.selectbox(
+                "Tema Visual (Basemap):",
+                options=["dark", "light", "osm"],
+                format_func=lambda x: "🌑 Dark Matter (Contraste Tático)" if x == "dark" else ("☀️ Positron (Claro Editorial)" if x == "light" else "🗺️ OpenStreetMap Clássico"),
+                index=0,
+                help="O mapa escuro (Dark Matter) realça os perímetros de facções e os selos de evidência."
+            )
+
+        with c_ctrl2:
+            motor_mapa = st.selectbox(
+                "Motor de Visualização:",
+                options=["Folium (Interativo / Dossiê)", "PyDeck 3D (WebGL / Alta Performance)"],
+                index=0,
+                help="PyDeck utiliza aceleração por GPU no navegador para visualização vetorial ultrarrápida."
+            )
+
+        with c_ctrl3:
+            camadas_sel = st.multiselect(
+                "Camadas Vetoriais Oficiais:",
+                options=["faccoes", "aisp", "bairros"],
+                default=["faccoes", "aisp"],
+                format_func=lambda x: {
+                    "faccoes": "🏴 Perímetros de Controle (1.671 Áreas)",
+                    "aisp": "🛡️ Áreas de Batalhões PMERJ (39 AISPs)",
+                    "bairros": "🏙️ Malha de Bairros Oficiais (166 Bairros - PCRJ)"
+                }.get(x, x)
+            )
+
+        # Barra de Playback Histórico
+        c_play1, c_play2 = st.columns([3, 1])
+        with c_play1:
+            anos_disponiveis = [ev.year for ev in events if ev.year is not None]
+            min_ano = min(anos_disponiveis) if anos_disponiveis else 1958
+            max_ano = max(anos_disponiveis) if anos_disponiveis else 2026
+            if min_ano >= max_ano:
+                max_ano = min_ano + 1
+
+            playback_teto = st.slider(
+                "⏱️ Linha do Tempo Dinâmica (Acontecimentos até o ano selecionado):",
+                min_value=min_ano,
+                max_value=max_ano,
+                value=max_ano,
+                step=1,
+                help="Mova o controle deslizante para inspecionar o surgimento progressivo de facções e acontecimentos históricos."
+            )
+        with c_play2:
+            st.metric(
+                label="Ano Limite",
+                value=str(playback_teto),
+                delta=f"{len([e for e in events if (e.year or 9999) <= playback_teto])} eventos"
+            )
+
+        # Filtrar eventos pelo playback
+        events_filtrados_tempo = [e for e in events if (e.year is None or e.year <= playback_teto)]
+
         c_mapa, c_dossie = st.columns([3, 2])
 
         with c_mapa:
-            camadas_col1, camadas_col2 = st.columns(2)
-            with camadas_col1:
-                exibir_perimetros = st.checkbox(
-                    "Sobrepor malha de perímetros (1.671 áreas)",
-                    value=False,
-                    help="Exibe contornos de favelas e comunidades segundo mapeamento vetorial."
+            exibir_perimetros = "faccoes" in camadas_sel
+            exibir_aisp = "aisp" in camadas_sel
+            exibir_bairros = "bairros" in camadas_sel
+
+            if motor_mapa == "Folium (Interativo / Dossiê)":
+                fmap, sem_geometria, plotados = build_historical_folium_map(
+                    events_filtrados_tempo,
+                    show_polygons=exibir_perimetros,
+                    show_aisp=exibir_aisp,
+                    show_bairros=exibir_bairros,
+                    theme=tema_mapa
                 )
-            with camadas_col2:
-                st.caption(f"Exibindo **{len(events)}** acontecimentos documentados no recorte.")
+                st_folium(fmap, width="100%", height=580)
+            else:
+                deck = build_pydeck_map(
+                    events_filtrados_tempo,
+                    show_factions=exibir_perimetros,
+                    show_aisp=exibir_aisp
+                )
+                if deck:
+                    st.pydeck_chart(deck, use_container_width=True)
+                else:
+                    st.warning("PyDeck não disponível neste ambiente.")
+                sem_geometria = [e for e in events_filtrados_tempo if not any(getattr(r.region, "has_coordinates", False) for r in getattr(e, "region_links", []))]
+                plotados = len(events_filtrados_tempo) - len(sem_geometria)
 
-            fmap, sem_geometria, plotados = build_historical_folium_map(events, show_polygons=exibir_perimetros)
-            st_folium(fmap, width="100%", height=560)
-
+            # Legenda Editorial de Evidências e Facções
             st.markdown("""
-            <div style="display:flex; gap: 15px; font-size: 0.78rem; font-family: 'JetBrains Mono', monospace; color: #5A564F; margin-top: 4px;">
-                <span>🟢 Confirmado documentalmente</span>
-                <span>🔵 Provável</span>
-                <span>🔴 Conflitante (Controvérsia)</span>
-                <span>⚪ Não verificado</span>
+            <div style="display:flex; flex-wrap:wrap; gap: 12px; font-size: 0.76rem; font-family: 'JetBrains Mono', monospace; background:#F0EDE6; padding:8px 12px; border:1px solid #D8D3C9; border-radius:3px; margin-top: 6px;">
+                <span><b>Evidência:</b></span>
+                <span style="color:#10B981; font-weight:700;">🟢 Nível A (Oficial/Judicial)</span>
+                <span style="color:#3B82F6; font-weight:700;">🔵 Nível B (Acadêmico/ISP)</span>
+                <span style="color:#F59E0B; font-weight:700;">🟡 Nível C (Imprensa Histórica)</span>
+                <span style="color:#EF4444; font-weight:700;">🔴 Conflitante</span>
+                <span style="color:#6F6B63;">|</span>
+                <span><b>Domínio:</b></span>
+                <span style="color:#E0342C; font-weight:700;">■ CV</span>
+                <span style="color:#2FA46B; font-weight:700;">■ TCP</span>
+                <span style="color:#EDB72B; font-weight:700;">■ ADA</span>
+                <span style="color:#2B5BC7; font-weight:700;">■ Milícias</span>
+                <span style="color:#00E5FF; font-weight:700;">- - AISP (PMERJ)</span>
             </div>
             """, unsafe_allow_html=True)
+
+            # Botões de Exportação Direta
+            c_exp1, c_exp2 = st.columns(2)
+            with c_exp1:
+                df_export = events_to_dataframe(events_filtrados_tempo)
+                csv_data = df_export.to_csv(index=False).encode("utf-8-sig")
+                st.download_button(
+                    "📥 Baixar Acontecimentos Filtrados (CSV)",
+                    data=csv_data,
+                    file_name=f"rio_historico_eventos_{playback_teto}.csv",
+                    mime="text/csv",
+                    use_container_width=True
+                )
+            with c_exp2:
+                # GeoJSON de pontos plotados
+                features_pontos = []
+                for ev in events_filtrados_tempo:
+                    for link in getattr(ev, "region_links", []):
+                        r = getattr(link, "region", None)
+                        if r and getattr(r, "has_coordinates", False) and r.latitude and r.longitude:
+                            features_pontos.append({
+                                "type": "Feature",
+                                "properties": {
+                                    "id": ev.id,
+                                    "titulo": ev.title,
+                                    "ano": ev.year,
+                                    "data": ev.date_display,
+                                    "confiabilidade": ev.confidence_level,
+                                    "territorio": r.original_name
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [float(r.longitude), float(r.latitude)]
+                                }
+                            })
+                geo_export_str = json.dumps({"type": "FeatureCollection", "features": features_pontos}, ensure_ascii=False)
+                st.download_button(
+                    "📥 Baixar GeoJSON de Pontos",
+                    data=geo_export_str.encode("utf-8"),
+                    file_name=f"rio_historico_pontos_{playback_teto}.geojson",
+                    mime="application/geo+json",
+                    use_container_width=True
+                )
 
             if sem_geometria:
                 with st.expander(f"📍 Acontecimentos sem delimitação pontual cadastrada ({len(sem_geometria)})"):
@@ -970,22 +1073,30 @@ def render_view_map(service, events, filtros):
                     for ev in sem_geometria:
                         st.markdown(f"- **[{ev.date_display}]** {ev.title} *(Território: {', '.join(r.original_name for r in ev.regions) or 'Geral'})*")
 
-        # Coluna Direita: Ficha Arquivística
+        # Coluna Direita: Ficha Arquivística & Dossiê
         with c_dossie:
             st.markdown("<div style='font-size:0.8rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em;'>Dossiê do Registro Selecionado</div>", unsafe_allow_html=True)
 
-            if not events:
+            if not events_filtrados_tempo:
                 st.info("Nenhum registro encontrado para os filtros selecionados.")
             else:
-                opcoes_eventos = {f"[{ev.date_display}] {ev.title} (ID {ev.id})": ev.id for ev in events}
+                opcoes_eventos = {f"[{ev.date_display}] {ev.title} (ID {ev.id})": ev.id for ev in events_filtrados_tempo}
                 sel_ev_str = st.selectbox("Selecione o acontecimento:", list(opcoes_eventos.keys()), label_visibility="collapsed")
                 ev_id = opcoes_eventos[sel_ev_str]
                 ev = service.get_event_by_id(ev_id)
 
                 if ev:
+                    # Inferencia de Nível de Evidência
+                    from app.map.builder import _infer_evidence_level
+                    ev_lvl = _infer_evidence_level(ev)
+                    ev_info = EVIDENCE_LEVELS.get(ev_lvl, EVIDENCE_LEVELS["C"])
+
                     st.markdown(f"""
                     <div class="archive-dossier">
-                        <div class="archive-tag">{ev.date_display} · {ev.temporal_precision.upper()} · {format_mode_badge(ev.is_demo)}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                            <span class="badge-editorial" style="background:{ev_info['color']}; color:#fff; border:none;">{ev_info['label']}</span>
+                            <span class="archive-tag">{ev.date_display} · {format_mode_badge(ev.is_demo)}</span>
+                        </div>
                         <div class="archive-title">{ev.title}</div>
                         <div style="margin-bottom: 0.8rem;">
                             {format_badge(ev.confidence_level)}
@@ -1047,7 +1158,7 @@ def render_view_map(service, events, filtros):
                         st.error("Alerta: Registro sem sustentação em fonte documentada.")
 
     with tab_inspecao:
-        st.markdown("### Catálogo Territorial & Consulta Vetorial")
+        st.markdown("### Catálogo Territorial & Consulta Vetorial (1.671 Áreas)")
         st.caption("Pesquisa por comunidade, favela ou território histórico nas bases geoespaciais integradas.")
 
         geo_data = load_geospatial_factions()
@@ -1082,6 +1193,119 @@ def render_view_map(service, events, filtros):
             st.markdown(f"**{len(areas_filtradas)}** áreas encontradas.")
             if areas_filtradas:
                 st.dataframe(pd.DataFrame(areas_filtradas), use_container_width=True, hide_index=True)
+
+    with tab_batalhoes:
+        st.markdown("### Áreas Integradas de Segurança Pública (39 AISPs / Batalhões PMERJ)")
+        st.caption("Delimitação geográfica oficial dos batalhões territoriais da Polícia Militar do Estado do Rio de Janeiro.")
+
+        df_aisp = load_aisp_dataframe()
+        if df_aisp is not None and not df_aisp.empty:
+            c_m1, c_m2, c_m3 = st.columns(3)
+            with c_m1:
+                st.metric("Total de AISPs Mapeadas", len(df_aisp))
+            with c_m2:
+                st.metric("RISPs (Regiões Integradas)", len(df_aisp["risp"].dropna().unique()))
+            with c_m3:
+                st.metric("Municípios Abrangidos", len(df_aisp["municipio"].dropna().unique()))
+
+            busca_batalhao = st.text_input("Buscar por Batalhão, Sede ou Município:", placeholder="Ex: 14º BPM, Bangu, Baixada...")
+            if busca_batalhao:
+                term = normalize_string_search(busca_batalhao)
+                df_aisp_view = df_aisp[
+                    df_aisp["batalhao"].str.lower().str.contains(term, na=False) |
+                    df_aisp["sede"].str.lower().str.contains(term, na=False) |
+                    df_aisp["municipio"].str.lower().str.contains(term, na=False)
+                ]
+            else:
+                df_aisp_view = df_aisp
+
+            cols_view = ["aisp", "batalhao", "sede", "nome_completo", "risp", "municipio", "centroide_lat", "centroide_lon"]
+            cols_exist = [c for c in cols_view if c in df_aisp_view.columns]
+            st.dataframe(df_aisp_view[cols_exist].sort_values("aisp"), use_container_width=True, hide_index=True)
+        else:
+            st.info("Arquivo Parquet de AISPs não localizado em data/geospatial/aisps_batalhoes.parquet.")
+
+    with tab_corregedoria:
+        st.markdown("### Evidências Formais de Desvios de Conduta & 'Arrego'")
+        st.caption("Registros auditados de operações da Corregedoria da PMERJ, GAECO/MPRJ e Polícia Federal com cadeia de custódia (SHA-256).")
+
+        corr_data = load_corregedoria_data()
+        if corr_data and "ocorrencias" in corr_data:
+            ocorr_list = corr_data["ocorrencias"]
+            st.markdown(f"**{len(ocorr_list)} operações e denúncias judicializadas catalogadas com hash de custódia.**")
+
+            for oc in ocorr_list:
+                st.markdown(f"""
+                <div class="archive-dossier" style="margin-bottom:1rem;">
+                    <div style="display:flex; justify-content:space-between;">
+                        <span class="badge-editorial badge-real">{oc['id']} · {oc['ano']}</span>
+                        <span class="archive-tag">{oc['orgao_investigador']}</span>
+                    </div>
+                    <div class="archive-title" style="margin:4px 0;">{oc['nome_operacao']}</div>
+                    <div style="font-size:0.85rem; color:#7A2E2E; font-weight:700;">
+                        Processo Judicial: {oc['processo_judicial']}
+                    </div>
+                    <div style="font-size:0.9rem; color:#20201E; margin:6px 0;">
+                        {oc['descricao']}
+                    </div>
+                    <div style="font-size:0.82rem; color:#4A4740; background:#F0EDE6; padding:6px; border-radius:2px;">
+                        <b>Batalhões/AISP Envolvidos:</b> {', '.join(oc['batalhoes_envolvidos'])}<br>
+                        <b>Modalidade Ilícita:</b> {oc['modalidade_ilicita']}<br>
+                        <b>Hash SHA-256 de Custódia:</b> <code>{oc['sha256_documento']}</code>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.info("Base de ocorrências da corregedoria não localizada em database/ocorrencias_corregedoria.json.")
+
+    with tab_eleitoral:
+        st.markdown("### Cruzamento Eleitoral: Locais de Votação x Batalhões (TSE)")
+        st.caption("Spatial Join entre colégios eleitorais e as áreas dos batalhões com cálculo do Índice Herfindahl-Hirschman (HHI) de concentração.")
+
+        df_tse = load_locais_votacao_data()
+        if df_tse is not None and not df_tse.empty:
+            c_e1, c_e2 = st.columns(2)
+            with c_e1:
+                currais_count = len(df_tse[df_tse["alerta_curral_eleitoral"] == True])
+                st.metric("Locais com Alta Concentração (Suspeita de Curral)", currais_count, f"{round(currais_count/len(df_tse)*100, 1)}% dos locais")
+            with c_e2:
+                st.metric("Total de Locais Auditados", len(df_tse))
+
+            st.markdown("""
+            > [!NOTE]
+            > **Cuidado Metodológico**: O índice HHI acima de 6.000 ou votações nominais superiores a 70% em colégios situados em áreas sob hegemonia armada indicam forte assimetria na circulação política, devendo ser interpretados como hipóteses de convergência e não condenações judiciais automáticas.
+            """)
+
+            st.dataframe(df_tse, use_container_width=True, hide_index=True)
+        else:
+            st.info("Base eleitoral do TSE não localizada em database/locais_votacao_rio.parquet.")
+
+    with tab_legislativo:
+        st.markdown("### Classificação Temática da Atividade Legislativa (CMRJ / ALERJ)")
+        st.caption("Classificador de pautas sensíveis incidentes sobre os mercados de controle territorial armado no Rio de Janeiro.")
+
+        # Testador interativo de classificação
+        with st.expander("🧪 Testador Interativo de Pautas Sensíveis (NLP)"):
+            st.caption("Cole a ementa de um Projeto de Lei para analisar sua incidência nos 5 eixos temáticos do crime organizado.")
+            texto_teste = st.text_area(
+                "Ementa ou texto da proposição:",
+                value="Dispõe sobre a regularização de transporte alternativo por vans e mototáxis na Zona Oeste."
+            )
+            if st.button("Classificar Proposição"):
+                res_class = classify_legislative_text(texto_teste)
+                if res_class["possui_convergencia_sensivel"]:
+                    st.success(f"Eixo Identificado: **{res_class['eixo_principal']}** (Score: {res_class['score_convergencia']})")
+                    st.markdown(f"**Termos Identificados:** `{', '.join(res_class['termos_identificados'])}`")
+                else:
+                    st.info("Nenhuma convergência temática sensível identificada (Pauta Administrativa / Geral).")
+                st.caption(res_class["cuidado_metodologico"])
+
+        df_leg = load_proposicoes_data()
+        if df_leg is not None and not df_leg.empty:
+            st.markdown("#### Proposições Coletadas & Classificadas")
+            st.dataframe(df_leg, use_container_width=True, hide_index=True)
+        else:
+            st.info("Base legislativa não localizada em database/proposicoes_legislativas.csv.")
 
 
 # =============================================================================

@@ -1,0 +1,175 @@
+{
+  "metadados": {
+    "titulo": "Eventos Judiciais e de Corregedoria Auditados — Arrego, Extorsão e Desvios de Conduta no RJ",
+    "orgaos_fontes": [
+      "Ministério Público do Estado do Rio de Janeiro (GAECO/MPRJ)",
+      "Polícia Federal (PF / DPF-RJ)",
+      "Corregedoria Geral da Polícia Militar (CGPM/PMERJ)",
+      "Corregedoria Geral de Polícia Civil (CGPOL/PCERJ)",
+      "Tribunal de Justiça do Estado do Rio de Janeiro (TJRJ)",
+      "Superior Tribunal de Justiça (STJ) e Supremo Tribunal Federal (STF)"
+    ],
+    "versao": "1.0.0",
+    "padrao_custodia": "SHA-256",
+    "nivel_evidencia": "Nível A — Decisões Judiciais e Denúncias Formais"
+  },
+  "ocorrencias": [
+    {
+      "id": "CORR-2017-CALABAR",
+      "nome_operacao": "Operação Calabar",
+      "ano": 2017,
+      "data_deflagracao": "2017-06-29",
+      "orgao_investigador": "GAECO/MPRJ e Corregedoria Geral da PMERJ",
+      "processo_judicial": "Processo nº 0038814-15.2017.8.19.0001 (Auditoria da Justiça Militar do RJ)",
+      "aisp_afetadas": [
+        7
+      ],
+      "batalhoes_envolvidos": [
+        "7º BPM (São Gonçalo)"
+      ],
+      "municipios": [
+        "São Gonçalo",
+        "Niterói"
+      ],
+      "faccao_correlacionada": "Comando Vermelho (CV)",
+      "modalidade_ilicita": "Arrego / Pagamento sistemático de propina para complacência territorial",
+      "descricao": "Maior operação contra corrupção policial militar da história do RJ. Denúncia formal de 96 policiais militares e dezenas de traficantes por esquema estruturado de propinas semanais pagas pelo Comando Vermelho para evitar operações e vazamento prévio de incursões.",
+      "resumo_evidencia": "Interceptações telefônicas autorizadas judicialmente, apreensões de planilhas de contabilidade do tráfico com rubricas expressas de 'batalhão' e 'patamo', e prisões preventivas decretadas pela Auditoria Militar.",
+      "sha256_documento": "2f2556ed42494f8efeac9101706ba0d7f58a23c9fde2bdaac03c450030d3eb05",
+      "link_oficial": "https://www.mprj.mp.br/conheca-o-mprj/noticias/-/detalhe/noticia/47515"
+    },
+    {
+      "id": "CORR-2017-QUARTO-ELEMENTO",
+      "nome_operacao": "Operação Quarto Elemento",
+      "ano": 2017,
+      "data_deflagracao": "2017-09-05",
+      "orgao_investigador": "GAECO/MPRJ e Polícia Federal",
+      "processo_judicial": "Processo nº 0209425-46.2017.8.19.0001 (1ª Vara Criminal Especializada / TJRJ)",
+      "aisp_afetadas": [
+        15,
+        20,
+        21,
+        3
+      ],
+      "batalhoes_envolvidos": [
+        "15º BPM (Caxias)",
+        "20º BPM (Mesquita)",
+        "21º BPM (Meriti)"
+      ],
+      "municipios": [
+        "Duque de Caxias",
+        "Nova Iguaçu",
+        "Belford Roxo",
+        "Rio de Janeiro"
+      ],
+      "faccao_correlacionada": "Milícia / Paramilitar",
+      "modalidade_ilicita": "Extorsão, sequestro e montagem de esquema de proteção a milícias",
+      "descricao": "Desarticulação de quadrilha composta por agentes públicos da segurança que sequestravam comerciantes e criminosos para exigir resgates vultosos e operavam cobranças ilícitas de proteção.",
+      "resumo_evidencia": "Mandados de prisão cumpridos contra policiais civis, militares e delegados, com suporte em provas periciais telemáticas e delações premiadas homologadas.",
+      "sha256_documento": "0d1054e611eb6975962f6698cb40bc6ecc3003db6bfbbc539281e2b50c1eef22",
+      "link_oficial": "https://www.mprj.mp.br/conheca-o-mprj/noticias/-/detalhe/noticia/50123"
+    },
+    {
+      "id": "CORR-2019-INTOCAVEIS",
+      "nome_operacao": "Operação Os Intocáveis",
+      "ano": 2019,
+      "data_deflagracao": "2019-01-22",
+      "orgao_investigador": "GAECO/MPRJ e DRACO/PCERJ",
+      "processo_judicial": "Processo nº 0013412-58.2019.8.19.0001 (4ª Vara Criminal do Rio de Janeiro)",
+      "aisp_afetadas": [
+        18,
+        31
+      ],
+      "batalhoes_envolvidos": [
+        "18º BPM (Jacarepaguá)",
+        "31º BPM (Barra da Tijuca)"
+      ],
+      "municipios": [
+        "Rio de Janeiro"
+      ],
+      "faccao_correlacionada": "Liga da Justiça / Escritório do Crime",
+      "modalidade_ilicita": "Grilagem de terras, monopólio de gás/água, assassinatos sob encomenda e extorsão",
+      "descricao": "Ação contra a cúpula da milícia de Rio das Pedras e Muzema. Identificação formal da atuação do ex-capitão do BOPE Adriano Magalhães da Nóbrega e do sargento reformado Ronnie Lessa no loteamento ilegal e homicídios mercenários.",
+      "resumo_evidencia": "Documentação cartorial fraudulenta apreendida, registros fiscais de extorsão a moradores e quebras de sigilo bancário homologadas pelo Poder Judiciário.",
+      "sha256_documento": "47e1727d27933708d6cd9d9799ee365d05d9abcae6972a5dd87abeef6fbb2829",
+      "link_oficial": "https://www.mprj.mp.br/conheca-o-mprj/noticias/-/detalhe/noticia/65890"
+    },
+    {
+      "id": "CORR-2020-GARGUIA",
+      "nome_operacao": "Operação Gárgula",
+      "ano": 2020,
+      "data_deflagracao": "2020-03-05",
+      "orgao_investigador": "GAECO/MPRJ e Polícia Civil",
+      "processo_judicial": "Processo nº 0041235-70.2020.8.19.0001 (1ª Vara Criminal Especializada de Combate ao Crime Organizado)",
+      "aisp_afetadas": [
+        18,
+        31
+      ],
+      "batalhoes_envolvidos": [
+        "18º BPM (Jacarepaguá)"
+      ],
+      "municipios": [
+        "Rio de Janeiro"
+      ],
+      "faccao_correlacionada": "Escritório do Crime",
+      "modalidade_ilicita": "Lavagem de capitais, construção civil clandestina e distribuição coercitiva de botijões de GLP",
+      "descricao": "Desmantelamento da estrutura financeira e patrimonial do Escritório do Crime, comprovando a utilização de laranjas e empresas imobiliárias de fachada para lavar proventos de extorsão.",
+      "resumo_evidencia": "Relatórios de inteligência financeira do COAF, bloqueio judicial de mais de R$ 8 milhões em bens imóveis e apreensões contábeis.",
+      "sha256_documento": "964036105fa65c878518ca43e2f3a8ad4af2ea696dec02b9e0c1592380e2128c",
+      "link_oficial": "https://www.mprj.mp.br/conheca-o-mprj/noticias/-/detalhe/noticia/74211"
+    },
+    {
+      "id": "CORR-2022-SUBURBIO",
+      "nome_operacao": "Operação Subúrbio",
+      "ano": 2022,
+      "data_deflagracao": "2022-08-16",
+      "orgao_investigador": "Corregedoria Geral da PMERJ e GAECO/MPRJ",
+      "processo_judicial": "Processo nº 0187410-23.2022.8.19.0001 (Auditoria da Justiça Militar do RJ)",
+      "aisp_afetadas": [
+        9,
+        41
+      ],
+      "batalhoes_envolvidos": [
+        "9º BPM (Rocha Miranda)",
+        "41º BPM (Irajá)"
+      ],
+      "municipios": [
+        "Rio de Janeiro"
+      ],
+      "faccao_correlacionada": "Comando Vermelho (CV)",
+      "modalidade_ilicita": "Arrego em pontos de venda de drogas e liberação de barricadas",
+      "descricao": "Investigação com câmeras ocultas e rastreamento telemático que flagrou viaturas policiais recolhendo semanalmente dinheiro vivo em bocas de fumo nos complexos do Chapadão e Pedreira.",
+      "resumo_evidencia": "Vídeos em alta resolução com áudio periciados, logs de GPS do sistema AVT das viaturas da PMERJ e mensagens trocadas via aplicativos encriptados.",
+      "sha256_documento": "aa4e3e24c42fc385358ac8c027a110805c96c6aa4a7a436faae9514294027e6d",
+      "link_oficial": "https://www.mprj.mp.br/conheca-o-mprj/noticias/-/detalhe/noticia/89104"
+    },
+    {
+      "id": "CORR-2022-FIM-DA-LINHA",
+      "nome_operacao": "Operação Fim da Linha",
+      "ano": 2022,
+      "data_deflagracao": "2022-11-29",
+      "orgao_investigador": "GAECO/MPRJ e Polícia Federal",
+      "processo_judicial": "Processo nº 0298145-12.2022.8.19.0001 (1ª Vara Criminal Especializada / TJRJ)",
+      "aisp_afetadas": [
+        4,
+        5,
+        14,
+        18
+      ],
+      "batalhoes_envolvidos": [
+        "4º BPM (São Cristóvão)",
+        "14º BPM (Bangu)",
+        "18º BPM (Jacarepaguá)"
+      ],
+      "municipios": [
+        "Rio de Janeiro"
+      ],
+      "faccao_correlacionada": "Cúpula da Contravenção e Máquinas Caça-Níqueis",
+      "modalidade_ilicita": "Corrupção ativa de agentes policiais para exploração de jogo ilegal e cigarros contrabandeados",
+      "descricao": "Prisão de bicheiros e policiais militares vinculados a esquemas de propina mensal para garantir o funcionamento impune de pontos de apostas ilegais e máquinas caça-níqueis na Zona Oeste e Norte.",
+      "resumo_evidencia": "Planilhas com valores detalhados por patente militar, recolhimento de armas de fogo sem registro e celulares com conversas de acerto de propina.",
+      "sha256_documento": "5a5443669123b5900d99a113a385f78af1ccaf9ba68f2213fa0095a6eace2bb8",
+      "link_oficial": "https://www.mprj.mp.br/conheca-o-mprj/noticias/-/detalhe/noticia/91230"
+    }
+  ]
+}

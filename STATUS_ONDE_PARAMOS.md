@@ -3,7 +3,7 @@
 **Repositório Remoto**: [GitHub (Privado) — `dixmene/rio-criminalidade-historica`](https://github.com/dixmene/rio-criminalidade-historica)  
 **Branch Atual**: `preview-designer` (Refatoração Visual) / `main` (Núcleo Histórico & DQ)  
 **Últimos Commits**: `f163d62` (Branch `preview-designer` — Atlas Editorial) | `4779c9a` (`main` — Ciclo 1 1950-1979 + DQ)  
-**Qualidade Técnica**: 26/26 Testes Automatizados Aprovados (`pytest`)
+**Qualidade Técnica**: 54/54 Testes Automatizados Aprovados (`pytest`)
 
 
 ---
@@ -167,6 +167,43 @@ Em resposta à crítica sobre a estética "SaaS/AI dashboard" (fundo preto `#0B1
 3. **Navegação Sóbria sem Emojis**: Cinco seções arquivísticas claras: *Visão Geral*, *Atlas Cartográfico*, *Linha do Tempo*, *Acervo Documental*, *Metodologia & Dados*.
 4. **Faixa Estatística Editorial**: Substituição de múltiplos cards de KPI por uma barra de contagem contínua e elegante.
 5. **O Mapa como Protagonista & Dossiê Lateral**: Mapa com proporção visual ampliada (OpenStreetMap limpo e vetores de 1.671 áreas) e gaveta lateral de "Dossiê do Registro Selecionado" com claims atômicos (`[APOIA]`, `[CONTESTA]`, `[MATIZA]`) e citações textuais literais entre aspas com indicação de página.
+
+---
+
+### J. O Mapa como Carro-Chefe & Infraestrutura de Pesquisa Especializada
+Implementada a evolução técnica completa transformando o mapa no protagonista do projeto com veracidade metodológica inquestionável e rigor historiográfico:
+
+1. **Ingestão das Malhas Geográficas Oficiais**:
+   - **39 AISP (Batalhões da PMERJ - ISP-RJ)**: Polígonos de todas as 39 áreas policiais militares em GeoJSON e GeoParquet (`data/geospatial/aisps_batalhoes_pmerj.geojson`, `database/aisps_batalhoes.geojson`, `.parquet`), enriquecidos com numeração, sede, RISP e centroides.
+   - **166 Bairros Oficiais (Prefeitura do Rio / IPP / Data.Rio)**: Limites administrativos municipais oficiais em GeoJSON e GeoParquet (`data/geospatial/bairros_rio_166_poligonos.geojson`, `database/bairros_rio.geojson`, `.parquet`).
+   - Metadados sidecar gerados com cálculo de **SHA-256** para auditoria e custódia digital.
+
+2. **Motor Cartográfico Modular (`app/map/`)**:
+   - **Tema Visual Escuro (CartoDB Dark Matter)**: Fundo dark com alto contraste para perímetros de facções (CV vermelho, TCP verde, ADA amarelo, Milícias azul) e linhas táticas dos batalhões.
+   - **Suporte Híbrido Folium & PyDeck 3D**: Renderização padrão em Leaflet/Folium e motor opcional em PyDeck (WebGL com aceleração de GPU).
+   - **Linha do Tempo com Playback Histórico**: Slider contínuo (1958–2026) e filtro progressivo de acontecimentos e transformações territoriais.
+   - **Classificação de Nível de Evidência nos Pins**:
+     - *Nível A (Oficial/Judicial)*: Decisões transitadas em julgado, denúncias do GAECO/MPRJ e CPIs.
+     - *Nível B (Acadêmico/Estatístico)*: Centros de pesquisa (UFRJ, UERJ, UFF, ISP-RJ, GENI).
+     - *Nível C (Imprensa Histórica)*: Hemeroteca Digital e jornais investigativos checados.
+     - *Conflitante*: Divergências historiográficas demarcadas.
+   - **Exportação Direta**: Download imediato dos dados do recorte visual em GeoJSON e CSV.
+
+3. **O Desafio do "Arrego" — Evidências Oficiais Judicializadas**:
+   - Criada a base `database/ocorrencias_corregedoria.json` com operações emblemáticas (Calabar, Quarto Elemento, Os Intocáveis, Gárgula, Subúrbio, Fim da Linha), processos judiciais, batalhões afetados e hashes SHA-256.
+
+4. **Cruzamento Eleitoral (TSE x Batalhões)**:
+   - Pipeline geoespacial `scripts/etl_tse_votacao.py` e microdados `database/locais_votacao_rio.parquet`.
+   - Execução de *Spatial Join* (point-in-polygon) e cálculo do **Índice Herfindahl-Hirschman (HHI)** para detecção objetiva de suspeitas de currais eleitorais armados (HHI $\ge 6.000$ ou votação $\ge 70\%$).
+
+5. **Classificação da Atividade Legislativa (CMRJ / ALERJ)**:
+   - Implementado o classificador `scripts/classifier_pautas.py` cobrindo a taxonomia dos 5 eixos econômicos do crime (transporte complementar/vans, uso do solo/grilagem, monopólio de utilidades/GLP/água/internet, ferros-velhos/fios, e moções de homenagem).
+   - Scraper `scripts/scraper_camara_rj.py` e base estruturada `database/proposicoes_legislativas.csv`.
+   - Testador interativo de NLP incorporado diretamente na interface Streamlit.
+
+6. **Ampliação da Suíte de Testes Automatizados**:
+   - 8 novos testes em `tests/test_official_geospatial_layers.py` e `tests/test_electoral_and_legislative_pipelines.py`.
+   - Total do projeto ampliado para **54/54 testes passando com 100% de aprovação**.
 
 ---
 

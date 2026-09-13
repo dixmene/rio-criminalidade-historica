@@ -47,6 +47,7 @@ wheels/
 !data/geospatial/seeds/*.db
 data/raw/
 !data/raw/.gitkeep
+data/geo/
 data/staging/
 !data/staging/.gitkeep
 data/processed/

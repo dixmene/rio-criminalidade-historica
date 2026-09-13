@@ -1,0 +1,11 @@
+{
+  "arquivo": "aisps_batalhoes_pmerj.geojson",
+  "formato": "GeoJSON (RFC 7946) & Parquet",
+  "total_aisps": 39,
+  "sha256_geojson": "33f7e28f0ba39ce1185bdaf67d0d89670a48acd3e6addf8e84e91c6099faf2b3",
+  "tamanho_bytes": 15995651,
+  "data_extracao": "2026-09-13T17:33:32.887668",
+  "url_origem": "https://services.arcgis.com/qFQYQQeTXZSPY7Fs/arcgis/rest/services/Limite_AISP/FeatureServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson",
+  "orgao_gestor": "Instituto de Segurança Pública (ISP-RJ) / Secretaria de Estado de Polícia Militar (SEPM)",
+  "resumo": "Delimitação territorial de todas as 39 AISPs (Áreas Integradas de Segurança Pública) vinculadas aos Batalhões da PMERJ."
+}
