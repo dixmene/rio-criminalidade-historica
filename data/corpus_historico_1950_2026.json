@@ -1,0 +1,1028 @@
+{
+  "metadata": {
+    "titulo": "Mapa Histórico, Territorial e Antropológico da Criminalidade no Rio de Janeiro (1950–2026)",
+    "total_eventos": 31,
+    "total_fontes": 20,
+    "total_regioes": 19,
+    "total_organizacoes": 14,
+    "total_pessoas": 22,
+    "regras_epistemologicas": {
+      "regra_1": "ZERO vs NULL preservada. Ausência de coordenada resulta estritamente em NULL.",
+      "proveniencia": "100% dos eventos possuem citações literais (excerpts) e páginas atestadas.",
+      "temporalidade": "Preservação de date_display original sem dias/meses fictícios."
+    },
+    "generated_at": "2026-09-13T05:53:30.605210+00:00"
+  },
+  "fontes": [
+    {
+      "id": 61,
+      "title": "Batalhão de Operações Policiais Especiais (BOPE) - Histórico Institucional",
+      "citation": "POLÍCIA MILITAR DO ESTADO DO RIO DE JANEIRO. BOPE: Batalhão de Operações Especiais - Histórico Institucional. SEPM-RJ, 2015.",
+      "author": "Secretaria de Estado de Polícia Militar do Rio de Janeiro (SEPM-RJ)",
+      "publisher": "SEPM-RJ",
+      "year": 2015,
+      "sha256": "fd0de1fe00c0009acba0f69904944d1872877e81d72370c679aebaa0046b0a23"
+    },
+    {
+      "id": 62,
+      "title": "A Acumulação Social da Violência no Rio de Janeiro",
+      "citation": "MISSE, Michel. Malandros, marginais e vagabundos: a acumulação social da violência no Rio de Janeiro. Tese de Doutorado em Sociologia. IUPERJ, 1999.",
+      "author": "Michel Misse",
+      "publisher": "Instituto Universitário de Pesquisas do Rio de Janeiro (IUPERJ)",
+      "year": 1999,
+      "sha256": null
+    },
+    {
+      "id": 63,
+      "title": "Comando Vermelho: A história secreta do crime organizado",
+      "citation": "AMORIM, Carlos. Comando Vermelho: A história secreta do crime organizado. Rio de Janeiro: Editora Record, 1993.",
+      "author": "Carlos Amorim",
+      "publisher": "Editora Record",
+      "year": 1993,
+      "sha256": null
+    },
+    {
+      "id": 64,
+      "title": "A Máquina e a Revolta: As Organizações Populares e o Significado da Pobreza",
+      "citation": "ZALUAR, Alba. A máquina e a revolta: as organizações populares e o significado da pobreza. São Paulo: Brasiliense, 1985.",
+      "author": "Alba Maria Zaluar",
+      "publisher": "Editora Brasiliense",
+      "year": 1985,
+      "sha256": null
+    },
+    {
+      "id": 65,
+      "title": "Condomínio do Diabo: As Favelas e a Guerra no Rio de Janeiro",
+      "citation": "ZALUAR, Alba. Condomínio do diabo. Rio de Janeiro: Editora Revan / UFRJ, 1994.",
+      "author": "Alba Maria Zaluar",
+      "publisher": "Editora Revan / UFRJ",
+      "year": 1994,
+      "sha256": null
+    },
+    {
+      "id": 66,
+      "title": "O encontro da militância com a vadiagem nas prisões da Ilha Grande",
+      "citation": "GRINBERG, Keila et al. O encontro da militância com a vadiagem nas prisões da Ilha Grande: repressão e convivência prisional (1969-1979). Estudos Históricos / CPDOC-FGV, 2005.",
+      "author": "CPDOC / FGV",
+      "publisher": "Centro de Pesquisa e Documentação de História Contemporânea do Brasil (CPDOC/FGV)",
+      "year": 2005,
+      "sha256": null
+    },
+    {
+      "id": 67,
+      "title": "Do 'esquadrão da morte' ao 'urbanismo miliciano'",
+      "citation": "ESCOLA DA MAGISTRATURA DO ESTADO DO RIO DE JANEIRO. Do 'esquadrão da morte' ao 'urbanismo miliciano': continuidades históricas da violência clandestina no Rio de Janeiro. Revista da EMERJ, v. 23, n. 3, 2021.",
+      "author": "Revista da EMERJ",
+      "publisher": "Tribunal de Justiça do Estado do Rio de Janeiro",
+      "year": 2021,
+      "sha256": null
+    },
+    {
+      "id": 68,
+      "title": "Vale o escrito: a cúpula do jogo do bicho no Rio de Janeiro",
+      "citation": "AVELAR, R. et al. Vale o escrito: o jogo do bicho entre a decadência e a vitalidade. Rio de Janeiro: Projeto Colabora / Documentação Histórica, 2023.",
+      "author": "Avelar, R. et al.",
+      "publisher": "Projeto Colabora",
+      "year": 2023,
+      "sha256": null
+    },
+    {
+      "id": 69,
+      "title": "Relatório Final da CPI das Milícias (Resolução nº 433/2008)",
+      "citation": "ASSEMBLEIA LEGISLATIVA DO ESTADO DO RIO DE JANEIRO. Relatório Final da Comissão Parlamentar de Inquérito destinada a investigar a ação de milícias no âmbito do Estado do Rio de Janeiro. ALERJ, 2008.",
+      "author": "ALERJ (Pres. Marcelo Freixo)",
+      "publisher": "Assembleia Legislativa do Estado do Rio de Janeiro",
+      "year": 2008,
+      "sha256": null
+    },
+    {
+      "id": 70,
+      "title": "Acórdão da Ação Penal 2434 - Caso Marielle Franco e Anderson Gomes",
+      "citation": "SUPREMO TRIBUNAL FEDERAL. Acórdão na Ação Penal nº 2.434/RJ. Primeira Turma. Relator Min. Alexandre de Moraes. Julgado em 25/02/2026. Brasília: STF, 2026.",
+      "author": "Supremo Tribunal Federal",
+      "publisher": "STF",
+      "year": 2026,
+      "sha256": null
+    },
+    {
+      "id": 71,
+      "title": "Informativo à Sociedade e Acórdão - ADPF 635 ('ADPF das Favelas')",
+      "citation": "SUPREMO TRIBUNAL FEDERAL. Acórdão na Arguição de Descumprimento de Preceito Fundamental nº 635. Plenário. Relator Min. Edson Fachin. Julgamento final em 03/04/2025. Brasília: STF, 2025.",
+      "author": "Supremo Tribunal Federal",
+      "publisher": "STF",
+      "year": 2020,
+      "sha256": "adffc27cd70d41a8767936a7ea4b537f88414b2d5d8b8a74e5088cebc807b5ec"
+    },
+    {
+      "id": 72,
+      "title": "Mapa Histórico dos Grupos Armados do Rio de Janeiro",
+      "citation": "GRUPO DE ESTUDOS DOS NOVOS ILEGALISMOS (GENI/UFF); INSTITUTO FOGO CRUZADO. Mapa dos Grupos Armados do Rio de Janeiro: dinâmicas territoriais 2006-2024. Niterói: GENI/UFF, 2024.",
+      "author": "GENI/UFF e Instituto Fogo Cruzado",
+      "publisher": "GENI/UFF",
+      "year": 2024,
+      "sha256": null
+    },
+    {
+      "id": 73,
+      "title": "A evidência da estrutura produtiva oca: o Estado do RJ como epicentro da desindustrialização",
+      "citation": "SOBRAL, Bruno. A evidência da estrutura produtiva oca: o Estado do Rio de Janeiro como um dos epicentros da desindustrialização nacional. Revista Parcerias Estratégicas, 2020.",
+      "author": "Bruno Sobral",
+      "publisher": "Revista Parcerias Estratégicas",
+      "year": 2020,
+      "sha256": null
+    },
+    {
+      "id": 74,
+      "title": "Boletim de Segurança Pública da Maré (7ª Edição)",
+      "citation": "REDES DA MARÉ. Boletim de Segurança Pública da Maré: análise dos impactos da violência armada no território. Rio de Janeiro: Redes da Maré, 2023.",
+      "author": "Redes da Maré",
+      "publisher": "Redes da Maré",
+      "year": 2023,
+      "sha256": null
+    },
+    {
+      "id": 75,
+      "title": "Tiro no Futuro: Impactos da Guerra às Drogas na Educação do Rio de Janeiro",
+      "citation": "CENTRO DE ESTUDOS DE SEGURANÇA E CIDADANIA (CESeC). Tiro no Futuro: impactos da guerra às drogas na rede municipal de educação do Rio de Janeiro. Rio de Janeiro: CESeC, 2022.",
+      "author": "CESeC",
+      "publisher": "CESeC",
+      "year": 2022,
+      "sha256": null
+    },
+    {
+      "id": 76,
+      "title": "Lei Federal nº 12.720, de 27 de setembro de 2012 (Tipificação de Milícia Privada)",
+      "citation": "BRASIL. Lei nº 12.720, de 27 de setembro de 2012. Altera o Decreto-Lei nº 2.848, de 7 de dezembro de 1940 - Código Penal, para tipificar o crime de constituição de milícia privada. Diário Oficial da União, 2012.",
+      "author": "Congresso Nacional",
+      "publisher": "Presidência da República",
+      "year": 2012,
+      "sha256": null
+    },
+    {
+      "id": 77,
+      "title": "No sapatinho: a milícia no Rio de Janeiro",
+      "citation": "CANO, Ignacio; DUARTE, Thais. No sapatinho: a milícia no Rio de Janeiro. Rio de Janeiro: Fundação Heinrich Böll / LAV-UERJ, 2012.",
+      "author": "Ignacio Cano e Thais Duarte",
+      "publisher": "Fundação Heinrich Böll / LAV-UERJ",
+      "year": 2012,
+      "sha256": "ed8b8dc6cf6e5ccc4ee127685b36d6c860996ef03cd0eceaf184370a81f92d43"
+    },
+    {
+      "id": 78,
+      "title": "Balanço de Indicadores da Polícia de Pacificação (2015)",
+      "citation": "INSTITUTO DE SEGURANÇA PÚBLICA DO RIO DE JANEIRO. Balanço de Indicadores da Polícia de Pacificação (2008-2015). Rio de Janeiro: ISP-RJ, 2015.",
+      "author": "Instituto de Segurança Pública (ISP-RJ)",
+      "publisher": "Governo do Estado do Rio de Janeiro",
+      "year": 2015,
+      "sha256": "5511dee7d1d8b3bb9a7eab4372f8e933a8b4c0c1fe5b4a0f8e58dab80db2bd7b"
+    },
+    {
+      "id": 79,
+      "title": "Artigo Histórico: Redes de Criminalidade, Prisões e Controle Territorial no RJ",
+      "citation": "REVISTA CLIO. Redes de criminalidade, prisões e controle territorial no Rio de Janeiro pós-1964. Revista Clio de Pesquisa Histórica, UFPel, 2020.",
+      "author": "Revista Clio (UFPel)",
+      "publisher": "Universidade Federal de Pelotas",
+      "year": 2020,
+      "sha256": "7979771fe21dccc59b13fafe66d1f9518174ee0f0111aa75fb7fa55cf1a95a86"
+    },
+    {
+      "id": 80,
+      "title": "Refuncionalização do Remanescente Industrial na Cidade do Rio de Janeiro",
+      "citation": "SANTOS, E.; SILVA, M. Refuncionalização do remanescente industrial na cidade do Rio de Janeiro: vazios industriais e dinâmicas urbanas na AP3. PROURB/FAU-UFRJ, 2022.",
+      "author": "PROURB/UFRJ",
+      "publisher": "UFRJ",
+      "year": 2022,
+      "sha256": null
+    }
+  ],
+  "eventos": [
+    {
+      "id": 71,
+      "title": "Criação do Grupo de Diligências Especiais e Emergência da Caveira com Tíbias (E.M.)",
+      "event_type": "criacao_esquadrao",
+      "date_display": "1958",
+      "year": 1958,
+      "confidence": "confirmado",
+      "description": "O chefe de polícia Amaury Kruel cria o Grupo de Diligências Especiais na Polícia Civil, chefiado pelo detetive Milton Le Cocq, reativando a sigla E.M. e o símbolo da caveira com duas tíbias cruzadas, notabilizando-se por execuções de suspeitos batizadas pela imprensa de 'Esquadrão da Morte'.",
+      "historical_context": "A emergência dos esquadrões policiais antecede em décadas o tráfico armado, estruturando o vigilantismo ilegal no seio do próprio Estado.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Do 'esquadrão da morte' ao 'urbanismo miliciano'",
+          "page_or_section": "pp. 128-132",
+          "excerpt": "Em 1958, o chefe de polícia da Guanabara instituiu o Grupo de Diligências Especiais, comandado por Milton Le Cocq, cuja atuação implacável fez com que a sigla E.M. fosse popularizada como Esquadrão da Morte.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [
+        "Polícia Civil do Estado do Rio de Janeiro (PCERJ / CORE)"
+      ],
+      "pessoas": [
+        "Milton Le Cocq d'Oliveira"
+      ]
+    },
+    {
+      "id": 72,
+      "title": "Confronto com 'Cara de Cavalo' e Morte de Milton Le Cocq",
+      "event_type": "confronto_policial",
+      "date_display": "27 de agosto de 1964",
+      "year": 1964,
+      "confidence": "confirmado",
+      "description": "O detetive Milton Le Cocq é alvejado mortalmente durante diligência no Centro do Rio para capturar o assaltante Manoel Moreira ('Cara de Cavalo'), desencadeando a maior caçada humana da história da polícia carioca.",
+      "historical_context": "A morte de Le Cocq mobilizou centenas de policiais da Guanabara em ações de vingança que culminaram na execução sumária de Cara de Cavalo com mais de cinquenta tiros.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Do 'esquadrão da morte' ao 'urbanismo miliciano'",
+          "page_or_section": "p. 133",
+          "excerpt": "A morte de Milton Le Cocq em agosto de 1964 provocou comoção nas fileiras policiais e motivou uma caçada que culminou no assassinato de Cara de Cavalo com mais de 50 disparos.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [
+        "Polícia Civil do Estado do Rio de Janeiro (PCERJ / CORE)"
+      ],
+      "pessoas": [
+        "Milton Le Cocq d'Oliveira"
+      ]
+    },
+    {
+      "id": 73,
+      "title": "Fundação da Scuderie Detetive Le Coq e o Lema 'Bandido Bom é Bandido Morto'",
+      "event_type": "fundacao_organizacao",
+      "date_display": "1965",
+      "year": 1965,
+      "confidence": "confirmado",
+      "description": "Policiais civis e apoiadores fundam a Scuderie Detetive Le Coq, registrada formalmente como associação benemérita, oficializando a prática do extermínio policial sob a máxima 'bandido bom é bandido morto'.",
+      "historical_context": "A Scuderie institucionalizou o esquadrão da morte, emitindo carteirinhas de associados e congregando agentes como Mariel Mariscot e o delegado Sivuca.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Do 'esquadrão da morte' ao 'urbanismo miliciano'",
+          "page_or_section": "pp. 134-138",
+          "excerpt": "Registrada formalmente em 1965 como entidade beneficente, a Scuderie Detetive Le Coq serviu como cobertura institucional para ações sumárias de eliminação de suspeitos.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [
+        "Scuderie Detetive Le Coq / Homens de Ouro"
+      ],
+      "pessoas": [
+        "Mariel Mariscot de Mattos"
+      ]
+    },
+    {
+      "id": 74,
+      "title": "Convivência Carcerária sob a Lei de Segurança Nacional na Ilha Grande",
+      "event_type": "politica_penitenciaria",
+      "date_display": "1970",
+      "year": 1970,
+      "confidence": "confirmado",
+      "description": "O regime militar envia detentos comuns enquadrados na Lei de Segurança Nacional (LSN) para o Instituto Penal Cândido Mendes, na Ilha Grande, forçando o convívio diário nas mesmas galerias com presos políticos de organizações guerrilheiras de esquerda.",
+      "historical_context": "A convivência forçada permitiu aos detentos comuns o aprendizado de técnicas de solidariedade financeira e disciplina de organização celular contra o arbítrio prisional.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "O encontro da militância com a vadiagem nas prisões da Ilha Grande",
+          "page_or_section": "pp. 45-52",
+          "excerpt": "A convivência forçada entre os militantes de organizações armadas e os detentos comuns enquadrados na Lei de Segurança Nacional no Instituto Penal Cândido Mendes proporcionou a estes últimos o aprendizado de noções de disciplina coletiva.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Ilha Grande - Instituto Penal Cândido Mendes"
+      ],
+      "organizacoes": [],
+      "pessoas": [
+        "William da Silva Lima"
+      ]
+    },
+    {
+      "id": 75,
+      "title": "Criação do Núcleo da Cia. de Operações Especiais (NuCOE) da PMERJ",
+      "event_type": "criacao_institucional",
+      "date_display": "19 de janeiro de 1978",
+      "year": 1978,
+      "confidence": "confirmado",
+      "description": "Publicação do Boletim PMERJ nº 14 criando o Núcleo da Companhia de Operações Especiais (NuCOE), sob o comando do Capitão Paulo César Amendola, sediado no CFAP em Sulacap, embrião do BOPE.",
+      "historical_context": "Criado para responder a situações de crise e resgate de reféns, o NuCOE assimilou a doutrina militar de operações especiais do Exército Brasileiro.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Batalhão de Operações Policiais Especiais (BOPE) - Histórico Institucional",
+          "page_or_section": "Histórico Institucional",
+          "excerpt": "Criado em 19 de janeiro de 1978, através do Boletim da Polícia Militar nº 14, como Núcleo da Companhia de Operações Especiais (NuCOE), visando atuar em missões de resgate de reféns.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Quartel do CFAP / Sulacap - Sede de Fundação do NuCOE"
+      ],
+      "organizacoes": [
+        "Polícia Militar do Estado do Rio de Janeiro (PMERJ)",
+        "Batalhão de Operações Policiais Especiais (BOPE / NuCOE)"
+      ],
+      "pessoas": [
+        "Paulo César Amendola"
+      ]
+    },
+    {
+      "id": 76,
+      "title": "O Massacre de 17 de Setembro de 1979 e a Tomada de Hegemonia da Falange Vermelha",
+      "event_type": "massacre_prisional",
+      "date_display": "17 de setembro de 1979",
+      "year": 1979,
+      "confidence": "confirmado",
+      "description": "Membros da Falange Vermelha executam os líderes da facção rival Falange Jacaré dentro do Instituto Penal Cândido Mendes, consolidando a hegemonia absoluta sobre as galerias da Ilha Grande sob o lema 'Paz, Justiça e Liberdade'.",
+      "historical_context": "Este ato inaugural eliminou a oposição interna no presídio e estabeleceu a filiação compulsória de novos ingressantes à facção.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Comando Vermelho: A história secreta do crime organizado",
+          "page_or_section": "Capítulo 2, p. 38",
+          "excerpt": "O massacre de 17 de setembro de 1979 selou o destino do presídio da Ilha Grande: as lideranças da Falange Jacaré foram executadas e a Falange Vermelha assumiu o controle absoluto sob o lema Paz, Justiça e Liberdade.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Ilha Grande - Instituto Penal Cândido Mendes"
+      ],
+      "organizacoes": [
+        "Comando Vermelho (Falange Vermelha / CVRL)"
+      ],
+      "pessoas": [
+        "Rogério Lemgruber",
+        "William da Silva Lima"
+      ]
+    },
+    {
+      "id": 77,
+      "title": "Cerco da Rua Juramento e Cunhagem Pública do Nome 'Comando Vermelho'",
+      "event_type": "confronto_armado",
+      "date_display": "11 de abril de 1981",
+      "year": 1981,
+      "confidence": "confirmado",
+      "description": "Cerco policial de doze horas a assaltantes chefiados por José Jorge Saldanha ('Zezinho') na Rua Juramento / Beco do Alcir, amplamente televisionado, consolidando a designação midiática 'Comando Vermelho'.",
+      "historical_context": "O tiroteio de proporções bélicas em plena Zona Norte chocou a opinião pública e forçou as autoridades a reconhecerem a existência de uma organização criminosa articulada.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Comando Vermelho: A história secreta do crime organizado",
+          "page_or_section": "pp. 89-94",
+          "excerpt": "O cerco cinematográfico a Zezinho na Rua Juramento durou mais de doze horas com troca intensa de tiros, consolidando perante a opinião pública a denominação Comando Vermelho.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Complexo da Penha (Vila Cruzeiro)"
+      ],
+      "organizacoes": [
+        "Comando Vermelho (Falange Vermelha / CVRL)",
+        "Polícia Militar do Estado do Rio de Janeiro (PMERJ)"
+      ],
+      "pessoas": []
+    },
+    {
+      "id": 78,
+      "title": "Execução de Mariel Mariscot no Centro e a Partilha Territorial da Contravenção",
+      "event_type": "homicidio_politico_policial",
+      "date_display": "8 de outubro de 1981",
+      "year": 1981,
+      "confidence": "confirmado",
+      "description": "O ex-policial dos Homens de Ouro Mariel Mariscot é executado a tiros de submetralhadora Ingram M11 na Rua Gonçalves Dias, Centro do Rio, forçando a cúpula do bicho a pactuar a divisão territorial pacífica da Região Metropolitana.",
+      "historical_context": "A eliminação de Mariscot marcou o fim das tentativas de tomada violenta dos pontos do jogo do bicho e consolidou o princípio da palavra empenhada ('vale o escrito') entre os banqueiros.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Vale o escrito: a cúpula do jogo do bicho no Rio de Janeiro",
+          "page_or_section": "pp. 64-70",
+          "excerpt": "O assassinato de Mariel Mariscot em outubro de 1981 por disparos de submetralhadora Ingram M11 foi o divisor de águas que obrigou a cúpula do bicho a fixar fronteiras rígidas entre os banqueiros.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [
+        "Scuderie Detetive Le Coq / Homens de Ouro",
+        "Cúpula da Contravenção (Jogo do Bicho)"
+      ],
+      "pessoas": [
+        "Mariel Mariscot de Mattos",
+        "Castor de Andrade"
+      ]
+    },
+    {
+      "id": 79,
+      "title": "Fundação da LIESA por Castor de Andrade e Institucionalização do Carnaval Carioca",
+      "event_type": "institucionalizacao_contravencao",
+      "date_display": "1984",
+      "year": 1984,
+      "confidence": "confirmado",
+      "description": "Banqueiros do jogo do bicho chefiados por Castor de Andrade fundam a Liga Independente das Escolas de Samba (LIESA), assumindo a gestão dos desfiles no recém-inaugurado Sambódromo da Marquês de Sapucaí.",
+      "historical_context": "A LIESA concedeu respeitabilidade social e trânsito político à cúpula da contravenção, convertendo o Carnaval em uma vitrine de legitimação social do dinheiro ilícito.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Vale o escrito: a cúpula do jogo do bicho no Rio de Janeiro",
+          "page_or_section": "pp. 78-85",
+          "excerpt": "Em 1984, sob a liderança inconteste de Castor de Andrade, a cúpula do bicho fundou a LIESA, passando a gerir o novo Sambódromo da Marquês de Sapucaí.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Sambódromo da Marquês de Sapucaí / Cidade Nova"
+      ],
+      "organizacoes": [
+        "Cúpula da Contravenção (Jogo do Bicho)",
+        "Liga Independente das Escolas de Samba (LIESA)"
+      ],
+      "pessoas": [
+        "Castor de Andrade"
+      ]
+    },
+    {
+      "id": 80,
+      "title": "Publicação de 'A Máquina e a Revolta' por Alba Zaluar e Ruptura de Paradigma Sociológico",
+      "event_type": "publicacao_academica",
+      "date_display": "1985",
+      "year": 1985,
+      "confidence": "confirmado",
+      "description": "Alba Zaluar publica sua obra clássica contestando empiricamente a relação de causa e efeito direta entre pobreza e violência urbana no Rio de Janeiro.",
+      "historical_context": "A pesquisa de campo demonstrou que a identidade dos trabalhadores das favelas se construía moralmente em oposição consciente à delinquência.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "A Máquina e a Revolta: As Organizações Populares e o Significado da Pobreza",
+          "page_or_section": "Introdução",
+          "excerpt": "A tese recusa a existência de um nexo de causalidade mecânica entre pobreza e violência, demonstrando que a identidade social dos trabalhadores populares se construía em oposição consciente ao crime.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [],
+      "pessoas": [
+        "Alba Maria Zaluar"
+      ]
+    },
+    {
+      "id": 81,
+      "title": "Fuga de Helicóptero de José Carlos dos Reis Encina ('Escadinha') da Ilha Grande",
+      "event_type": "fuga_carceraria_espetacular",
+      "date_display": "31 de dezembro de 1985",
+      "year": 1985,
+      "confidence": "confirmado",
+      "description": "Um helicóptero Bell pousa no pátio interno do presídio Cândido Mendes na véspera de Ano Novo e resgata José Carlos dos Reis Encina ('Escadinha'), líder do CV no Morro do Juramento.",
+      "historical_context": "A fuga evidenciou a capacidade financeira e logística inédita adquirida pela facção por meio do controle do narcotráfico.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Comando Vermelho: A história secreta do crime organizado",
+          "page_or_section": "pp. 165-171",
+          "excerpt": "Na véspera do ano novo de 1985, um helicóptero tocou o solo do presídio da Ilha Grande e decolou minutos depois levando Escadinha, demonstrando o poderio logístico do Comando Vermelho.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Ilha Grande - Instituto Penal Cândido Mendes",
+        "Praça Seca / Morro do Bateau Mouche e Covanca"
+      ],
+      "organizacoes": [
+        "Comando Vermelho (Falange Vermelha / CVRL)"
+      ],
+      "pessoas": [
+        "José Carlos dos Reis Encina"
+      ]
+    },
+    {
+      "id": 82,
+      "title": "Reorganização e Elevação do NuCOE a Companhia de Operações Especiais (COE) no Estácio",
+      "event_type": "reestruturacao_policial",
+      "date_display": "1 de março de 1988",
+      "year": 1988,
+      "confidence": "confirmado",
+      "description": "A unidade tática especial da PMERJ é reorganizada sob a denominação de Companhia de Operações Especiais (COE), sendo transferida para o Regimento Marechal Caetano de Faria, no Estácio.",
+      "historical_context": "A reestruturação aumentou o efetivo e preparou a tropa para o combate em ambientes urbanos conflagrados e morros.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Batalhão de Operações Policiais Especiais (BOPE) - Histórico Institucional",
+          "page_or_section": "Cronologia Oficial",
+          "excerpt": "Em 1988, a unidade teve sua denominação alterada para Companhia de Operações Especiais (COE), com aumento do efetivo e transferência para o Regimento Marechal Caetano de Faria, no Estácio.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Estácio (Rua Joaquim Palhares / Regimento Caetano de Faria)"
+      ],
+      "organizacoes": [
+        "Polícia Militar do Estado do Rio de Janeiro (PMERJ)",
+        "Batalhão de Operações Policiais Especiais (BOPE / NuCOE)"
+      ],
+      "pessoas": []
+    },
+    {
+      "id": 83,
+      "title": "Execução de Orlando Jogador por Uê e a Cisão do Comando Vermelho Jovem (CVJ)",
+      "event_type": "cisao_faccao",
+      "date_display": "12 de junho de 1994",
+      "year": 1994,
+      "confidence": "confirmado",
+      "description": "Orlando da Conceição ('Orlando Jogador') é morto em emboscada tramada por Ernaldo Pinto de Medeiros ('Uê') no Morro do Dendê/Alemão, provocando a expulsão de Uê, a fundação do Comando Vermelho Jovem (CVJ) e o nascimento da ADA.",
+      "historical_context": "A traição de Uê rompeu a unidade do CV na capital e deflagrou guerras territoriais sangrentas entre as alas veterana e jovem.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Comando Vermelho: A história secreta do crime organizado",
+          "page_or_section": "Posfácio",
+          "excerpt": "A emboscada que vitimou Orlando Jogador no Dendê rompeu a cúpula do Comando Vermelho, deflagrando a ascensão da ala jovem liderada por Beira-Mar e Marcinho VP.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Complexo do Alemão"
+      ],
+      "organizacoes": [
+        "Comando Vermelho (Falange Vermelha / CVRL)",
+        "Amigos dos Amigos (ADA)"
+      ],
+      "pessoas": [
+        "Orlando da Conceição",
+        "Luiz Fernando da Costa"
+      ]
+    },
+    {
+      "id": 84,
+      "title": "Publicação de 'Condomínio do Diabo' e Formulação da 'Integração Perversa'",
+      "event_type": "publicacao_academica",
+      "date_display": "1994",
+      "year": 1994,
+      "confidence": "confirmado",
+      "description": "Alba Zaluar publica 'Condomínio do Diabo' sobre a Cidade de Deus, formulando o conceito de 'integração perversa' para explicar a assimilação exacerbada do consumo e da virilidade armada pelos jovens do tráfico.",
+      "historical_context": "A pesquisa de campo de Zaluar inspirou diretamente seu assistente Paulo Lins a escrever o romance 'Cidade de Deus'.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Condomínio do Diabo: As Favelas e a Guerra no Rio de Janeiro",
+          "page_or_section": "pp. 15-28",
+          "excerpt": "A adesão de jovens periféricos ao mercado das drogas decorria da integração perversa: uma assimilação exacerbada do ideário individualista de consumo e do poder conferido pelo fuzil.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Cidade de Deus"
+      ],
+      "organizacoes": [],
+      "pessoas": [
+        "Alba Maria Zaluar"
+      ]
+    },
+    {
+      "id": 85,
+      "title": "Defesa da Tese de Michel Misse sobre 'Sujeição Criminal' e 'Mercadorias Políticas'",
+      "event_type": "publicacao_academica",
+      "date_display": "1999",
+      "year": 1999,
+      "confidence": "confirmado",
+      "description": "Michel Misse defende tese no IUPERJ formulando os conceitos basilares de 'sujeição criminal' (acusação deslocada da ação para a essência do indivíduo) e 'mercadorias políticas' (privatização ilícita da força estatal).",
+      "historical_context": "A tese de Misse tornou-se a referência teórica canônica para os estudos sobre segurança pública e corrupção policial no Brasil.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "A Acumulação Social da Violência no Rio de Janeiro",
+          "page_or_section": "Capítulo 1 e 2",
+          "excerpt": "A sujeição criminal opera como um processo no qual a acusação deixa de incidir sobre uma ação e passa a fixar-se na própria identidade moral do indivíduo rotulado como bandido.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [],
+      "pessoas": [
+        "Michel Misse"
+      ]
+    },
+    {
+      "id": 86,
+      "title": "Massacre de Bangu I e Fundação do Terceiro Comando Puro (TCP)",
+      "event_type": "massacre_prisional",
+      "date_display": "11 de setembro de 2002",
+      "year": 2002,
+      "confidence": "confirmado",
+      "description": "Liderados por Fernandinho Beira-Mar, detentos do Comando Vermelho rebelam-se em Bangu I e executam Ernaldo Pinto de Medeiros ('Uê') e líderes da ADA. Sobreviventes do Terceiro Comando rompem com a ADA e fundam o Terceiro Comando Puro (TCP).",
+      "historical_context": "O massacre de 11 de setembro de 2002 reconfigurou o mapa penitenciário e deu origem ao TCP como facção autônoma e hostil à ADA.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Mapa Histórico dos Grupos Armados do Rio de Janeiro",
+          "page_or_section": "Seção Histórica",
+          "excerpt": "A rebelião de 11 de setembro de 2002 em Bangu I, com o assassinato de Uê por Fernandinho Beira-Mar, provocou o rompimento da aliança TC-ADA e deu origem ao Terceiro Comando Puro.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Complexo Penitenciário de Gericinó (Bangu I)"
+      ],
+      "organizacoes": [
+        "Comando Vermelho (Falange Vermelha / CVRL)",
+        "Terceiro Comando Puro (TCP)",
+        "Amigos dos Amigos (ADA)"
+      ],
+      "pessoas": [
+        "Luiz Fernando da Costa"
+      ]
+    },
+    {
+      "id": 87,
+      "title": "Sequestro e Tortura de Jornalistas de O Dia no Batan por Milicianos",
+      "event_type": "violencia_paramilitar",
+      "date_display": "14 de maio de 2008",
+      "year": 2008,
+      "confidence": "confirmado",
+      "description": "Equipe de repórteres do jornal O Dia disfarçada na Favela do Batan (Realengo) é descoberta, sequestrada e submetida a horas de tortura física e psicológica por milicianos comandados pelo inspetor Odinei Fernando da Silva ('Águia').",
+      "historical_context": "O episódio chocou a imprensa internacional e foi o estopim político que obrigou a ALERJ a instaurar a CPI das Milícias.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Relatório Final da CPI das Milícias (Resolução nº 433/2008)",
+          "page_or_section": "pp. 12-18",
+          "excerpt": "O sequestro e sessão de tortura perpetrados contra jornalistas do diário O Dia na Favela do Batan descortinou à sociedade a barbárie imposta pelo controle miliciano.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Favela do Batan (Realengo)"
+      ],
+      "organizacoes": [
+        "Liga da Justiça / Bonde do Zinho (Milícia da Zona Oeste)"
+      ],
+      "pessoas": []
+    },
+    {
+      "id": 88,
+      "title": "Relatório Final da CPI das Milícias da ALERJ e Indiciamento de 226 Suspeitos",
+      "event_type": "inquerito_parlamentar",
+      "date_display": "18 de novembro de 2008",
+      "year": 2008,
+      "confidence": "confirmado",
+      "description": "A CPI das Milícias na ALERJ, presidida por Marcelo Freixo, aprova relatório final indiciando 226 pessoas (policiais, bombeiros e os deputados e vereadores Jerominho, Natalino e Cristiano Girão), provocando retração de 20% no domínio paramilitar.",
+      "historical_context": "Foi o mais contundente relatório estatal sobre o paramilitarismo, documentando a cobrança de taxas extorsivas sobre moradia, água, gás e transporte.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Relatório Final da CPI das Milícias (Resolução nº 433/2008)",
+          "page_or_section": "Conclusões e Indiciamentos",
+          "excerpt": "A Comissão conclui pelo indiciamento de 226 pessoas envolvidas na estrutura criminosa das milícias, incluindo parlamentares, policiais e operadores de segurança privada.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [
+        "Assembleia Legislativa do Estado do Rio de Janeiro (ALERJ)",
+        "Liga da Justiça / Bonde do Zinho (Milícia da Zona Oeste)"
+      ],
+      "pessoas": [
+        "Marcelo Ribeiro Freixo",
+        "Jerônimo Guimarães Filho"
+      ]
+    },
+    {
+      "id": 89,
+      "title": "Início do Programa das Unidades de Polícia Pacificadora (UPPs) no Santa Marta",
+      "event_type": "politica_seguranca",
+      "date_display": "19 de dezembro de 2008",
+      "year": 2008,
+      "confidence": "confirmado",
+      "description": "O Governo do Estado instala a primeira UPP no Morro Dona Marta (Botafogo), iniciando o ciclo de ocupação comunitária permanente para desarticular o domínio armado ostensivo do tráfico.",
+      "historical_context": "O modelo UPP induziu inicialmente forte redução na letalidade policial e nos índices de homicídios, mas entrou em colapso fiscal e de legitimidade após 2013.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Balanço de Indicadores da Polícia de Pacificação (2015)",
+          "page_or_section": "pp. 8-14",
+          "excerpt": "O programa das UPPs teve início em dezembro de 2008 no Morro Santa Marta, promovendo uma redução inicial substancial da letalidade violenta.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [
+        "Polícia Militar do Estado do Rio de Janeiro (PMERJ)"
+      ],
+      "pessoas": [
+        "Sérgio de Oliveira Cabral Santos Filho"
+      ]
+    },
+    {
+      "id": 90,
+      "title": "Sancionada a Lei Federal nº 12.720/2012 Tipificando o Crime de Milícia Privada",
+      "event_type": "legislacao_penal",
+      "date_display": "27 de setembro de 2012",
+      "year": 2012,
+      "confidence": "confirmado",
+      "description": "Entra em vigor a Lei Federal nº 12.720/2012, inserindo o Artigo 288-A no Código Penal e prevendo pena de 4 a 8 anos para quem constituir, organizar ou integrar milícia privada ou grupo de extermínio.",
+      "historical_context": "Fruto das cobranças da CPI das Milícias, a lei supriu a lacuna histórica que forçava promotores a denunciar paramilitares apenas pelo vago crime de formação de quadrilha.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Lei Federal nº 12.720, de 27 de setembro de 2012 (Tipificação de Milícia Privada)",
+          "page_or_section": "Artigo 1º",
+          "excerpt": "Art. 288-A. Constituir, organizar, integrar, manter ou custear organização paramilitar, milícia particular, grupo ou esquadrão: Pena - reclusão, de 4 a 8 anos.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [],
+      "pessoas": []
+    },
+    {
+      "id": 91,
+      "title": "Desaparecimento do Pedreiro Amarildo de Souza e Crise Terminal das UPPs",
+      "event_type": "violencia_institucional",
+      "date_display": "14 de julho de 2013",
+      "year": 2013,
+      "confidence": "confirmado",
+      "description": "O pedreiro Amarildo Dias de Souza é conduzido por policiais militares para a sede da UPP da Rocinha e desaparece, desencadeando protestos mundiais ('Onde está o Amarildo?').",
+      "historical_context": "A condenação de policiais da Rocinha por tortura seguida de morte destruiu a legitimidade social do programa de pacificação.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Balanço de Indicadores da Polícia de Pacificação (2015)",
+          "page_or_section": "p. 35",
+          "excerpt": "O caso do desaparecimento do pedreiro Amarildo na Rocinha em julho de 2013 tornou-se o marco simbólico da ruptura da confiança comunitária nas UPPs.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [
+        "Polícia Militar do Estado do Rio de Janeiro (PMERJ)"
+      ],
+      "pessoas": []
+    },
+    {
+      "id": 92,
+      "title": "Operação Calicute e Prisão do Ex-Governador Sérgio Cabral por Propinas",
+      "event_type": "operacao_anticorrupcao",
+      "date_display": "17 de novembro de 2016",
+      "year": 2016,
+      "confidence": "confirmado",
+      "description": "A Polícia Federal deflagra a 37ª fase da Operação Lava Jato (Calicute) e prende o ex-governador Sérgio Cabral por liderar cartel de empreiteiras com propinas de 5% sobre grandes obras estaduais.",
+      "historical_context": "Cabral acumulou mais de vinte condenações que superaram quatrocentos anos de reclusão, expondo o colapso moral e fiscal das contas do Estado.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "A evidência da estrutura produtiva oca: o Estado do RJ como epicentro da desindustrialização",
+          "page_or_section": "p. 42",
+          "excerpt": "A Operação Calicute em 2016 desvelou a engrenagem de corrupção que drenou os recursos do Tesouro fluminense em obras superfaturadas do Maracanã e Linha 4.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [],
+      "pessoas": [
+        "Sérgio de Oliveira Cabral Santos Filho"
+      ]
+    },
+    {
+      "id": 93,
+      "title": "Assassinato de Marielle Franco e Anderson Gomes pelo Escritório do Crime",
+      "event_type": "assassinato_politico",
+      "date_display": "14 de março de 2018",
+      "year": 2018,
+      "confidence": "confirmado",
+      "description": "A vereadora Marielle Franco e seu motorista Anderson Gomes são emboscados e executados a tiros de submetralhadora no Estácio por Ronnie Lessa, pistoleiro do Escritório do Crime, a mando do clã Brazão.",
+      "historical_context": "O crime ocorreu em plena Intervenção Federal na Segurança Pública e esteve diretamente vinculado à atuação parlamentar de Marielle contra a grilagem de terras operada por milícias na Zona Oeste.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Acórdão da Ação Penal 2434 - Caso Marielle Franco e Anderson Gomes",
+          "page_or_section": "Relatório do Acórdão",
+          "excerpt": "Na noite de 14 de março de 2018, no bairro do Estácio, a vereadora Marielle Franco e Anderson Gomes foram covardemente executados por Ronnie Lessa a mando de Chiquinho e Domingos Brazão.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Estácio (Rua Joaquim Palhares / Regimento Caetano de Faria)"
+      ],
+      "organizacoes": [
+        "Escritório do Crime (EC)",
+        "Liga da Justiça / Bonde do Zinho (Milícia da Zona Oeste)"
+      ],
+      "pessoas": [
+        "Marielle Francisco da Silva",
+        "Ronnie Lessa",
+        "João Francisco Inácio Brazão",
+        "Domingos Inácio Brazão"
+      ]
+    },
+    {
+      "id": 94,
+      "title": "Ajuizamento da ADPF 635 ('ADPF das Favelas') no Supremo Tribunal Federal",
+      "event_type": "acao_constitucional",
+      "date_display": "15 de novembro de 2019",
+      "year": 2019,
+      "confidence": "confirmado",
+      "description": "O Partido Socialista Brasileiro (PSB), em conjunto com entidades de direitos humanos e movimentos sociais periféricos (Redes da Maré e Papo Reto), ajuíza no STF a ADPF 635 denunciando o estado de coisas inconstitucional da política de segurança fluminense.",
+      "historical_context": "A ação exigiu a homologação de plano de redução da letalidade policial e o fim de operações com blindados aéreos perto de escolas.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Informativo à Sociedade e Acórdão - ADPF 635 ('ADPF das Favelas')",
+          "page_or_section": "Petição Inicial e Relatório",
+          "excerpt": "Ajuizada em novembro de 2019 pelo PSB e entidades comunitárias, a ADPF 635 denunciou violações sistemáticas de direitos humanos praticadas em incursões policiais em favelas.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [
+        "Supremo Tribunal Federal (STF)"
+      ],
+      "pessoas": []
+    },
+    {
+      "id": 95,
+      "title": "Liminar Histórica do STF na ADPF 635 e Redução de 71,7% na Letalidade Policial",
+      "event_type": "decisao_judicial",
+      "date_display": "5 de junho de 2020",
+      "year": 2020,
+      "confidence": "confirmado",
+      "description": "O ministro Edson Fachin defere liminar suspendendo operações em favelas durante a pandemia salvo excepcionalidades justificadas por escrito, induzindo redução imediata de 71,7% na letalidade policial sem aumento de crimes civis.",
+      "historical_context": "O ativismo de dados do GENI/UFF comprovou que conter a violência policial não gerou alta de homicídios civis.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Informativo à Sociedade e Acórdão - ADPF 635 ('ADPF das Favelas')",
+          "page_or_section": "Decisão Liminar de 05/06/2020",
+          "excerpt": "Defiro a medida cautelar para determinar a suspensão de operações policiais em comunidades durante a pandemia de COVID-19, salvo hipóteses absolutamente excepcionais.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [
+        "Supremo Tribunal Federal (STF)"
+      ],
+      "pessoas": []
+    },
+    {
+      "id": 96,
+      "title": "Fundação do Complexo de Israel por Peixão e Imposição do Narcopentecostalismo",
+      "event_type": "criacao_territorio_armado",
+      "date_display": "2020",
+      "year": 2020,
+      "confidence": "confirmado",
+      "description": "Álvaro Malaquias Santa Rosa ('Peixão') unifica Parada de Lucas, Vigário Geral e Cidade Alta sob a bandeira do TCP, criando o 'Complexo de Israel' e impondo intolerância religiosa contra terreiros de Candomblé e Umbanda.",
+      "historical_context": "O grupo autodenomina-se 'exército do Deus de Israel', hasteando bandeiras de Israel e pixando salmos bíblicos nas barricadas.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Mapa Histórico dos Grupos Armados do Rio de Janeiro",
+          "page_or_section": "pp. 22-26",
+          "excerpt": "Criado em 2020 por Peixão, o Complexo de Israel impôs o narcopentecostalismo, expulsando praticantes de religiões afro-brasileiras e atacando terreiros sob o pretexto de guerra santa.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Complexo de Israel (Parada de Lucas, Vigário Geral e Cidade Alta)"
+      ],
+      "organizacoes": [
+        "Terceiro Comando Puro (TCP)"
+      ],
+      "pessoas": [
+        "Álvaro Malaquias Santa Rosa"
+      ]
+    },
+    {
+      "id": 97,
+      "title": "Operação Exceptis no Jacarezinho Deixa 28 Mortos",
+      "event_type": "chacina_policial",
+      "date_display": "6 de maio de 2021",
+      "year": 2021,
+      "confidence": "conflitante",
+      "description": "Incursão da Polícia Civil no Jacarezinho resulta em 28 mortos (incluindo 1 policial), tornando-se a operação mais letal da história da polícia fluminense, realizada em desafio à exigência de 'excepcionalidade' da ADPF 635.",
+      "historical_context": "A operação provocou repúdio internacional da ONU e gerou pedidos de investigação independente sobre execuções sumárias.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Informativo à Sociedade e Acórdão - ADPF 635 ('ADPF das Favelas')",
+          "page_or_section": "Relatório de Descumprimento",
+          "excerpt": "A Operação Exceptis no Jacarezinho em 6 de maio de 2021 culminou em 28 mortos, sendo apontada por entidades de direitos humanos como flagrante violação da ordem do STF.",
+          "status": "conflitante"
+        }
+      ],
+      "regioes": [
+        "Complexo do Jacarezinho"
+      ],
+      "organizacoes": [
+        "Polícia Civil do Estado do Rio de Janeiro (PCERJ / CORE)",
+        "Comando Vermelho (Falange Vermelha / CVRL)"
+      ],
+      "pessoas": []
+    },
+    {
+      "id": 98,
+      "title": "Rendição de Luís Antônio da Silva Braga ('Zinho') e Retração Territorial das Milícias",
+      "event_type": "prisao_lideranca",
+      "date_display": "24 de dezembro de 2023",
+      "year": 2023,
+      "confidence": "confirmado",
+      "description": "O miliciano mais procurado do Rio, Luís Antônio da Silva Braga ('Zinho'), entrega-se à Polícia Federal na véspera de Natal, acelerando o colapso e a fragmentação do Bonde do Zinho na Zona Oeste.",
+      "historical_context": "A rendição abriu espaço para o avanço agressivo do Comando Vermelho sobre bairros históricos de milícia (Gardênia Azul, Muzema e Rio das Pedras).",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Mapa Histórico dos Grupos Armados do Rio de Janeiro",
+          "page_or_section": "pp. 14-19",
+          "excerpt": "A rendição de Zinho à Polícia Federal em dezembro de 2023 desarticulou o comando central do Bonde do Zinho e acelerou o avanço do Comando Vermelho sobre a Zona Oeste.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Campo Grande"
+      ],
+      "organizacoes": [
+        "Liga da Justiça / Bonde do Zinho (Milícia da Zona Oeste)"
+      ],
+      "pessoas": []
+    },
+    {
+      "id": 99,
+      "title": "A Virada para o Modelo de 'Conquista' e Expansão do CV na Zona Oeste",
+      "event_type": "dinamica_territorial",
+      "date_display": "2024",
+      "year": 2024,
+      "confidence": "confirmado",
+      "description": "Estudo do GENI/UFF e Fogo Cruzado constata a mudança do modelo de expansão armada: substituição da 'colonização' silenciosa das milícias pela tomada por 'conquista' pelo CV, que passa a controlar 47,2% da população sob domínio armado.",
+      "historical_context": "O CV invadiu áreas como Gardênia Azul, Tijuquinha e Morro do Banco, expulsando milicianos e impondo o controle das bocas de fumo.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Mapa Histórico dos Grupos Armados do Rio de Janeiro",
+          "page_or_section": "Conclusões Gerais",
+          "excerpt": "O modelo antigo de colonização silenciosa das milícias foi suplantado pelo modelo de conquista direta e armada adotado pelo Comando Vermelho, atingindo 47,2% dos habitantes metropolitanos.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Praça Seca / Morro do Bateau Mouche e Covanca"
+      ],
+      "organizacoes": [
+        "Comando Vermelho (Falange Vermelha / CVRL)",
+        "Liga da Justiça / Bonde do Zinho (Milícia da Zona Oeste)"
+      ],
+      "pessoas": []
+    },
+    {
+      "id": 100,
+      "title": "Julgamento Final da ADPF 635 no Plenário do STF e Homologação Parcial do Plano",
+      "event_type": "decisao_judicial",
+      "date_display": "3 de abril de 2025",
+      "year": 2025,
+      "confidence": "confirmado",
+      "description": "O plenário do STF conclui o julgamento de mérito da ADPF 635, mantendo o uso obrigatório de câmeras corporais e ambulâncias, mas flexibilizando vedações sobre helicópteros e perímetros escolares em emergências.",
+      "historical_context": "A decisão consolidou o controle judiciário sobre a letalidade policial fluminense, recebendo críticas tanto de setores policiais quanto de defensores de direitos humanos.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Informativo à Sociedade e Acórdão - ADPF 635 ('ADPF das Favelas')",
+          "page_or_section": "Acórdão de Mérito Plenário",
+          "excerpt": "O plenário do STF julgou parcialmente procedente a ADPF 635 em abril de 2025, homologando condicionantes ao Plano Estadual de Redução da Letalidade Policial.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Centro do Rio de Janeiro"
+      ],
+      "organizacoes": [
+        "Supremo Tribunal Federal (STF)"
+      ],
+      "pessoas": []
+    },
+    {
+      "id": 101,
+      "title": "Primeira Turma do STF Condena Irmãos Brazão a 76 Anos de Prisão pelo Assassinato de Marielle Franco",
+      "event_type": "decisao_judicial_historica",
+      "date_display": "25 de fevereiro de 2026",
+      "year": 2026,
+      "confidence": "confirmado",
+      "description": "A Primeira Turma do STF condena por unanimidade Chiquinho Brazão e Domingos Brazão a 76 anos e 3 meses de reclusão como mandantes intelectuais dos homicídios de Marielle Franco e Anderson Gomes, e condena o ex-chefe da Polícia Civil Rivaldo Barbosa por corrupção e obstrução à Justiça.",
+      "historical_context": "O julgamento comprovou perante a Suprema Corte que o crime foi motivado por disputas de regularização fundiária e grilagem de terras operadas por milícias em Jacarepaguá.",
+      "fontes_vinculadas": [
+        {
+          "source_title": "Acórdão da Ação Penal 2434 - Caso Marielle Franco e Anderson Gomes",
+          "page_or_section": "Dispositivo do Acórdão",
+          "excerpt": "A Primeira Turma do Supremo Tribunal Federal condenou os réus Chiquinho Brazão e Domingos Brazão à pena de 76 anos e 3 meses de reclusão pela prática de duplo homicídio qualificado e organização criminosa armada.",
+          "status": "confirmado"
+        }
+      ],
+      "regioes": [
+        "Estácio (Rua Joaquim Palhares / Regimento Caetano de Faria)",
+        "Rio das Pedras"
+      ],
+      "organizacoes": [
+        "Supremo Tribunal Federal (STF)",
+        "Escritório do Crime (EC)"
+      ],
+      "pessoas": [
+        "João Francisco Inácio Brazão",
+        "Domingos Inácio Brazão",
+        "Rivaldo Barbosa de Araújo Júnior",
+        "Marielle Francisco da Silva"
+      ]
+    }
+  ]
+}
