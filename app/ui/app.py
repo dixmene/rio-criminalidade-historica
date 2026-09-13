@@ -1,3 +1,23 @@
+import sys
+import os
+from pathlib import Path
+
+# -----------------------------------------------------------------------------
+# Resolução de Namespace e sys.path
+# Evita que o arquivo app.py faça shadowing do pacote raiz 'app/'
+# -----------------------------------------------------------------------------
+_current_dir = str(Path(__file__).resolve().parent)
+_root_dir = str(Path(__file__).resolve().parent.parent.parent)
+
+while _current_dir in sys.path:
+    sys.path.remove(_current_dir)
+
+if _root_dir not in sys.path:
+    sys.path.insert(0, _root_dir)
+
+if "app" in sys.modules and not hasattr(sys.modules["app"], "__path__"):
+    del sys.modules["app"]
+
 import streamlit as st
 import folium
 from streamlit_folium import st_folium
@@ -244,7 +264,7 @@ def main():
                 map_obj = folium.Map(
                     location=DEFAULT_MAP_CENTER,
                     zoom_start=DEFAULT_MAP_ZOOM,
-                    tiles="CartoDB positron"
+                    tiles="OpenStreetMap"
                 )
 
                 mapped_count = 0
@@ -380,7 +400,7 @@ def main():
                 for ev in filtered_events:
                     t_rows.append({
                         "Data Documentada": ev.date_display,
-                        "Ano Ref.": ev.year if ev.year is not None else "N/I",
+                        "Ano Ref.": str(ev.year) if ev.year is not None else "N/I",
                         "Precisão": ev.temporal_precision,
                         "Título do Evento": ev.title,
                         "Território": ", ".join([r.original_name for r in ev.regions]),
@@ -474,7 +494,7 @@ def main():
                         "Título": s.title,
                         "Eixo Temático": eixo_str,
                         "Instituição / Veículo": s.publisher or "N/I",
-                        "Ano": s.publication_year if s.publication_year is not None else "S/D",
+                        "Ano": str(s.publication_year) if s.publication_year is not None else "S/D",
                         "Tipologia": s.source_type,
                         "Eventos Vinculados": len(s.event_links),
                         "Custódia Local": "✅ SHA-256" if s.file_hash_sha256 else "🌐 Remoto / Catálogo",
