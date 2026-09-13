@@ -1,5 +1,5 @@
 # 📊 RELATÓRIO DE QUALIDADE DE DADOS HISTÓRICOS (DATA QUALITY - DQ)
-**Gerado em**: 2026-09-13T16:17:36.430128+00:00  
+**Gerado em**: 2026-09-13T17:04:56.899230+00:00  
 **Ambiente**: Produção / Pesquisa Histórica Auditável  
 **Escopo**: Acervo de Dados Reais (`is_demo = False`)
 
