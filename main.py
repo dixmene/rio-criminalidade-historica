@@ -1,18 +1,27 @@
 import os
 import sys
-from dotenv import load_dotenv
+import subprocess
+from app.config import APP_NAME, ENVIRONMENT, DATABASE_URL
 
-# Garante suporte a UTF-8 no terminal Windows
 if sys.platform == "win32":
-    sys.stdout.reconfigure(encoding="utf-8")
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
 
-load_dotenv()
 
 def main():
-    app_name = os.getenv("APP_NAME", "Daniel Systems")
-    environment = os.getenv("ENVIRONMENT", "development")
-    print(f"🚀 {app_name} iniciado com sucesso!")
-    print(f"Ambiente: {environment}")
+    print(f"🏛️  {APP_NAME}")
+    print(f"Ambiente: {ENVIRONMENT}")
+    print(f"Banco de Dados: {DATABASE_URL}")
+    print("\nPara iniciar o Painel Interativo com Mapa e Linha do Tempo, execute:")
+    print("  streamlit run app/ui/app.py\n")
+
+    if len(sys.argv) > 1 and sys.argv[1] == "--ui":
+        print("Iniciando interface gráfica Streamlit...")
+        subprocess.run(["streamlit", "run", "app/ui/app.py"])
+
 
 if __name__ == "__main__":
     main()
