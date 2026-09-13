@@ -1,0 +1,20 @@
+[
+  {
+    "timestamp": "2026-09-13T16:13:35.613597+00:00",
+    "real_events": 31,
+    "real_sources": 173,
+    "real_claims": 0,
+    "disputed_claims": 0,
+    "temporal_span": 69,
+    "integrity_errors": 0
+  },
+  {
+    "timestamp": "2026-09-13T16:17:36.430128+00:00",
+    "real_events": 36,
+    "real_sources": 182,
+    "real_claims": 3,
+    "disputed_claims": 3,
+    "temporal_span": 69,
+    "integrity_errors": 0
+  }
+]
