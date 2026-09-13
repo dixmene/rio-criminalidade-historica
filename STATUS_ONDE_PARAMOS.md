@@ -1,8 +1,8 @@
 # 📌 STATUS DO PROJETO — ONDE PARAMOS
 **Data do Registro**: 13 de Setembro de 2026  
 **Repositório Remoto**: [GitHub (Privado) — `dixmene/rio-criminalidade-historica`](https://github.com/dixmene/rio-criminalidade-historica)  
-**Branch Atual**: `preview-designer` (Refatoração Visual) / `main` (Núcleo Histórico & DQ)  
-**Últimos Commits**: `f163d62` (Branch `preview-designer` — Atlas Editorial) | `4779c9a` (`main` — Ciclo 1 1950-1979 + DQ)  
+**Branch Atual**: `main` (Produção & Pesquisa Integrada) / `preview-designer` (Consolidado)  
+**Versão Atual**: `v0.2.0` (Atlas Historiográfico & Carro-Chefe Cartográfico)  
 **Qualidade Técnica**: 54/54 Testes Automatizados Aprovados (`pytest`)
 
 
