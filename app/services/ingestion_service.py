@@ -18,6 +18,12 @@ from app.schemas import (
     OrganizationCreate,
     RegionCreate,
 )
+from src.normalization.rules import (
+    normalize_name,
+    normalize_location,
+    normalize_organization,
+    normalize_date,
+)
 
 
 class IngestionService:
@@ -32,21 +38,36 @@ class IngestionService:
         return source
 
     def create_person(self, data: PersonCreate) -> Person:
-        person = Person(**data.model_dump())
+        dump = data.model_dump()
+        if not dump.get("normalized_name"):
+            norm = normalize_name(dump["original_name"])
+            dump["normalized_name"] = norm["normalized_name"]
+        
+        person = Person(**dump)
         self.db.add(person)
         self.db.commit()
         self.db.refresh(person)
         return person
 
     def create_organization(self, data: OrganizationCreate) -> Organization:
-        org = Organization(**data.model_dump())
+        dump = data.model_dump()
+        if not dump.get("normalized_name"):
+            norm = normalize_organization(dump["original_name"])
+            dump["normalized_name"] = norm["normalized_name"]
+
+        org = Organization(**dump)
         self.db.add(org)
         self.db.commit()
         self.db.refresh(org)
         return org
 
     def create_region(self, data: RegionCreate) -> Region:
-        region = Region(**data.model_dump())
+        dump = data.model_dump()
+        if not dump.get("normalized_name"):
+            norm = normalize_location(dump["original_name"])
+            dump["normalized_name"] = norm["normalized_name"]
+
+        region = Region(**dump)
         self.db.add(region)
         self.db.commit()
         self.db.refresh(region)
@@ -54,33 +75,52 @@ class IngestionService:
 
     def create_event(self, data: EventCreate) -> Event:
         """
-        Cria um evento histórico garantindo a proveniência estrita de fontes.
+        Cria um evento histórico com garantia de proveniência e temporalidade rigorosa.
+        
+        Regra Inegociável:
+        - Se is_demo=False, pelo menos uma fonte documental deve estar associada.
         """
-        # 1. Cria o evento base
+        if not data.is_demo and (not data.sources or len(data.sources) == 0):
+            raise ValueError(
+                "Regra de Domínio Violada: Nenhum evento histórico real pode ser inserido sem comprovação de fonte."
+            )
+
+        # Trata temporalidade
         event_dict = data.model_dump(exclude={"sources", "organizations", "people", "regions"})
+        if event_dict.get("year") is None and event_dict.get("date_display"):
+            dt, yr, exact = normalize_date(event_dict["date_display"])
+            if event_dict.get("date_start") is None:
+                event_dict["date_start"] = dt
+            if event_dict.get("year") is None:
+                event_dict["year"] = yr
+            if not event_dict.get("exact_date"):
+                event_dict["exact_date"] = exact
+
         event = Event(**event_dict)
         self.db.add(event)
-        self.db.flush()  # Obtém o event.id
+        self.db.flush()
 
-        # 2. Registra proveniência de fontes (Obrigatório)
+        # Inserção de Fontes Obrigatórias
         for s_in in data.sources:
-            # Verifica se fonte existe
             source_exists = self.db.query(Source).filter(Source.id == s_in.source_id).first()
             if not source_exists:
-                raise ValueError(f"Fonte ID {s_in.source_id} não encontrada.")
+                raise ValueError(f"Fonte ID {s_in.source_id} não encontrada no acervo.")
+
+            if not s_in.excerpt or len(s_in.excerpt.strip()) < 5:
+                raise ValueError("O trecho comprobatório (excerpt) da fonte é obrigatório.")
 
             event_source = EventSource(
                 event_id=event.id,
                 source_id=s_in.source_id,
                 page_or_section=s_in.page_or_section,
-                excerpt=s_in.excerpt,
+                excerpt=s_in.excerpt.strip(),
                 claim_assertion=s_in.claim_assertion,
                 validation_status=s_in.validation_status,
                 confidence_notes=s_in.confidence_notes,
             )
             self.db.add(event_source)
 
-        # 3. Associa Organizações
+        # Organizações
         if data.organizations:
             for o_in in data.organizations:
                 event_org = EventOrganization(
@@ -90,7 +130,7 @@ class IngestionService:
                 )
                 self.db.add(event_org)
 
-        # 4. Associa Pessoas
+        # Pessoas
         if data.people:
             for p_in in data.people:
                 event_person = EventPerson(
@@ -100,7 +140,7 @@ class IngestionService:
                 )
                 self.db.add(event_person)
 
-        # 5. Associa Territórios/Regiões
+        # Regiões
         if data.regions:
             for r_in in data.regions:
                 event_region = EventRegion(

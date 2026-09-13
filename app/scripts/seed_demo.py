@@ -24,6 +24,11 @@ from app.models import (
     EventPerson,
     EventRegion,
 )
+from src.normalization.rules import (
+    normalize_name,
+    normalize_location,
+    normalize_organization,
+)
 
 
 def seed_demo_data():
@@ -41,140 +46,194 @@ def seed_demo_data():
 
         print("Populando dados [DEMO] para validação técnica do MVP...")
 
-        # 1. Regiões do Rio de Janeiro (com coordenadas reais)
-        regions_data = [
-            Region(name="Centro", region_type="bairro", municipality="Rio de Janeiro", latitude=-22.9035, longitude=-43.1824, description="Área central administrativa e comercial do RJ", is_demo=True),
-            Region(name="Copacabana", region_type="bairro", municipality="Rio de Janeiro", latitude=-22.9698, longitude=-43.1868, description="Zona Sul litorânea do RJ", is_demo=True),
-            Region(name="Tijuca", region_type="bairro", municipality="Rio de Janeiro", latitude=-22.9242, longitude=-43.2328, description="Zona Norte tradicional", is_demo=True),
-            Region(name="Maré", region_type="complexo", municipality="Rio de Janeiro", latitude=-22.8580, longitude=-43.2450, description="Complexo de comunidades na Zona Norte", is_demo=True),
-            Region(name="São Cristóvão", region_type="bairro", municipality="Rio de Janeiro", latitude=-22.8988, longitude=-43.2215, description="Zona Norte, área histórica e de pavilhões", is_demo=True),
-            Region(name="Barra da Tijuca", region_type="bairro", municipality="Rio de Janeiro", latitude=-23.0003, longitude=-43.3659, description="Zona Oeste do RJ", is_demo=True),
-            Region(name="Duque de Caxias", region_type="municipio", municipality="Duque de Caxias", latitude=-22.7856, longitude=-43.3117, description="Baixada Fluminense", is_demo=True),
-            Region(name="Niterói", region_type="municipio", municipality="Niterói", latitude=-22.8859, longitude=-43.1153, description="Região Metropolitana Leste", is_demo=True),
-            Region(name="Madureira", region_type="bairro", municipality="Rio de Janeiro", latitude=-22.8717, longitude=-43.3396, description="Polo cultural e comercial da Zona Norte", is_demo=True),
+        # 1. Regiões do Rio de Janeiro
+        # Inclui intencionalmente uma região SEM coordenadas para testar que o sistema
+        # NÃO força coordenadas falsas quando o local não está cartograficamente delimitado!
+        raw_regions = [
+            ("Centro", "bairro", "Rio de Janeiro", -22.9035, -43.1824, "exata", "Área central administrativa e comercial"),
+            ("Copacabana", "bairro", "Rio de Janeiro", -22.9698, -43.1868, "exata", "Zona Sul litorânea"),
+            ("Tijuca", "bairro", "Rio de Janeiro", -22.9242, -43.2328, "exata", "Zona Norte tradicional"),
+            ("Maré", "complexo", "Rio de Janeiro", -22.8580, -43.2450, "centroide", "Complexo de comunidades na Zona Norte"),
+            ("São Cristóvão", "bairro", "Rio de Janeiro", -22.8988, -43.2215, "exata", "Zona Norte, área histórica"),
+            ("Barra da Tijuca", "bairro", "Rio de Janeiro", -23.0003, -43.3659, "exata", "Zona Oeste do RJ"),
+            ("Duque de Caxias", "municipio", "Duque de Caxias", -22.7856, -43.3117, "centroide", "Baixada Fluminense"),
+            ("Niterói", "municipio", "Niterói", -22.8859, -43.1153, "centroide", "Região Metropolitana Leste"),
+            ("Madureira", "bairro", "Rio de Janeiro", -22.8717, -43.3396, "exata", "Polo cultural da Zona Norte"),
+            ("[DEMO] Território em Litígio Histórico", "territorio_historico", "Rio de Janeiro", None, None, "desconhecida", "Território de fronteira histórica sem coordenadas exatas mapeadas"),
         ]
+
+        regions_data = []
+        for name, r_type, mun, lat, lon, prec, desc in raw_regions:
+            norm = normalize_location(name)
+            regions_data.append(
+                Region(
+                    original_name=norm["original_name"],
+                    normalized_name=norm["normalized_name"],
+                    region_type=r_type,
+                    municipality=mun,
+                    latitude=lat,
+                    longitude=lon,
+                    location_precision=prec,
+                    description=desc,
+                    is_demo=True,
+                )
+            )
         db.add_all(regions_data)
         db.flush()
 
         # 2. Organizações [DEMO]
-        orgs_data = [
-            Organization(name="[DEMO] Ordem dos Advogados Seccional RJ", acronym="OAB-RJ", org_type="sociedade_civil", notes="Entidade representativa dos advogados", is_demo=True),
-            Organization(name="[DEMO] Delegacia Regional de Ordem Política e Social", acronym="DOPS-RJ", org_type="orgao_estatal", notes="Órgão de repressão e inteligência política", is_demo=True),
-            Organization(name="[DEMO] Batalhão de Polícia Militar da Zona Sul", acronym="19-BPM", org_type="policial", notes="Comando de policiamento regional", is_demo=True),
-            Organization(name="[DEMO] Sindicato dos Metalúrgicos do Rio", acronym="SindMetal-RJ", org_type="sindicato", notes="Organização sindical representativa da indústria naval e metalúrgica", is_demo=True),
-            Organization(name="[DEMO] Associação de Moradores Unidos da Baixada", acronym="AMUB", org_type="sociedade_civil", notes="Coletivo comunitário popular", is_demo=True),
-            Organization(name="[DEMO] Coletivo Cultural e Teatral Carioca", acronym="CCTC", org_type="sociedade_civil", notes="Grupo artístico independente", is_demo=True),
+        raw_orgs = [
+            ("[DEMO] Ordem dos Advogados Seccional RJ", "OAB-RJ", "sociedade_civil", 1930, None, "Entidade jurídica"),
+            ("[DEMO] Delegacia Regional de Ordem Política e Social", "DOPS-RJ", "orgao_estatal", 1922, 1983, "Órgão de repressão e inteligência"),
+            ("[DEMO] Batalhão de Polícia Militar da Zona Sul", "19-BPM", "policial", 1975, None, "Comando regional"),
+            ("[DEMO] Sindicato dos Metalúrgicos do Rio", "SindMetal-RJ", "sindicato", 1917, None, "Entidade sindical"),
+            ("[DEMO] Associação de Moradores Unidos da Baixada", "AMUB", "sociedade_civil", 1983, None, "Coletivo popular"),
+            ("[DEMO] Coletivo Cultural e Teatral Carioca", "CCTC", "sociedade_civil", 1980, None, "Grupo artístico"),
         ]
+        orgs_data = []
+        for name, acr, o_type, f_yr, d_yr, desc in raw_orgs:
+            norm = normalize_organization(name)
+            orgs_data.append(
+                Organization(
+                    original_name=norm["original_name"],
+                    normalized_name=norm["normalized_name"],
+                    acronym=acr,
+                    org_type=o_type,
+                    foundation_year=f_yr,
+                    dissolution_year=d_yr,
+                    description=desc,
+                    is_demo=True,
+                )
+            )
         db.add_all(orgs_data)
         db.flush()
 
-        # 3. Pessoas / Lideranças [DEMO]
-        people_data = [
-            Person(name="[DEMO] Dra. Helena Vasconcelos", aliases="Helena da OAB", role_description="Advogada e defensora de direitos", notes="Atuante em habeas corpus", is_demo=True),
-            Person(name="[DEMO] Comissário Roberto Albuquerque", aliases="Beto Investigador", role_description="Agente policial de investigações", notes="Lotado na delegacia central", is_demo=True),
-            Person(name="[DEMO] Mário Santos da Silva", aliases="Mário Naval", role_description="Líder operário do setor naval", notes="Organizador de assembleias e greves", is_demo=True),
-            Person(name="[DEMO] Prof.ª Clarice Guimarães", aliases="Prof. Clarice", role_description="Pesquisadora e historiadora", notes="Cronista documental", is_demo=True),
-            Person(name="[DEMO] Sebastião Mendes", aliases="Tião da Associação", role_description="Líder comunitário local", notes="Coordenador de movimentos por saneamento e posse de terra", is_demo=True),
+        # 3. Pessoas [DEMO]
+        raw_people = [
+            ("[DEMO] Dra. Helena Vasconcelos", "Helena da OAB", "Advogada e defensora de direitos", 1938, None),
+            ("[DEMO] Comissário Roberto Albuquerque", "Beto Investigador", "Agente policial", 1942, 1999),
+            ("[DEMO] Mário Santos da Silva", "Mário Naval", "Líder operário do setor naval", 1935, 2005),
+            ("[DEMO] Prof.ª Clarice Guimarães", "Prof. Clarice", "Pesquisadora e historiadora", 1945, None),
+            ("[DEMO] Sebastião Mendes", "Tião da Associação", "Líder comunitário local", 1940, 2012),
         ]
+        people_data = []
+        for name, ali, role, by, dy in raw_people:
+            norm = normalize_name(name)
+            people_data.append(
+                Person(
+                    original_name=norm["original_name"],
+                    normalized_name=norm["normalized_name"],
+                    aliases=ali,
+                    role_description=role,
+                    birth_year=by,
+                    death_year=dy,
+                    is_demo=True,
+                )
+            )
         db.add_all(people_data)
         db.flush()
 
-        # 4. Fontes Documentadas [DEMO]
+        # 4. Fontes [DEMO] (Separando tipologia de avaliação da evidência)
         sources_data = [
             Source(
                 title="[DEMO] Relatório Anual da Comissão Arquivística de 1975",
                 citation="COMISSÃO DE PESQUISA. Relatório do Fundo de Documentação Histórica (1975). Rio de Janeiro: Arquivo Público, 1976.",
                 author="Comissão Arquivística",
+                publisher="Arquivo Público do Estado",
                 publication_year=1976,
-                source_type="relatorio_oficial",
+                source_type="oficial_relatorio",
                 archive_ref="Arquivo do Estado, Caixa 14, Documento 88",
-                reliability_rating=5,
                 is_demo=True,
             ),
             Source(
                 title="[DEMO] Diário de Notícias Carioca - Edição Matutina (Maio 1978)",
                 citation="DIÁRIO DE NOTÍCIAS. Cobertura da Paralisação Geral nos Estaleiros. Rio de Janeiro, ano 48, n. 1420, p. 1-3, 14 mai. 1978.",
                 author="Redação Diário de Notícias",
+                publisher="Diário de Notícias",
                 publication_year=1978,
-                source_type="jornal",
+                source_type="jornalismo_hemeroteca",
                 archive_ref="Hemeroteca Digital, Microfilme 1978-05",
-                reliability_rating=4,
                 is_demo=True,
             ),
             Source(
                 title="[DEMO] Livro 'Vozes e Territórios da Guanabara'",
                 citation="GUIMARÃES, Clarice. Vozes e Territórios da Guanabara: Conflitos e Memória (1970-1985). Rio de Janeiro: Editora Universitária, 1986.",
                 author="Clarice Guimarães",
+                publisher="Editora Universitária",
                 publication_year=1986,
-                source_type="livro",
+                source_type="academico_livro",
                 archive_ref="Biblioteca Nacional, Acervo Geral, 320.981 G963v",
-                reliability_rating=5,
                 is_demo=True,
             ),
             Source(
                 title="[DEMO] Boletim Informativo da Ordem dos Advogados (1980)",
                 citation="OAB-RJ. Boletim de Defesa das Garantias Fundamentais. Rio de Janeiro: Seccional RJ, n. 12, ago. 1980.",
                 author="OAB Seccional RJ",
+                publisher="OAB-RJ",
                 publication_year=1980,
-                source_type="documento_oficial",
+                source_type="oficial_relatorio",
                 archive_ref="Acervo Histórico OAB, Pasta 1980-B",
-                reliability_rating=5,
                 is_demo=True,
             ),
             Source(
                 title="[DEMO] Inquérito Policial de Ocorrência Especial n. 34/81",
                 citation="SECRETARIA DE SEGURANÇA. Inquérito Policial sobre Incidente no Pavilhão de Eventos. Rio de Janeiro: Divisão de Registros, 1981.",
                 author="Secretaria de Segurança",
+                publisher="Polícia Civil RJ",
                 publication_year=1981,
-                source_type="documento_oficial",
+                source_type="documento_judicial",
                 archive_ref="Arquivo Público do Estado do RJ, Série Inquéritos, doc 34/81",
-                reliability_rating=3,
                 is_demo=True,
             ),
             Source(
                 title="[DEMO] Depoimento Oral Registrado de Sebastião Mendes",
                 citation="MENDES, Sebastião. Entrevista concedida ao Projeto Memória Popular da Baixada. Gravação em fita magnética, 18 out. 1984.",
                 author="Sebastião Mendes / Núcleo de História Oral",
+                publisher="Núcleo de História Oral",
                 publication_year=1984,
-                source_type="depoimento",
+                source_type="historia_oral",
                 archive_ref="Arquivo Sonoro Comunitário, Fita 07-B",
-                reliability_rating=4,
                 is_demo=True,
             ),
         ]
         db.add_all(sources_data)
         db.flush()
 
-        # Mapeamento auxiliar
-        r = {reg.name: reg for reg in regions_data}
+        r = {reg.original_name: reg for reg in regions_data}
         o = {org.acronym: org for org in orgs_data}
-        p = {pers.name: pers for pers in people_data}
+        p = {pers.original_name: pers for pers in people_data}
         s = {src.title: src for src in sources_data}
 
-        # 5. Eventos Documentados [DEMO]
+        # 5. Eventos [DEMO] com rigor temporal e proveniência estrita
         events_setup = [
             {
                 "title": "[DEMO] Assembleia Sindical e Paralisação dos Operários Navais",
+                "date_display": "12 de abril de 1975",
                 "date_start": "1975-04-12",
                 "year": 1975,
+                "exact_date": True,
+                "temporal_precision": "dia",
                 "confidence_level": "confirmado",
-                "description": "Reunião de trabalhadores do setor naval deliberando pauta de reivindicações salariais e melhores condições de segurança nos estaleiros da Baía de Guanabara.",
-                "historical_context": "Período de recomposição gradual de movimentos sindicais e transição política no Rio de Janeiro pós-fusão dos estados.",
+                "description": "Reunião de trabalhadores do setor naval deliberando pauta salarial e segurança nos estaleiros de Niterói.",
+                "historical_context": "Período de recomposição gradual de movimentos sindicais.",
                 "region": r["Niterói"],
                 "orgs": [(o["SindMetal-RJ"], "organizador")],
                 "people": [(p["[DEMO] Mário Santos da Silva"], "lideranca_operaria")],
                 "source": s["[DEMO] Relatório Anual da Comissão Arquivística de 1975"],
-                "excerpt": "Às 08h30 do dia 12 de abril de 1975, operários concentraram-se na praça do estaleiro em Niterói, votando a paralisação pacífica por unanimidade.",
+                "excerpt": "Às 08h30 do dia 12 de abril de 1975, operários concentraram-se na praça do estaleiro em Niterói, votando a paralisação pacífica.",
                 "page": "p. 45-47",
                 "status": "confirmado",
             },
             {
                 "title": "[DEMO] Abertura do Congresso Jurídico de Garantias Fundamentais",
+                "date_display": "20 de agosto de 1977",
                 "date_start": "1977-08-20",
                 "year": 1977,
+                "exact_date": True,
+                "temporal_precision": "dia",
                 "confidence_level": "confirmado",
-                "description": "Conferência de juristas no Centro do Rio de Janeiro discutindo a restauração do habeas corpus e garantias civis.",
-                "historical_context": "Articulação de setores da sociedade civil e juristas pela anistia e fortalecimento das instituições jurídicas.",
+                "description": "Conferência de juristas no Centro do Rio de Janeiro discutindo restauração de garantias civis.",
+                "historical_context": "Articulação de setores da sociedade civil e juristas.",
                 "region": r["Centro"],
                 "orgs": [(o["OAB-RJ"], "organizador")],
                 "people": [(p["[DEMO] Dra. Helena Vasconcelos"], "palestrante_defensora")],
@@ -185,11 +244,14 @@ def seed_demo_data():
             },
             {
                 "title": "[DEMO] Grande Mobilização Operária e Passeata em São Cristóvão",
+                "date_display": "14 de maio de 1978",
                 "date_start": "1978-05-14",
                 "year": 1978,
+                "exact_date": True,
+                "temporal_precision": "dia",
                 "confidence_level": "confirmado",
-                "description": "Caminhada de operários e moradores partindo de São Cristóvão em direção ao centro comercial da cidade.",
-                "historical_context": "Ano marcado por greves operárias e ressurgimento das manifestações de rua no eixo Rio-São Paulo.",
+                "description": "Caminhada de operários e moradores partindo de São Cristóvão em direção ao centro da cidade.",
+                "historical_context": "Ano marcado por greves e manifestações de rua.",
                 "region": r["São Cristóvão"],
                 "orgs": [(o["SindMetal-RJ"], "convocante"), (o["DOPS-RJ"], "monitoramento")],
                 "people": [(p["[DEMO] Mário Santos da Silva"], "orador_principal"), (p["[DEMO] Comissário Roberto Albuquerque"], "agente_monitoramento")],
@@ -200,26 +262,32 @@ def seed_demo_data():
             },
             {
                 "title": "[DEMO] Incidente e Explosão de Artefato em Evento Comunitário",
+                "date_display": "30 de abril de 1981",
                 "date_start": "1981-04-30",
                 "year": 1981,
+                "exact_date": True,
+                "temporal_precision": "dia",
                 "confidence_level": "conflitante",
-                "description": "Explosão de dispositivo explosivo nas imediações do pavilhão de convenções na Barra da Tijuca durante comemoração com milhares de pessoas.",
-                "historical_context": "Tensões entre setores radicais contrários à abertura política e movimentos populares durante o processo de redemocratização.",
+                "description": "Explosão de dispositivo nas imediações do pavilhão de convenções na Barra da Tijuca durante comemoração com milhares de pessoas.",
+                "historical_context": "Tensões entre setores radicais contrários à abertura política e movimentos populares.",
                 "region": r["Barra da Tijuca"],
                 "orgs": [(o["DOPS-RJ"], "orgao_investigador"), (o["OAB-RJ"], "comissao_independente")],
                 "people": [(p["[DEMO] Dra. Helena Vasconcelos"], "observadora_juridica"), (p["[DEMO] Comissário Roberto Albuquerque"], "perito_policial")],
                 "source": s["[DEMO] Inquérito Policial de Ocorrência Especial n. 34/81"],
-                "excerpt": "Relatório preliminar sustenta versão de ataque externo, enquanto testemunhas oculares e laudos independentes apontam detonação acidental em veículo oficial.",
+                "excerpt": "Relatório preliminar sustenta versão de ataque externo, enquanto testemunhas e laudos independentes apontam detonação acidental em veículo oficial.",
                 "page": "Folhas 12-28",
                 "status": "conflitante",
             },
             {
                 "title": "[DEMO] Reunião de Formação da Associação de Moradores na Baixada",
+                "date_display": "15 de março de 1983",
                 "date_start": "1983-03-15",
                 "year": 1983,
+                "exact_date": True,
+                "temporal_precision": "dia",
                 "confidence_level": "confirmado",
-                "description": "Fundação formal da rede de comitês de bairro para reivindicar saneamento básico, eletrificação e regularização fundiária.",
-                "historical_context": "Crescimento vigoroso dos movimentos de bairros periféricos na Baixada Fluminense durante a abertura eleitoral estadual.",
+                "description": "Fundação formal da rede de comitês de bairro para reivindicar saneamento e posse de terra.",
+                "historical_context": "Movimentos de bairros periféricos na Baixada Fluminense.",
                 "region": r["Duque de Caxias"],
                 "orgs": [(o["AMUB"], "fundadora")],
                 "people": [(p["[DEMO] Sebastião Mendes"], "presidente_eleito")],
@@ -229,27 +297,33 @@ def seed_demo_data():
                 "status": "confirmado",
             },
             {
-                "title": "[DEMO] Festival Cultural de Rua e Mostra de Cinema Independente",
-                "date_start": "1984-09-22",
+                "title": "[DEMO] Festival Cultural de Rua em Madureira",
+                "date_display": "setembro de 1984",
+                "date_start": "1984-09-01",
                 "year": 1984,
+                "exact_date": False,
+                "temporal_precision": "mes",
                 "confidence_level": "provavel",
                 "description": "Exibição ao ar livre de curtas-metragens e apresentações teatrais em praça pública de Madureira.",
-                "historical_context": "Efervescência cultural e ocupação dos espaços públicos no período da campanha das Diretas Já.",
+                "historical_context": "Efervescência cultural e ocupação dos espaços públicos no período das Diretas Já.",
                 "region": r["Madureira"],
                 "orgs": [(o["CCTC"], "produtor_cultural")],
                 "people": [(p["[DEMO] Prof.ª Clarice Guimarães"], "curadora_historica")],
                 "source": s["[DEMO] Livro 'Vozes e Territórios da Guanabara'"],
-                "excerpt": "A praça de Madureira transformou-se em palco comunitário acolhendo mais de duas mil pessoas para debates e projeções de filmes nacionais.",
+                "excerpt": "A praça de Madureira transformou-se em palco comunitário acolhendo mais de duas mil pessoas para debates e filmes nacionais.",
                 "page": "p. 240",
                 "status": "provavel",
             },
             {
                 "title": "[DEMO] Denúncia de Monitoramento Ilegal de Advogados e Entidades",
-                "date_start": "1980-08-10",
+                "date_display": "agosto de 1980",
+                "date_start": "1980-08-01",
                 "year": 1980,
+                "exact_date": False,
+                "temporal_precision": "mes",
                 "confidence_level": "confirmado",
-                "description": "Publicação de dossiê contendo registros de vigilância policial e escutas telefônicas direcionadas a defensores de direitos humanos.",
-                "historical_context": "Fase de transição com resistência de setores dos serviços de informações em encerrar a espionagem política.",
+                "description": "Publicação de dossiê contendo registros de vigilância policial e escutas direcionadas a defensores de direitos humanos.",
+                "historical_context": "Fase de transição política.",
                 "region": r["Centro"],
                 "orgs": [(o["OAB-RJ"], "denunciante"), (o["DOPS-RJ"], "investigado")],
                 "people": [(p["[DEMO] Dra. Helena Vasconcelos"], "relatora_denuncia")],
@@ -260,11 +334,14 @@ def seed_demo_data():
             },
             {
                 "title": "[DEMO] Encontro de Lideranças Comunitárias e Coletivos da Maré",
+                "date_display": "18 de junho de 1985",
                 "date_start": "1985-06-18",
                 "year": 1985,
+                "exact_date": True,
+                "temporal_precision": "dia",
                 "confidence_level": "confirmado",
-                "description": "Encontro regional reunindo representantes de várias favelas e núcleos para elaboração de pauta urbana unificada.",
-                "historical_context": "Período da Nova República e reorganização das federações comunitárias na capital fluminense.",
+                "description": "Encontro regional reunindo representantes de várias favelas para elaboração de pauta urbana unificada.",
+                "historical_context": "Período da Nova República e reorganização das federações comunitárias.",
                 "region": r["Maré"],
                 "orgs": [(o["AMUB"], "convidada"), (o["CCTC"], "apoio_cultural")],
                 "people": [(p["[DEMO] Sebastião Mendes"], "convidado_intersetorial"), (p["[DEMO] Prof.ª Clarice Guimarães"], "documentarista")],
@@ -274,12 +351,15 @@ def seed_demo_data():
                 "status": "confirmado",
             },
             {
-                "title": "[DEMO] Registro de Ocorrência Policial não Verificada em Copacabana",
-                "date_start": "1979-11-05",
+                "title": "[DEMO] Boato de Panfletagem Não Confirmada em Copacabana",
+                "date_display": "final de 1979",
+                "date_start": "1979-11-01",
                 "year": 1979,
+                "exact_date": False,
+                "temporal_precision": "aproximado",
                 "confidence_level": "nao_verificado",
-                "description": "Boato e informe anônimo de suposta panfletagem clandestina e tumulto em calçadão litorâneo, sem confirmação em prontuários formais.",
-                "historical_context": "Circulação recorrente de informes anônimos e contra-informações nos arquivos da segurança.",
+                "description": "Informe anônimo de suposta panfletagem em calçadão litorâneo, sem confirmação em prontuários.",
+                "historical_context": "Circulação de informes anônimos e contra-informações.",
                 "region": r["Copacabana"],
                 "orgs": [(o["19-BPM"], "averiguador")],
                 "people": [(p["[DEMO] Comissário Roberto Albuquerque"], "analista_informe")],
@@ -287,14 +367,35 @@ def seed_demo_data():
                 "excerpt": "Nota curta de coluna de segurança mencionando apuração de chamada anônima sem ocorrência confirmada.",
                 "page": "p. 8",
                 "status": "nao_verificado",
+            },
+            {
+                "title": "[DEMO] Registro Histórico em Território de Fronteira Não Delimitado",
+                "date_display": "c. 1976",
+                "date_start": "1976-01-01",
+                "year": 1976,
+                "exact_date": False,
+                "temporal_precision": "aproximado",
+                "confidence_level": "provavel",
+                "description": "Ocorrência documentada em área de litígio entre distritos, cuja cartografia exata não possui coordenadas mapeadas na fonte.",
+                "historical_context": "Incerteza cartográfica e delimitações imprecisas pré-computação gráfica.",
+                "region": r["[DEMO] Território em Litígio Histórico"],
+                "orgs": [(o["SindMetal-RJ"], "interessado")],
+                "people": [(p["[DEMO] Mário Santos da Silva"], "participante")],
+                "source": s["[DEMO] Relatório Anual da Comissão Arquivística de 1975"],
+                "excerpt": "Disputa de jurisdição sobre área de transição cujos marcos geodésicos exatos não constavam do memorial do município.",
+                "page": "p. 89",
+                "status": "provavel",
             }
         ]
 
         for item in events_setup:
             ev = Event(
                 title=item["title"],
+                date_display=item["date_display"],
                 date_start=item["date_start"],
                 year=item["year"],
+                exact_date=item["exact_date"],
+                temporal_precision=item["temporal_precision"],
                 confidence_level=item["confidence_level"],
                 description=item["description"],
                 historical_context=item["historical_context"],
@@ -303,7 +404,7 @@ def seed_demo_data():
             db.add(ev)
             db.flush()
 
-            # Relacionamento de proveniência com a fonte
+            # Proveniência estrita
             ev_src = EventSource(
                 event_id=ev.id,
                 source_id=item["source"].id,
@@ -311,7 +412,7 @@ def seed_demo_data():
                 excerpt=item["excerpt"],
                 claim_assertion=item["title"],
                 validation_status=item["status"],
-                confidence_notes=f"Registro DEMO de validação do ciclo metodológico ({item['status']}).",
+                confidence_notes=f"Registro DEMO de teste ({item['status']}).",
             )
             db.add(ev_src)
 
@@ -319,7 +420,7 @@ def seed_demo_data():
             ev_reg = EventRegion(
                 event_id=ev.id,
                 region_id=item["region"].id,
-                specific_location_name=item["region"].name,
+                specific_location_name=item["region"].original_name,
             )
             db.add(ev_reg)
 
@@ -342,7 +443,7 @@ def seed_demo_data():
                 db.add(ev_pers)
 
         db.commit()
-        print(f"[OK] Sucesso: {len(events_setup)} eventos DEMO inseridos com proveniencia de fontes, organizacoes, pessoas e regioes!")
+        print(f"[OK] Sucesso: {len(events_setup)} eventos DEMO inseridos com rigor temporal, geográfico e proveniência!")
 
     except Exception as e:
         db.rollback()

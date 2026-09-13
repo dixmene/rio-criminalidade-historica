@@ -9,6 +9,12 @@ UNKNOWN_SENTINEL_VALUES = {
     "-", "--", "s/d", "sem data", "indeterminado"
 }
 
+PT_MONTHS = {
+    "janeiro": 1, "fevereiro": 2, "marco": 3, "março": 3,
+    "abril": 4, "maio": 5, "junho": 6, "julho": 7,
+    "agosto": 8, "setembro": 9, "outubro": 10, "novembro": 11, "dezembro": 12
+}
+
 
 def normalize_nulls(value: Any) -> Optional[Any]:
     """
@@ -82,6 +88,13 @@ def normalize_date(date_str: Optional[str]) -> Tuple[Optional[str], Optional[int
     """
     Normaliza representações de datas históricas.
     Retorna: (date_start_str, year_int, exact_date_bool)
+    
+    Suporta:
+    - ISO YYYY-MM-DD
+    - BR DD/MM/YYYY
+    - Português por extenso: '14 de novembro de 1982' -> ('1982-11-14', 1982, True)
+    - Português mês/ano: 'maio de 1978' -> ('1978-05-01', 1978, False)
+    - Apenas ano: '1975' -> ('1975-01-01', 1975, False)
     """
     if date_str is None:
         return (None, None, False)
@@ -105,7 +118,28 @@ def normalize_date(date_str: Optional[str]) -> Tuple[Optional[str], Optional[int
         iso = f"{year}-{int(month):02d}-{int(day):02d}"
         return (iso, int(year), True)
 
-    # Formato Mês/Ano (MM/YYYY ou YYYY-MM)
+    # Formato por extenso: '14 de novembro de 1982'
+    extenso_match = re.match(r'^(\d{1,2})\s+de\s+([a-zA-ZçÇ]+)\s+de\s+(\d{4})$', s, re.IGNORECASE)
+    if extenso_match:
+        day = int(extenso_match.group(1))
+        month_name = extenso_match.group(2).lower()
+        year = int(extenso_match.group(3))
+        if month_name in PT_MONTHS:
+            month = PT_MONTHS[month_name]
+            iso = f"{year}-{month:02d}-{day:02d}"
+            return (iso, year, True)
+
+    # Formato mês e ano por extenso: 'maio de 1978'
+    mes_ano_match = re.match(r'^([a-zA-ZçÇ]+)\s+de\s+(\d{4})$', s, re.IGNORECASE)
+    if mes_ano_match:
+        month_name = mes_ano_match.group(1).lower()
+        year = int(mes_ano_match.group(2))
+        if month_name in PT_MONTHS:
+            month = PT_MONTHS[month_name]
+            iso = f"{year}-{month:02d}-01"
+            return (iso, year, False)
+
+    # Formato Mês/Ano numérico (YYYY-MM)
     my_match = re.match(r'^(\d{4})-(\d{2})$', s)
     if my_match:
         year = int(my_match.group(1))

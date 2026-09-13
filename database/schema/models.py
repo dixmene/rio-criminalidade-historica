@@ -11,6 +11,10 @@ def utc_now():
 
 
 class Source(Base):
+    """
+    Entidade Fonte: Registra a bibliografia, documento oficial, jornal,
+    depoimento ou relatório arquivístico.
+    """
     __tablename__ = "sources"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -25,17 +29,18 @@ class Source(Base):
     url = Column(String(500), nullable=True)
     archive_ref = Column(String(255), nullable=True)
     file_hash_sha256 = Column(String(64), nullable=True)
-    reliability_rating = Column(Integer, default=5)
     notes = Column(Text, nullable=True)
-    is_demo = Column(Boolean, default=False, nullable=False)
+    is_demo = Column(Boolean, default=False, nullable=False, index=True)
     created_at = Column(DateTime, default=utc_now)
 
-    # Relacionamentos
     event_links = relationship("EventSource", back_populates="source", cascade="all, delete-orphan")
     territorial_links = relationship("TerritorialRelationSource", back_populates="source", cascade="all, delete-orphan")
 
 
 class Organization(Base):
+    """
+    Entidade Organização: Facções, milícias, sindicatos, órgãos públicos.
+    """
     __tablename__ = "organizations"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -46,14 +51,21 @@ class Organization(Base):
     foundation_year = Column(Integer, nullable=True)
     dissolution_year = Column(Integer, nullable=True)
     description = Column(Text, nullable=True)
-    is_demo = Column(Boolean, default=False, nullable=False)
+    is_demo = Column(Boolean, default=False, nullable=False, index=True)
     created_at = Column(DateTime, default=utc_now)
 
     event_links = relationship("EventOrganization", back_populates="organization", cascade="all, delete-orphan")
     territorial_relations = relationship("TerritorialRelation", back_populates="organization", cascade="all, delete-orphan")
 
+    @property
+    def name(self) -> str:
+        return self.original_name
+
 
 class Person(Base):
+    """
+    Entidade Pessoa: Lideranças documentadas, agentes estatais, vítimas.
+    """
     __tablename__ = "people"
 
     id = Column(Integer, primary_key=True, index=True)
@@ -64,48 +76,72 @@ class Person(Base):
     birth_year = Column(Integer, nullable=True)
     death_year = Column(Integer, nullable=True)
     notes = Column(Text, nullable=True)
-    is_demo = Column(Boolean, default=False, nullable=False)
+    is_demo = Column(Boolean, default=False, nullable=False, index=True)
     created_at = Column(DateTime, default=utc_now)
 
     event_links = relationship("EventPerson", back_populates="person", cascade="all, delete-orphan")
 
+    @property
+    def name(self) -> str:
+        return self.original_name
+
 
 class Region(Base):
+    """
+    Entidade Região / Território:
+    Latitude e longitude são estritamente NULLABLE (não inventar coordenadas).
+    """
     __tablename__ = "regions"
 
     id = Column(Integer, primary_key=True, index=True)
     original_name = Column(String(255), nullable=False)
     normalized_name = Column(String(255), nullable=False, index=True)
     region_type = Column(String(100), nullable=False, default="bairro")
-    municipality = Column(String(100), nullable=False, default="Rio de Janeiro")
-    latitude = Column(Float, nullable=False)
-    longitude = Column(Float, nullable=False)
+    municipality = Column(String(100), nullable=True, default="Rio de Janeiro")
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
+    location_precision = Column(String(50), nullable=False, default="aproximada")
+    geometry_source = Column(String(100), nullable=True)
+    geometry_confidence = Column(String(50), nullable=True)
     geojson_boundary = Column(Text, nullable=True)
     description = Column(Text, nullable=True)
-    is_demo = Column(Boolean, default=False, nullable=False)
+    is_demo = Column(Boolean, default=False, nullable=False, index=True)
     created_at = Column(DateTime, default=utc_now)
 
     event_links = relationship("EventRegion", back_populates="region", cascade="all, delete-orphan")
     territorial_relations = relationship("TerritorialRelation", back_populates="region", cascade="all, delete-orphan")
 
+    @property
+    def name(self) -> str:
+        return self.original_name
+
+    @property
+    def has_coordinates(self) -> bool:
+        return self.latitude is not None and self.longitude is not None
+
 
 class Event(Base):
+    """
+    Entidade Evento Histórico:
+    Preserva date_display literal da fonte e temporalidade controlada.
+    """
     __tablename__ = "events"
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False, index=True)
     event_type = Column(String(100), nullable=False, default="acontecimento_geral")
-    date_start = Column(String(50), nullable=False, index=True)
+    date_display = Column(String(100), nullable=False)
+    date_start = Column(String(50), nullable=True, index=True)
     date_end = Column(String(50), nullable=True)
-    year = Column(Integer, nullable=False, index=True)
-    exact_date = Column(Boolean, default=True, nullable=False)
+    year = Column(Integer, nullable=True, index=True)
+    temporal_precision = Column(String(50), nullable=False, default="dia")
+    exact_date = Column(Boolean, default=False, nullable=False)
     description = Column(Text, nullable=False)
     historical_context = Column(Text, nullable=True)
     confidence_level = Column(String(30), default="confirmado", nullable=False, index=True)
-    is_demo = Column(Boolean, default=False, nullable=False)
+    is_demo = Column(Boolean, default=False, nullable=False, index=True)
     created_at = Column(DateTime, default=utc_now)
 
-    # Relacionamentos
     source_links = relationship("EventSource", back_populates="event", cascade="all, delete-orphan")
     organization_links = relationship("EventOrganization", back_populates="event", cascade="all, delete-orphan")
     person_links = relationship("EventPerson", back_populates="event", cascade="all, delete-orphan")
@@ -156,7 +192,7 @@ class TerritorialRelation(Base):
     relation_type = Column(String(100), nullable=False, default="dominio_hegemonico")
     confidence_level = Column(String(30), nullable=False, default="confirmado")
     notes = Column(Text, nullable=True)
-    is_demo = Column(Boolean, default=False, nullable=False)
+    is_demo = Column(Boolean, default=False, nullable=False, index=True)
     created_at = Column(DateTime, default=utc_now)
 
     organization = relationship("Organization", back_populates="territorial_relations")

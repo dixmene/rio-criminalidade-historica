@@ -148,11 +148,13 @@ pytest -v
 
 ## 📚 5. Documentação Metodológica
 
-Consulte os guias detalhados em `docs/metodologia/`:
-* [Metodologia de Pesquisa](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/metodologia_pesquisa.md)
-* [Metodologia de Fontes e Tipologia](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/metodologia_fontes.md)
-* [Metodologia de Confiabilidade e Validação](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/metodologia_confiabilidade.md)
-* [Metodologia de Normalização e Regra do Zero](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/metodologia_normalizacao.md)
-* [Metodologia Geográfica e Territórios no Tempo](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/metodologia_geografica.md)
+Consulte os guias metodológicos padronizados em `docs/metodologia/`:
+* [01. Princípios de Dados e Epistemologia](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/01_principios_dados.md)
+* [02. Normalização de Nomes e Regra ZERO vs. NULL](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/02_normalizacao.md)
+* [03. Metodologia de Proveniência Estrita](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/03_proveniencia.md)
+* [04. Confiabilidade e Gestão de Conflitos](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/04_confiabilidade.md)
+* [05. Política e Modelagem Temporal](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/05_temporalidade.md)
+* [06. Metodologia Geográfica e Gestão de Incerteza](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/06_geografia.md)
+* [07. Isolamento de Dados Técnicos DEMO vs. Histórico Real](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/07_demo_vs_real.md)
 * [Proposta de ERD Relacional](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/arquitetura/erd_proposta.md)
 * [Cronograma Detalhado do Projeto](file:///C:/Users/dani/Documents/Daniel%20Systems/cronograma_projeto.md)

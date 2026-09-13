@@ -21,54 +21,75 @@ def db_session():
     session.close()
 
 
-def test_event_requires_sources():
-    """Valida que o schema rejeita evento sem nenhuma fonte vinculada."""
-    with pytest.raises(ValidationError):
+def test_real_event_requires_sources_in_schema():
+    """Valida que o schema Pydantic rejeita evento histórico real (is_demo=False) sem fontes."""
+    with pytest.raises(ValidationError) as exc_info:
         EventCreate(
-            title="[DEMO] Evento Sem Fonte",
-            date_start="1980-01-01",
-            year=1980,
-            description="Tentativa de inserção de evento sem comprovação bibliográfica.",
+            title="Evento Real Sem Fonte",
+            date_display="1980-01-01",
+            description="Tentativa de inserção de evento real sem fonte documental.",
             confidence_level="confirmado",
-            sources=[],  # Deve falhar (min_length=1)
+            is_demo=False,
+            sources=[],  # Deve falhar obrigatoriamente
         )
+    assert "Regra de Proveniência Violada" in str(exc_info.value)
 
 
-def test_event_ingestion_with_valid_source(db_session):
-    """Valida ingestão completa com proveniência de fonte comprovada."""
+def test_real_event_rejected_in_service_without_sources(db_session):
+    """Valida que o IngestionService rejeita inserção de evento histórico real sem fontes."""
     ingestion = IngestionService(db_session)
 
-    # 1. Cria fonte
+    # Cria dados mínimos usando schema com is_demo=True para burlar Pydantic inicial,
+    # mas tentando forçar is_demo=False no serviço
+    event_data = EventCreate(
+        title="Evento Teste",
+        date_display="1980-01-01",
+        description="Tentativa direta de registrar evento sem fontes.",
+        confidence_level="confirmado",
+        is_demo=True,  # Inicialmente demo
+        sources=[],
+    )
+    # Altera para evento real
+    event_data.is_demo = False
+
+    with pytest.raises(ValueError) as exc_info:
+        ingestion.create_event(event_data)
+    assert "Regra de Domínio Violada" in str(exc_info.value)
+
+
+def test_real_event_with_valid_source_allowed(db_session):
+    """Valida ingestão bem-sucedida de evento histórico real quando proveniência existe."""
+    ingestion = IngestionService(db_session)
+
     src = ingestion.create_source(
         SourceCreate(
-            title="[DEMO] Arquivo Histórico Oficial",
-            citation="ARQUIVO. Documentos Oficiais, 1982.",
+            title="Documento Histórico Oficial",
+            citation="ARQUIVO NACIONAL. Fundo Documental, 1982.",
             publication_year=1982,
-            source_type="documento_oficial",
-            is_demo=True,
+            source_type="oficial_relatorio",
+            is_demo=False,
         )
     )
 
-    # 2. Cria evento apontando para a fonte
     event_data = EventCreate(
-        title="[DEMO] Evento Comprovado",
-        date_start="1982-06-10",
-        year=1982,
-        description="Evento histórico rigorosamente documentado.",
+        title="Evento Comprovado em Fonte",
+        date_display="10 de junho de 1982",
+        description="Acontecimentos rigorosamente documentados em arquivo primário.",
         confidence_level="confirmado",
-        is_demo=True,
+        is_demo=False,
         sources=[
             EventSourceLinkInput(
                 source_id=src.id,
-                page_or_section="p. 15-18",
-                excerpt="O registro documental atesta expressamente o acontecimento na data indicada.",
+                page_or_section="Folha 42",
+                excerpt="O registro documental atesta expressamente a deliberação na data indicada.",
                 validation_status="confirmado",
             )
         ],
     )
 
-    created_event = ingestion.create_event(event_data)
-    assert created_event.id is not None
-    assert len(created_event.source_links) == 1
-    assert created_event.source_links[0].source_id == src.id
-    assert created_event.source_links[0].validation_status == "confirmado"
+    event = ingestion.create_event(event_data)
+    assert event.id is not None
+    assert event.is_demo is False
+    assert len(event.sources) == 1
+    assert event.sources[0].title == "Documento Histórico Oficial"
+    assert event.source_links[0].excerpt.startswith("O registro documental")

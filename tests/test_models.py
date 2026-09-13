@@ -30,16 +30,17 @@ def test_create_entities(db_session):
         title="[DEMO] Fonte de Teste",
         citation="AUTOR. Livro de Teste, 1980.",
         publication_year=1980,
-        source_type="livro",
+        source_type="academico_livro",
         is_demo=True,
     )
     db_session.add(src)
     db_session.flush()
     assert src.id is not None
 
-    # 2. Region
+    # 2. Region (com original_name e normalized_name)
     reg = Region(
-        name="Centro",
+        original_name="Centro",
+        normalized_name="CENTRO",
         region_type="bairro",
         latitude=-22.9035,
         longitude=-43.1824,
@@ -48,25 +49,40 @@ def test_create_entities(db_session):
     db_session.add(reg)
     db_session.flush()
     assert reg.id is not None
+    assert reg.name == "Centro"
 
-    # 3. Organization
-    org = Organization(name="[DEMO] OAB-RJ", acronym="OAB", is_demo=True)
+    # 3. Organization (com original_name e normalized_name)
+    org = Organization(
+        original_name="[DEMO] OAB-RJ",
+        normalized_name="[DEMO] OAB-RJ",
+        acronym="OAB",
+        is_demo=True
+    )
     db_session.add(org)
     db_session.flush()
     assert org.id is not None
+    assert org.name == "[DEMO] OAB-RJ"
 
-    # 4. Person
-    pers = Person(name="[DEMO] Dra. Helena", is_demo=True)
+    # 4. Person (com original_name e normalized_name)
+    pers = Person(
+        original_name="[DEMO] Dra. Helena",
+        normalized_name="[DEMO] DRA. HELENA",
+        is_demo=True
+    )
     db_session.add(pers)
     db_session.flush()
     assert pers.id is not None
+    assert pers.name == "[DEMO] Dra. Helena"
 
-    # 5. Event
+    # 5. Event (com date_display e rigor temporal)
     ev = Event(
         title="[DEMO] Evento de Teste",
+        date_display="01 de maio de 1980",
         date_start="1980-05-01",
         year=1980,
-        description="Descrição detalhada para teste de persistência.",
+        exact_date=True,
+        temporal_precision="dia",
+        description="Descrição detalhada para teste de persistência e integridade.",
         confidence_level="confirmado",
         is_demo=True,
     )
@@ -93,6 +109,9 @@ def test_create_entities(db_session):
     assert len(loaded_ev.sources) == 1
     assert loaded_ev.sources[0].title == "[DEMO] Fonte de Teste"
     assert len(loaded_ev.organizations) == 1
+    assert loaded_ev.organizations[0].name == "[DEMO] OAB-RJ"
     assert len(loaded_ev.people) == 1
+    assert loaded_ev.people[0].name == "[DEMO] Dra. Helena"
     assert len(loaded_ev.regions) == 1
+    assert loaded_ev.regions[0].name == "Centro"
     assert loaded_ev.source_links[0].excerpt == "Trecho de teste com citação comprovada."

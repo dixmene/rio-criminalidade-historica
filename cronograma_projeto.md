@@ -5,8 +5,8 @@
 
 ## 📌 Status Geral do Projeto
 
-> **Fase Atual**: `FASE 1 — Preparação do Ambiente e Infraestrutura Inicial`  
-> **Próxima Fase**: `FASE 2 — Arquitetura de Pesquisa e Modelo de Dados Definitivo`
+> **Status Atual**: `SPRINT DE HARDENING CONCLUÍDA COM SUCESSO` (16/16 testes automatizados passando)  
+> **Próxima Fase**: `FASE 1 DA PESQUISA: Seleção e Execução do Piloto Histórico Controlado (1970–1989)`
 
 ---
 
@@ -29,17 +29,29 @@
   - [x] Configurar ambiente Python (`.venv`, `requirements.txt`, `pyproject.toml`)
   - [x] Configurar `.gitignore` e `.env.example`
   - [x] Criar `config/settings.py` com suporte a variáveis de ambiente e caminhos
-  - [x] Elaborar documentação metodológica (`docs/metodologia/`):
-    - [x] `metodologia_pesquisa.md`
-    - [x] `metodologia_fontes.md`
-    - [x] `metodologia_geografica.md`
-    - [x] `metodologia_normalizacao.md`
-    - [x] `metodologia_confiabilidade.md`
   - [x] Configurar conexão com o banco de dados (`src/database/connection.py`)
   - [x] Desenvolver módulo de normalização de Unicode e REGRA 1 (`src/normalization/rules.py`)
   - [x] Criar esqueletos de scripts de ingestão, extração e normalização
-  - [x] Implementar testes automatizados para normalização, regra do zero e conexão
 * **Critério de Conclusão**: Todos os testes unitários passando (`pytest -v`) e banco conectável.
+
+---
+
+## SPRINT DE HARDENING DO MVP (Concluída)
+* **Objetivo**: Blindar o MVP tecnicamente antes de qualquer inserção de dados históricos reais.
+* **Critérios de Conclusão Verificados**:
+  - [x] Nomes possuem `original_name` + `normalized_name` onde aplicável (Pessoas, Organizações, Regiões).
+  - [x] `NULL` e `0` estão estritamente diferenciados no modelo e pipelines (REGRA 1).
+  - [x] Evento histórico real (`is_demo=False`) sem fonte vinculada é terminantemente rejeitado por validação de domínio.
+  - [x] Fonte possui proveniência estrita (citação, trecho textual obrigatório, página/seção).
+  - [x] Dados `[DEMO]` estão 100% isolados por flag e seletor na UI.
+  - [x] Região não exige coordenadas inventadas (`latitude` e `longitude` são `NULLABLE`).
+  - [x] Eventos em regiões sem coordenadas são tratados e exibidos sem inventar pontos no mapa.
+  - [x] Política temporal rigorosa implementada (`date_display`, precisão temporal, sem inventar dias/meses falsos).
+  - [x] Separação conceitual entre tipologia da fonte e validação de asserções em `EventSource`.
+  - [x] Documentação metodológica padronizada (01 a 07) em `docs/metodologia/`.
+  - [x] Teste End-to-End completo aprovado (`tests/test_end_to_end.py`).
+  - [x] 16 testes automatizados passando com 100% de sucesso.
+  - [x] Streamlit + Folium atualizados e funcionando.
 
 ---
 

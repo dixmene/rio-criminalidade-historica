@@ -1,10 +1,14 @@
 import enum
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import (
-    Column, Integer, String, Text, Float, Boolean, ForeignKey, DateTime, Enum
+    Column, Integer, String, Text, Float, Boolean, ForeignKey, DateTime
 )
 from sqlalchemy.orm import relationship
 from app.database import Base
+
+
+def utc_now():
+    return datetime.now(timezone.utc)
 
 
 class ValidationStatusEnum(str, enum.Enum):
@@ -34,7 +38,7 @@ class EventSource(Base):
         nullable=False
     )
     confidence_notes = Column(Text, nullable=True)  # Divergências ou observações críticas
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=utc_now)
 
     # Relacionamentos
     event = relationship("Event", back_populates="source_links")

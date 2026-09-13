@@ -1,33 +1,48 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Text, Boolean, DateTime
 from sqlalchemy.orm import relationship
 from app.database import Base
 
 
+def utc_now():
+    return datetime.now(timezone.utc)
+
+
 class Event(Base):
     """
     Entidade Evento Histórico: Acontecimento documentado no tempo e no espaço.
-    Regra de ouro: Todo evento deve possuir proveniência vinculada via EventSource.
+    
+    Regra de Temporalidade:
+    - date_display: armazena a grafia exata informada pela fonte (ex: 'maio de 1978', '1975', '15/03/1983').
+    - year: ano de referência para indexação da linha do tempo (NULL permitido se desconhecido).
+    - Não transforma '1970' em '1970-01-01' ficticiamente.
+    
+    Regra de Proveniência:
+    - Nenhum evento histórico real (is_demo=False) pode existir sem pelo menos uma fonte vinculada.
     """
     __tablename__ = "events"
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String(255), nullable=False, index=True)
+    event_type = Column(String(100), nullable=False, default="acontecimento_geral")
     
-    # Temporalidade
-    date_start = Column(String(50), nullable=False, index=True)  # Formato YYYY-MM-DD ou YYYY
+    # Temporalidade rigorosa
+    date_display = Column(String(100), nullable=False)  # Como a fonte informa o tempo
+    date_start = Column(String(50), nullable=True, index=True)  # YYYY-MM-DD se dia exato, ou YYYY-MM ou YYYY
     date_end = Column(String(50), nullable=True)
-    year = Column(Integer, nullable=False, index=True)  # Ano de referência principal para timeline
-    exact_date = Column(Boolean, default=True, nullable=False)
+    year = Column(Integer, nullable=True, index=True)  # Ano de referência principal para timeline
+    temporal_precision = Column(String(50), nullable=False, default="dia")
+    # precisão: dia, mes, ano, intervalo, aproximado, desconhecido
+    exact_date = Column(Boolean, default=False, nullable=False)
     
-    # Conteúdo
+    # Conteúdo factual e contexto
     description = Column(Text, nullable=False)
-    historical_context = Column(Text, nullable=True)  # Contexto histórico ampliado
+    historical_context = Column(Text, nullable=True)
     confidence_level = Column(String(30), default="confirmado", nullable=False, index=True)
     # Níveis: confirmado, provavel, conflitante, nao_verificado
     
-    is_demo = Column(Boolean, default=False, nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    is_demo = Column(Boolean, default=False, nullable=False, index=True)
+    created_at = Column(DateTime, default=utc_now)
 
     # Relacionamentos
     source_links = relationship("EventSource", back_populates="event", cascade="all, delete-orphan")
@@ -52,4 +67,4 @@ class Event(Base):
         return [link.region for link in self.region_links]
 
     def __repr__(self):
-        return f"<Event(id={self.id}, title='{self.title[:30]}...', year={self.year}, confidence='{self.confidence_level}')>"
+        return f"<Event(id={self.id}, title='{self.title[:30]}...', date='{self.date_display}', confidence='{self.confidence_level}')>"
