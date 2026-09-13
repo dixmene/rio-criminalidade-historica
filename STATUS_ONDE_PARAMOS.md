@@ -1,102 +1,105 @@
 # 📌 STATUS DO PROJETO — ONDE PARAMOS
-**Data do Registro**: 13 de Setembro de 2026 (02:30)  
+**Data do Registro**: 13 de Setembro de 2026  
 **Repositório Remoto**: [GitHub (Privado) — `dixmene/rio-criminalidade-historica`](https://github.com/dixmene/rio-criminalidade-historica)  
-**Branch Atual**: `main` (100% sincronizada)  
-**Qualidade Técnica**: 16/16 Testes Automatizados Aprovados (`pytest -v`)
+**Branch Atual**: `main`  
+**Qualidade Técnica**: 17/17 Testes Automatizados Aprovados (`pytest -v`)
 
 ---
 
-## 🟢 1. O que foi Concluído Hoje
+## 🟢 1. O que foi Concluído nesta Etapa
 
-1. **Infraestrutura Completa de Engenharia de Dados**:
-   - Estrutura profissional de diretórios (`data/raw/`, `docs/`, `research/`, `scripts/`, `database/`, `src/`, `tests/`, `app/`).
-   - Ambiente virtual `.venv` configurado com `pandas`, `SQLAlchemy`, `psycopg2-binary`, `pydantic`, `shapely`, `pyproj`, `folium`, `beautifulsoup4`, `pdfplumber`, `pypdf`, `pytest`.
-   - `.gitignore` blindado: **zero exposição** de credenciais, bancos `.db` ou arquivos `.env`.
+### A. Download e Catalogação Automatizada do Corpus do NotebookLM
+1. **Pipeline de Ingestão e Hashes Criptográficos (`scripts/ingestion/download_corpus.py`)**:
+   - Baixou documentos integrais em `data/raw/` organizados por pastas temáticas (`academia/`, `governo/`, `processos_publicos/`, `seguranca_publica/`, `jornalismo/`).
+   - Gerou metadados arquivísticos em formato JSON sidecar (`*_meta.json`) com cálculo de **SHA-256** para auditoria e custódia digital.
+   - Gerou o catálogo consolidado `data/catalogo_fontes_notebooklm.json`.
 
-2. **Sprint de Hardening do MVP Realizada**:
-   - **Camada Central de Normalização**: Todas as entidades possuem `original_name` (grafia histórica preservada) e `normalized_name` (maiúsculas sem acentos via decomposição canônica Unicode).
-   - **REGRA 1 (ZERO vs. NULL)**: `NULL` é usado exclusivamente para dado desconhecido/não informado; `0` é preservado exclusivamente quando o valor for comprovadamente zero. Nenhuma conversão automática de vazio para zero.
-   - **Proveniência Obrigatória**: A nível de schema Pydantic e serviço de domínio (`IngestionService`), eventos históricos reais (`is_demo=False`) sem fontes vinculadas com citação literal (`excerpt`) são **terminantemente rejeitados**.
-   - **Isolamento de Dados [DEMO]**: Dados sintéticos possuem `is_demo=True` e `[DEMO]`. A interface gráfica possui seletor explícito de visualização para não misturar dados de teste com história real.
-   - **Geografia sem Invenção de Coordenadas**: `Region.latitude` e `Region.longitude` são estritamente `nullable=True`. Se o território histórico não tiver delimitação cartográfica precisa, não são inventadas coordenadas falsas. O Folium só plota pontos documentados e a interface lista os eventos sem coordenadas em painel dedicado.
-   - **Temporalidade Rigorosa**: O campo `date_display` preserva a escrita original da fonte (`"1975"`, `"maio de 1978"`), sem inventar dias ou meses fictícios. Suporte completo a datas por extenso em português.
-   - **Separação Conceitual de Fontes**: Desacoplamento da tipologia do documento da avaliação de alegações específicas (feitas por afirmação em `EventSource.validation_status`).
+2. **Documentos Físicos e Digitais no Acervo Local**:
+   - `data/raw/academia/no_sapatinho_milicia_rj.pdf` (6.3 MB) — Heinrich Böll / LAV-UERJ
+   - `data/raw/processos_publicos/stf_adpf_635_info_sociedade.pdf` (190 KB) — Supremo Tribunal Federal (ADPF das Favelas)
+   - `data/raw/seguranca_publica/isp_balanco_indicadores_upp_2015.pdf` (564 KB) — Instituto de Segurança Pública (ISP-RJ)
+   - `data/raw/academia/clio_ufpel_artigo_historico.pdf` (211 KB) — Revista Clio (UFPel)
+   - `data/raw/academia/revista_passagens_uff_artigo.pdf` (584 KB) — Revista Passagens (UFF)
+   - `data/raw/academia/redalyc_trajetoria_milicias_rj.pdf` (169 KB) — Redalyc
+   - `data/raw/governo/sepm_rj_historico_bope.html` (98 KB) — Polícia Militar do RJ (Histórico Oficial NuCOE/BOPE)
+   - `data/raw/jornalismo/elpais_adriano_nobrega_submundo_rj.html` (335 KB) — El País Brasil
+   - `data/raw/jornalismo/elpais_intervencao_federal_seguranca_rj.html` (331 KB) — El País Brasil
+   - `data/raw/jornalismo/ihu_upps_ajustes_fracasso.html` (55 KB) — IHU Unisinos
 
-3. **Documentação Metodológica Padronizada (`docs/metodologia/`)**:
-   - `01_principios_dados.md`: Rastreabilidade integral e epistemologia histórica.
-   - `02_normalizacao.md`: Decomposição Unicode e REGRA 1 (ZERO vs. NULL).
-   - `03_proveniencia.md`: Validação estrita de proveniência de fontes.
-   - `04_confiabilidade.md`: Níveis de evidência e gestão de versões conflitantes.
-   - `05_temporalidade.md`: Política temporal de não-invenção de datas.
-   - `06_geografia.md`: Gestão de incerteza geoespacial.
-   - `07_demo_vs_real.md`: Protocolos de isolamento de dados DEMO.
-
-4. **Testes Automatizados (16 Suítes Aprovadas)**:
-   - Conexão e integridade de tabelas (`test_database_connection.py`).
-   - Normalização Unicode e preservação de original (`test_normalization_rules.py`).
-   - REGRA 1 ZERO vs. NULL (`test_zero_vs_null.py`).
-   - Rejeição de eventos sem fontes (`test_provenance.py`).
-   - Relações territoriais e proveniência temporal (`test_schema_models.py`).
-   - Filtros temporais e territoriais (`test_services.py`).
-   - **Ciclo Completo End-to-End** (`test_end_to_end.py`): Fonte $\rightarrow$ Território $\rightarrow$ Organização $\rightarrow$ Pessoa $\rightarrow$ Evento $\rightarrow$ Consulta $\rightarrow$ Rastreabilidade.
+3. **Módulo de Extração Multi-Formato (`scripts/extraction/extract_text.py`)**:
+   - Extração estruturada de páginas e texto limpo para PDFs (`pdfplumber` / `pypdf`) e páginas web (`BeautifulSoup`).
 
 ---
 
-## 🛑 2. Onde Paramos Exatamente
-
-* **O MVP está 100% estabilizado e blindado.**
-* **Nenhum dado histórico real foi inserido ainda.**
-* O banco de dados contém apenas a carga controlada de 10 eventos `[DEMO]` para testes técnicos da interface e dos filtros.
-* O trabalho foi pausado exatamente no portão de entrada da **Pesquisa Histórica Real**.
-
----
-
-## 🚀 3. Roteiro para o Retorno (Amanhã)
-
-Ao reabrir o projeto, a sequência imediata será:
-
-### Passo 1: Seleção do Corpus do Piloto Histórico (1970–1989)
-* Focar no recorte inicial: **1970–1989** (Antecedentes, Ilha Grande, formação das primeiras organizações prisionais e transição política).
-* Definir as primeiras **10 a 20 fontes reais**:
-  1. *Obras Historiográficas/Sociológicas de Referência*:
-     - Amorim, Carlos. *Comando Vermelho: A história secreta do crime organizado* (1993).
-     - Misse, Michel. *Crime e Violência no Brasil Contemporâneo* (2006).
-     - Zaluar, Alba. *Condomínio do Diabo* (1994).
-     - Paixão, Antônio Luiz. *Recuperar ou Punir? Como o Estado trata o criminoso* (1987).
-  2. *Fontes Institucionais e Arquivísticas*:
-     - Acervo do Fundo DOPS / Arquivo Público do Estado do Rio de Janeiro (Aperj).
-     - Documentos históricos da Comissão da Verdade do Rio de Janeiro (CEV-Rio).
-  3. *Acervo Hemerográfico*:
-     - Matérias históricas digitalizadas da Biblioteca Nacional (Jornal do Brasil e O Globo do período 1975–1985).
-
-### Passo 2: Registro e Extração das Primeiras Fontes
-* Utilizar `scripts/ingestion/ingest_source.py` para armazenar os documentos/trechos em `data/raw/` com cálculo de hash SHA-256.
-* Fichar as fontes em `research/source_reviews/`.
-
-### Passo 3: Ingestão dos Primeiros 10 a 20 Eventos Históricos Reais
-* Utilizar `IngestionService` para cadastrar os eventos reais (`is_demo=False`), garantindo:
-  - Citação literal exata em `excerpt`.
-  - Página ou seção documental.
-  - Vínculo com os territórios (com coordenadas reais se delimitadas, ou `None` se incertas).
-  - Vínculo com lideranças e organizações documentadas.
-
-### Passo 4: Validação no Mapa e na Linha do Tempo
-* Rodar o Streamlit e testar o modo **"Apenas Dados Históricos Reais"** com a primeira base factual viva.
+### B. Ingestão do Piloto Histórico Real (1970–1989)
+1. **Script de Ingestão Factual (`scripts/ingestion/seed_real_sources.py`)**:
+   - **12 Fontes Históricas Reais** cadastradas com citação formal, autoria, tipologia, link arquivístico e hash SHA-256 (`is_demo=False`).
+   - **8 Territórios Históricos Reais**:
+     - Com coordenadas cartográficas delimitadas (Ilha Grande/Dois Rios, Quartel Sulacap, Centro/Rua Gonçalves Dias, Brás de Pina/Penha, Sambódromo da Marquês de Sapucaí, Estácio/Caetano de Faria, Morro do Juramento).
+     - Com coordenadas estritamente `NULL` (Rede Penitenciária Geral da Guanabara), cumprindo a **Regra 1 (Não invenção de coordenadas)**.
+   - **6 Organizações Históricas**: Comando Vermelho, PMERJ, NuCOE/BOPE, Scuderia Le Cocq / Homens de Ouro, Cúpula da Contravenção e LIESA.
+   - **7 Lideranças e Personagens Históricos**: Rogério Lemgruber (Bagulhão), William da Silva Lima (Professor), Capitão Amendola, Mariel Mariscot, Castor de Andrade, José Carlos dos Reis Encina (Escadinha), José Jorge Saldanha (Zezinho).
+   - **10 Eventos Históricos Reais Documentados (1970–1989)**:
+     - 1970: Aplicação da Lei de Segurança Nacional e Remessa de Presos Comuns e Políticos para a Ilha Grande.
+     - 1978: Criação do Núcleo da Companhia de Operações Especiais (NuCOE) da PMERJ (Boletim nº 14).
+     - 1979: Fundação e Estruturação do Coletivo 'Falange Vermelha' no Instituto Penal Cândido Mendes.
+     - 1981: O Cerco da Rua Juramento e a Consagração Pública do Termo 'Comando Vermelho'.
+     - 1982: Assassinato do Ex-Policial Mariel Mariscot no Centro do Rio de Janeiro.
+     - 1984: Fundação da Liga Independente das Escolas de Samba (LIESA) e Monopólio da Contravenção.
+     - 1985: Fuga de Helicóptero de José Carlos dos Reis Encina ('Escadinha') do Presídio da Ilha Grande.
+     - 1988: Reorganização e Elevação do NuCOE para Companhia de Operações Especiais (COE) da PMERJ.
+     - 1980-1988: Circulação e Codificação das Primeiras Cartas e Estatuto Disciplinar do Comando Vermelho.
+     - 1989: Transferência Gradual de Lideranças da Ilha Grande e Transição do Foco Territorial para as Favelas.
+   - **100% dos eventos possuem fontes vinculadas com citação textual literal (`excerpt`), página ou seção e validação de afirmação**.
 
 ---
 
-## 💻 4. Comandos Rápidos de Execução
+### C. Unificação do Banco de Dados e Testes Automatizados
+1. **Unificação da Conexão**:
+   - `app/config.py` e `config/settings.py` unificados para apontar diretamente para `data/rio_historico.db`.
+2. **Suíte de Testes Aprovada (17/17)**:
+   - Novo teste `tests/test_real_pilot_data.py` validando integridade, proveniência estrita, não-invenção de coordenadas e hashes da base real.
+   - Isolamento total entre dados reais (`is_demo=False`) e dados sintéticos (`is_demo=True`).
+3. **Painel Interativo (Streamlit + Folium)**:
+   - Configurado por padrão para o modo **"Apenas Dados Históricos Reais"**, exibindo o mapa interativo, linha do tempo 1970–1989, cards de proveniência com citação literal e caixa de territórios sem coordenadas geográficas.
+
+---
+
+## 🛑 2. Situação Atual do Banco de Dados (`data/rio_historico.db`)
+
+| Entidade | Dados Históricos Reais (`is_demo=False`) | Dados Técnicos de Teste (`is_demo=True`) | Total |
+| :--- | :---: | :---: | :---: |
+| **Eventos** | **10** | 10 | 20 |
+| **Fontes Documentais** | **12** | 6 | 18 |
+| **Regiões / Territórios** | **8** | 10 | 18 |
+| **Organizações** | **6** | 6 | 12 |
+| **Pessoas / Biografias** | **7** | 5 | 12 |
+
+---
+
+## 🚀 3. Próximos Passos Recomendados
+
+1. **Expansão do Recorte Histórico para os Anos 1990 (Fase 2)**:
+   - Ingestão de eventos da década de 1990: desativação/demolição do Instituto Penal Cândido Mendes (1994), CPI do Narcotráfico, surgimento do Terceiro Comando (TC) e Amigos dos Amigos (ADA).
+2. **Extração das Fontes do Acervo de Transição (2000–2020)**:
+   - Utilizar o extrator nos PDFs já baixados (`no_sapatinho_milicia_rj.pdf`, `isp_balanco_indicadores_upp_2015.pdf`, `stf_adpf_635_info_sociedade.pdf`) para catalogar eventos da gênese das milícias e UPPs.
+3. **Refinamento Cartográfico**:
+   - Adicionar arquivos GeoJSON vetoriais dos bairros e limites de favelas históricas em `data/geospatial/`.
+
+---
+
+## 💻 4. Comandos para Execução e Demonstração
 
 ```powershell
 # 1. Ativar o ambiente virtual
 .\.venv\Scripts\Activate.ps1
 
-# 2. Rodar todos os testes automatizados
+# 2. Rodar todos os testes automatizados (17 testes)
 pytest -v
 
-# 3. Executar o Painel Interativo (Streamlit + Mapa Folium)
+# 3. Executar o Painel Interativo no Navegador
 streamlit run app/ui/app.py
 
-# 4. Verificar saúde e tabelas do banco de dados
-python -m scripts.validation.check_db
+# 4. Re-executar ou atualizar a carga histórica real se necessário
+python -m scripts.ingestion.seed_real_sources
 ```

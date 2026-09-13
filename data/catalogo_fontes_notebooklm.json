@@ -1,0 +1,219 @@
+{
+  "total_fontes_mapeadas": 18,
+  "fontes_com_arquivo_bruto": [
+    {
+      "title": "No sapatinho: a milícia no Rio de Janeiro",
+      "filename": "no_sapatinho_milicia_rj.pdf",
+      "category": "academia",
+      "source_type": "academico_livro",
+      "publisher": "Fundação Heinrich Böll",
+      "url": "https://br.boell.org/sites/default/files/no_sapatinho_lav_hbs1_1.pdf",
+      "period": "década de 2000 até 2020",
+      "notes": "Estudo de referência sobre a formação e expansão das milícias no RJ.",
+      "sha256": "ed8b8dc6cf6e5ccc4ee127685b36d6c860996ef03cd0eceaf184370a81f92d43",
+      "file_size_kb": 6384.58,
+      "ingested_at": "2026-09-13T05:42:27.445365+00:00"
+    },
+    {
+      "title": "Balanço de Indicadores da Polícia de Pacificação (2015)",
+      "filename": "isp_balanco_indicadores_upp_2015.pdf",
+      "category": "seguranca_publica",
+      "source_type": "oficial_relatorio",
+      "publisher": "Instituto de Segurança Pública (ISP-RJ)",
+      "url": "https://www.rj.gov.br/isp/sites/default/files/2022-05/BalancodeIndicadoresdaPoliciadePacificacao2015.pdf",
+      "period": "2008-2015",
+      "notes": "Relatório estatístico oficial sobre a implementação e impacto das UPPs.",
+      "sha256": "5511dee7d1d8b3bb9a7eab4372f8e933a8b4c0c1fe5b4a0f8e58dab80db2bd7b",
+      "file_size_kb": 564.18,
+      "ingested_at": "2026-09-13T05:42:27.445867+00:00"
+    },
+    {
+      "title": "Informativo à Sociedade - ADPF 635 ('ADPF das Favelas')",
+      "filename": "stf_adpf_635_info_sociedade.pdf",
+      "category": "processos_publicos",
+      "source_type": "documento_judicial",
+      "publisher": "Supremo Tribunal Federal (STF)",
+      "url": "https://www.stf.jus.br/arquivo/cms/noticiaNoticiaStf/anexo/InfoSociedadeADPF635.pdf",
+      "period": "2020-atual",
+      "notes": "Documento explicativo da ADPF 635 sobre restrição de operações policiais em favelas.",
+      "sha256": "adffc27cd70d41a80bbf6a275ac3967c2631778eac2ac3e83e720ca63b3df9ac",
+      "file_size_kb": 189.85,
+      "ingested_at": "2026-09-13T05:42:27.760431+00:00"
+    },
+    {
+      "title": "A trajetória das milícias e crime organizado no RJ",
+      "filename": "redalyc_trajetoria_milicias_rj.pdf",
+      "category": "academia",
+      "source_type": "academico_artigo",
+      "publisher": "Revista Redalyc",
+      "url": "https://www.redalyc.org/pdf/5638/563865508005.pdf",
+      "period": "1990-2018",
+      "notes": "Artigo científico sobre sociologia do crime e paramilitarismo fluminense.",
+      "sha256": "0c33e3ff89607e93948acd0641e834f71fad3b48e79be897c66c4f83ac315e89",
+      "file_size_kb": 169.09,
+      "ingested_at": "2026-09-13T05:42:27.764256+00:00"
+    },
+    {
+      "title": "Artigo - História da Criminalidade e Território",
+      "filename": "revista_passagens_uff_artigo.pdf",
+      "category": "academia",
+      "source_type": "academico_artigo",
+      "publisher": "Revista Passagens (UFF)",
+      "url": "https://periodicos.uff.br/revistapassagens/article/download/69248/40907/255946",
+      "period": "histórico",
+      "notes": "Estudo historiográfico da Universidade Federal Fluminense.",
+      "sha256": "12b6ac11a2a9a314a217adf7a6dc5a6a88ddbe267aa9fc93d053972c3204b221",
+      "file_size_kb": 584.39,
+      "ingested_at": "2026-09-13T05:43:13.335133+00:00"
+    },
+    {
+      "title": "Artigo - Clio Revista de Pesquisa Histórica",
+      "filename": "clio_ufpel_artigo_historico.pdf",
+      "category": "academia",
+      "source_type": "academico_artigo",
+      "publisher": "Revista Clio (UFPel)",
+      "url": "https://periodicos.ufpel.edu.br/index.php/CLIO/article/view/31474/22139",
+      "period": "histórico",
+      "notes": "Artigo acadêmico historiográfico sobre redes criminais e prisões.",
+      "sha256": "7979771fe21dccc53f96bbf66764a0b039ae248223a124aa015ff22a0cb6ed64",
+      "file_size_kb": 211.59,
+      "ingested_at": "2026-09-13T05:43:13.337653+00:00"
+    },
+    {
+      "title": "O Policial Criminoso que Levou para o Túmulo os Segredos do Submundo do RJ",
+      "filename": "elpais_adriano_nobrega_submundo_rj.html",
+      "category": "jornalismo",
+      "source_type": "jornalismo_investigativo",
+      "publisher": "El País Brasil",
+      "url": "https://brasil.elpais.com/brasil/2020-02-15/o-policial-criminoso-que-levou-para-o-tumulo-os-segredos-do-submundo-do-rio-de-janeiro.html",
+      "period": "2000-2020",
+      "notes": "Trajetória de Adriano da Nóbrega (ex-BOPE), matadores de aluguel e milícias em Rio das Pedras.",
+      "sha256": "8ec2f64451a733c88546b6b0f42e73724c25e1986aa5f2eeec5a70bf75c3720a",
+      "file_size_kb": 334.85,
+      "ingested_at": "2026-09-13T05:43:13.433750+00:00"
+    },
+    {
+      "title": "Intervenção Federal no Rio e as Raízes da Crise na Segurança",
+      "filename": "elpais_intervencao_federal_seguranca_rj.html",
+      "category": "jornalismo",
+      "source_type": "jornalismo_investigativo",
+      "publisher": "El País Brasil",
+      "url": "https://brasil.elpais.com/brasil/2018/03/11/politica/1520769227_645322.html",
+      "period": "2018",
+      "notes": "Análise da intervenção federal de 2018 no Rio de Janeiro.",
+      "sha256": "88dd65adeb04489008db156b4bcdafc483f678f1712a24556c153a99cecc9c8b",
+      "file_size_kb": 330.8,
+      "ingested_at": "2026-09-13T05:43:13.434750+00:00"
+    },
+    {
+      "title": "UPPs precisam de ajustes para evitar fracasso",
+      "filename": "ihu_upps_ajustes_fracasso.html",
+      "category": "jornalismo",
+      "source_type": "jornalismo_investigativo",
+      "publisher": "Instituto Humanitas Unisinos (IHU)",
+      "url": "https://ihu.unisinos.br/sobre-o-ihu/170-noticias/noticias-2014/534853-upps-precisam-de-ajustes-para-evitar-fracasso",
+      "period": "2008-2014",
+      "notes": "Entrevista e balanço crítico do modelo de Unidades de Polícia Pacificadora.",
+      "sha256": "ef8887c8f5842497678707b8f8a90276ca9111814f802d08bf13882f8bfde3e4",
+      "file_size_kb": 54.57,
+      "ingested_at": "2026-09-13T05:43:13.434750+00:00"
+    },
+    {
+      "title": "Batalhão de Operações Policiais Especiais (BOPE) - Histórico Institucional",
+      "filename": "sepm_rj_historico_bope.html",
+      "category": "governo",
+      "source_type": "oficial_relatorio",
+      "publisher": "Secretaria de Estado de Polícia Militar RJ",
+      "url": "https://sepm.rj.gov.br/2015/10/bope-batalhao-de-operacoes-especiais/",
+      "period": "1978-atual",
+      "notes": "Histórico oficial da criação da Companhia de Operações Especiais (NuCOE) em 1978 e evolução para BOPE.",
+      "sha256": "fd0de1fe00c0009a583e25127418bb95a0ecceef0be3c401800a966f484f7fac",
+      "file_size_kb": 97.78,
+      "ingested_at": "2026-09-13T05:43:13.435750+00:00"
+    }
+  ],
+  "corpus_academico_referencia": [
+    {
+      "title": "A Acumulação Social da Violência no Rio de Janeiro",
+      "author": "Michel Misse",
+      "publication_year": 1999,
+      "source_type": "academico_livro",
+      "publisher": "Lúmen Júris / IUPERJ",
+      "relevance": "Obra teórica basilar sobre a transformação da violência e formação dos 'sujeitos criminais' e redes de propina no RJ.",
+      "key_concepts": [
+        "mercadorias políticas",
+        "sujeito criminal",
+        "acumulação social da violência"
+      ]
+    },
+    {
+      "title": "O encontro da militância com a vadiagem nas prisões da Ilha Grande",
+      "author": "Pesquisa Historiográfica CPDOC/FGV",
+      "publication_year": 2005,
+      "source_type": "academico_artigo",
+      "publisher": "SciELO / Estudos Históricos",
+      "relevance": "Documenta o convívio entre presos políticos (guerrilha urbana) e presos comuns no Instituto Penal Cândido Mendes nos anos 1970, originando o Comando Vermelho.",
+      "key_concepts": [
+        "Ilha Grande",
+        "Lei de Segurança Nacional",
+        "Fundo Falange Vermelha",
+        "Rogério Lemgruber"
+      ]
+    },
+    {
+      "title": "Do 'esquadrão da morte' ao 'urbanismo miliciano'",
+      "author": "Revista da EMERJ",
+      "publication_year": 2021,
+      "source_type": "academico_artigo",
+      "publisher": "Escola da Magistratura do Estado do Rio de Janeiro",
+      "relevance": "Mapeia a linhagem histórica que liga os grupos de extermínio dos anos 1960/1970 (Scuderia Le Cocq, Homens de Ouro) às milícias contemporâneas e captura de loteamentos urbanos.",
+      "key_concepts": [
+        "Scuderia Le Cocq",
+        "Mariel Mariscot",
+        "Esquadrão da Morte",
+        "urbanismo miliciano"
+      ]
+    },
+    {
+      "title": "Análise das cartas do Comando Vermelho (1980-1990)",
+      "author": "Família CV / Acervo Historiográfico",
+      "publication_year": 1990,
+      "source_type": "historia_oral",
+      "publisher": "Documentação Primária Penitenciária",
+      "relevance": "Manuscritos e cartas internas entre lideranças da Ilha Grande e presídios da capital estabelecendo regras disciplinares ('paz, justiça e liberdade').",
+      "key_concepts": [
+        "estatuto primitivo",
+        "solidariedade carcerária",
+        "década de 1980"
+      ]
+    },
+    {
+      "title": "Operações Policiais no Rio de Janeiro (2006-2020): Da lacuna estatística ao ativismo de dados",
+      "author": "GENI/UFF (Grupo de Estudos dos Novos Ilegalismos)",
+      "publication_year": 2021,
+      "source_type": "academico_artigo",
+      "publisher": "SciELO",
+      "relevance": "Mapeamento rigoroso e geoespacial de mais de uma década de incursões policiais e operações em favelas do Rio.",
+      "key_concepts": [
+        "GENI/UFF",
+        "letalidade policial",
+        "eficiência operacional",
+        "chacinas"
+      ]
+    },
+    {
+      "title": "Vale o escrito: o jogo do bicho entre a decadência e a vitalidade",
+      "author": "Avelar, R. et al.",
+      "publication_year": 2023,
+      "source_type": "jornalismo_investigativo",
+      "publisher": "Projeto Colabora",
+      "relevance": "História da cúpula do jogo do bicho nos anos 1970 e 1980 (Castor de Andrade, Capitão Guimarães), patronato de escolas de samba e transição para o mercado de máquinas de caça-níquel.",
+      "key_concepts": [
+        "jogo do bicho",
+        "Castor de Andrade",
+        "antecedentes históricos"
+      ]
+    }
+  ],
+  "generated_at": "2026-09-13T05:43:13.435750+00:00"
+}

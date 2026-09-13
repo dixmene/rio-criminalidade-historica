@@ -33,9 +33,12 @@ def test_timeline_and_filters():
         assert len(conflitantes) >= 1
         assert any("Explosão" in ev.title or "Incidente" in ev.title for ev in conflitantes)
 
-        # 4. Teste de isolamento DEMO: count_real_events deve ser 0
-        real_count = service.count_real_events()
-        assert real_count == 0
+        # 4. Teste de isolamento DEMO vs REAL
+        demo_count = service.count_demo_events()
+        assert demo_count >= 10
+        real_events = service.list_events(is_demo=False)
+        for rev in real_events:
+            assert rev.is_demo is False
 
         # 5. Teste de região sem coordenadas geográficas (não inventa coordenadas)
         unmapped_region = next((r for r in regions if r.latitude is None), None)

@@ -137,7 +137,7 @@ def main():
         demo_mode = st.sidebar.radio(
             "Origem dos Dados:",
             options=["Apenas Dados Históricos Reais", "Incluir Dados Técnicos [DEMO]", "Apenas Dados [DEMO]"],
-            index=1,  # Durante a fase de desenvolvimento, default em incluir demo para teste visual
+            index=0,  # Default agora é o acervo de dados históricos reais
             help="Dados DEMO são identificados com [DEMO] e servem apenas para testes técnicos de interface."
         )
 

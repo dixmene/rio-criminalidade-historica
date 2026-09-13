@@ -93,6 +93,10 @@ class EventService:
         """Conta eventos históricos reais (is_demo=False)."""
         return self.db.query(Event).filter(Event.is_demo == False).count()
 
+    def count_demo_events(self) -> int:
+        """Conta eventos de teste técnico [DEMO] (is_demo=True)."""
+        return self.db.query(Event).filter(Event.is_demo == True).count()
+
     def list_regions(self, is_demo: Optional[bool] = None) -> List[Region]:
         query = self.db.query(Region)
         if is_demo is not None:
