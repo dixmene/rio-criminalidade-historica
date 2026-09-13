@@ -1,7 +1,8 @@
 # 📌 STATUS DO PROJETO — ONDE PARAMOS
-**Data do Registro**: 13 de Setembro de 2026  
+**Data do Registro**: 13 de Setembro de 2026 (Madrugada)  
 **Repositório Remoto**: [GitHub (Privado) — `dixmene/rio-criminalidade-historica`](https://github.com/dixmene/rio-criminalidade-historica)  
 **Branch Atual**: `main`  
+**Último Commit**: `79fb522`  
 **Qualidade Técnica**: 18/18 Testes Automatizados Aprovados (`python -m pytest -v`)
 
 ---
@@ -78,6 +79,9 @@
    - Filtros dinâmicos por **Eixo Temático de Pesquisa** (25 eixos), **Tipologia Documental** e **Busca Textual** (título, autor, veículo).
    - Indicadores de custódia digital (arquivos locais com hash SHA-256 vs fontes remotas catalogadas).
    - Ficha catalográfica completa ao selecionar qualquer fonte: citação formal ABNT, notas, links de acesso e lista de eventos vinculados com trechos literais.
+3. **Resolução de Namespace e Camada Cartográfica**:
+   - Injeção determinística de prioridade de importação em `app/ui/app.py` eliminando colisões com o diretório `app/ui`.
+   - Camada base de mapas configurada com **OpenStreetMap** (100% livre de limites ou chaves de API).
 
 ---
 
@@ -107,18 +111,16 @@
 
 ---
 
-## 💻 4. Comandos para Execução e Demonstração
+## 💻 4. Como Retomar Amanhã (Comandos Prontos)
 
 ```powershell
-# 1. Ativar o ambiente virtual
+# 1. Entrar na pasta e ativar o ambiente
+cd "C:\Users\dani\Documents\Daniel Systems"
 .\.venv\Scripts\Activate.ps1
 
-# 2. Rodar todos os testes automatizados (18 testes)
+# 2. Rodar a suíte de testes (garantia de 18/18 aprovados)
 python -m pytest -v
 
-# 3. Executar o Painel Interativo no Navegador
+# 3. Abrir o Painel Interativo no Navegador
 streamlit run app/ui/app.py
-
-# 4. Re-executar a carga do acervo de fontes do Excel se necessário
-python -m scripts.ingestion.import_sources_from_excel
 ```
