@@ -43,5 +43,14 @@
     "disputed_claims": 3,
     "temporal_span": 69,
     "integrity_errors": 0
+  },
+  {
+    "timestamp": "2026-09-13T17:29:33.000398+00:00",
+    "real_events": 43,
+    "real_sources": 185,
+    "real_claims": 10,
+    "disputed_claims": 3,
+    "temporal_span": 69,
+    "integrity_errors": 0
   }
 ]
