@@ -1,160 +1,129 @@
 # Mapa Histórico, Territorial e Antropológico da Criminalidade no Rio de Janeiro
 
-Projeto de pesquisa científica, histórica, sociológica e antropológica sobre a evolução da criminalidade organizada e dinâmicas territoriais no estado do Rio de Janeiro.
+Projeto de pesquisa científica, histórica, sociológica, antropológica e geoespacial sobre a evolução da criminalidade organizada e das dinâmicas territoriais no estado do Rio de Janeiro.
 
----
+O objetivo não é produzir um dashboard de ocorrências, mas uma **infraestrutura de pesquisa auditável**: cada afirmação deve poder ser rastreada até a evidência documental que a sustenta, contesta ou contextualiza.
 
-## 🏛️ 1. Objetivo e Escopo
+## O que o projeto pretende responder
 
-O objetivo deste projeto é construir uma **base histórica documentada, auditável e reproduzível** acompanhada de um **mapa geoespacial interativo associado a uma linha do tempo**, permitindo o estudo analítico e historiográfico de:
+- Como organizações e formas de organização armada surgiram, se transformaram, se fragmentaram ou desapareceram?
+- Como disputas, alianças e transformações territoriais ocorreram ao longo do tempo?
+- Como Estado, sistema penitenciário, economia, política urbana e transformações sociais interagiram com essas dinâmicas?
+- Como diferentes fontes descrevem os mesmos acontecimentos e por que suas versões divergem?
+- O que sabemos, o que inferimos e o que permanece desconhecido?
 
-* Origem, formação e evolução de facções criminosas e grupos paramilitares (milícias);
-* Lideranças históricas documentadas;
-* Dinâmicas de disputas territoriais, alianças e cisões;
-* Relações entre grupos e territórios ao longo do tempo;
-* Operações e intervenções estatais de repercussão histórica;
-* Contexto político, social, econômico e penitenciário;
-* **Biblioteca de fontes primárias e secundárias que sustentam cada informação.**
+## Princípio central
 
-> **⚠️ AVISO ÉTICO E LIMITAÇÃO DE ESCOPO:**  
-> Este projeto possui finalidade **exclusivamente acadêmica, historiográfica e de pesquisa sociológica**.  
-> **NÃO** é uma ferramenta de inteligência operacional policial, **NÃO** realiza predições, **NÃO** indica alvos e **NÃO** auxilia qualquer atividade ilícita.
+A unidade de conhecimento do projeto é a **afirmação (claim)**. Um evento histórico pode conter diversas afirmações, e cada uma delas pode possuir evidência, contestação e limitações diferentes.
 
----
+O sistema preserva:
 
-## 🧭 2. Princípios Metodológicos Fundamentais
+- grafia original e forma normalizada das entidades;
+- expressão temporal original da fonte;
+- limites temporais derivados e sua precisão;
+- localização e incerteza geográfica;
+- fontes primárias e secundárias;
+- trecho comprobatório, página/seção e avaliação crítica;
+- versões conflitantes quando existirem;
+- distinção estrita entre `0` e `NULL`;
+- separação entre dados históricos e dados técnicos `[DEMO]`.
 
-1. **Rastreabilidade e Proveniência Estrita de Fontes**:  
-   Nenhum fato, data ou vinculação territorial é inserido no banco sem vínculo a uma fonte documentada com citação literal, página e referência arquivística.
-2. **Tratamento de Narrativas Conflitantes**:  
-   Quando fontes confiáveis divergirem, ambas as versões são preservadas com suas respectivas referências e classificadas como `conflitante` / `disputed`.
-3. **REGRA 1 — ZERO vs. DESCONHECIDO (NULL)**:  
-   O valor matemático `0` denota contagem confirmada como zero. Dados ausentes, desconhecidos ou não informados são estritamente armazenados como `NULL` / `None`.
-4. **Preservação de Grafias Originais**:  
-   Toda entidade textual preserva a forma original (`original_name`) e a forma normalizada para buscas (`normalized_name`).
+## Limites éticos
 
----
+O projeto possui finalidade exclusivamente acadêmica, historiográfica e sociológica. Não é ferramenta de inteligência operacional, não faz predição, não identifica alvos e não deve ser usado para planejamento de atividade ilícita.
 
-## 🏗️ 3. Estrutura Profissional de Diretórios
+Informações sobre pessoas e organizações devem ser apresentadas com contexto, proveniência e distinção entre alegação, registro documental e fato judicialmente estabelecido.
+
+## Metodologia
+
+O protocolo completo está em [`docs/metodologia/00_protocolo_de_pesquisa.md`](docs/metodologia/00_protocolo_de_pesquisa.md).
+
+O catálogo de proveniência e custódia digital está em [`docs/metodologia/08_catalogo_de_proveniencia.md`](docs/metodologia/08_catalogo_de_proveniencia.md).
+
+As regras metodológicas devem ser consideradas parte do próprio dataset: uma mudança na regra de normalização ou na interpretação de uma fonte pode alterar os resultados e, portanto, deve ser versionada.
+
+## Arquitetura conceitual
 
 ```text
-rio-criminalidade-historica/
-│
-├── README.md                       # Documentação geral do projeto
-├── cronograma_projeto.md           # Cronograma detalhado por fases e tarefas
-├── CONTRIBUTING.md                 # Diretrizes éticas e de pesquisa
-├── .gitignore                      # Regras de exclusão do controle de versão
-├── .env.example                    # Modelo de variáveis de ambiente
-├── requirements.txt                # Dependências Python gerenciadas
-├── pyproject.toml                  # Configuração de build e testes
-│
-├── config/
-│   └── settings.py                 # Configurações centralizadas (Pydantic / os.getenv)
-│
-├── data/                           # Armazenamento estruturado de dados
-│   ├── raw/                        # Documentos brutos (jornalismo, academia, governo, etc.)
-│   ├── staging/                    # Dados intermediários de extração
-│   ├── processed/                  # Dados limpos e prontos para inserção
-│   ├── geospatial/                 # Malhas cartográficas (IBGE, IPP, GeoJSON)
-│   └── exports/                    # Relatórios e exportações de pesquisa
-│
-├── docs/                           # Documentação técnica e científica
-│   ├── metodologia/                # Protocolos de pesquisa, fontes, cartografia, normalização
-│   ├── fontes/                     # Catálogo e critérios de fontes
-│   ├── pesquisa/                   # Guias e recortes históricos
-│   └── arquitetura/                # ERD e arquitetura relacional
-│
-├── research/                       # Planejamento de pesquisa empírica
-│   ├── questions/                  # Banco de queries e perguntas de pesquisa
-│   ├── timelines/                  # Recortes por décadas
-│   ├── entities/                   # Caderno de entidades
-│   ├── regions/                    # Caderno de territórios
-│   └── source_reviews/             # Fichamento crítico de fontes
-│
-├── scripts/                        # Scripts executáveis de automação
-│   ├── ingestion/                  # Download e registro de fontes (hash SHA-256)
-│   ├── extraction/                 # Extratores de texto (PDF, HTML, TXT)
-│   ├── cleaning/                   # Utilitários de normalização
-│   ├── normalization/              # Regras de transformação
-│   ├── geospatial/                 # Processamento de geometrias
-│   └── validation/                 # Verificação de banco e integridade
-│
-├── database/                       # Infraestrutura do banco de dados
-│   ├── migrations/                 # Migrações Alembic
-│   ├── schema/                     # DDL SQL (PostgreSQL/PostGIS) e modelos ORM
-│   ├── seeds/                      # Cargas de referência
-│   └── queries/                    # Consultas SQL analíticas
-│
-├── src/                            # Biblioteca de código-fonte reutilizável
-│   ├── ingestion/                  # Módulos de coleta e custódia
-│   ├── extraction/                 # Parsers polimórficos
-│   ├── processing/                 # Processamento e pipelines
-│   ├── normalization/              # Implementação de regras de normalização
-│   ├── entities/                   # Modelos de domínio
-│   ├── geospatial/                 # Utilitários geográficos e espaciais
-│   ├── database/                   # Conexão, sessões e engine SQLAlchemy
-│   └── utils/                      # Unicode, hashes e funções auxiliares
-│
-├── tests/                          # Testes automatizados (pytest)
-│
-└── app/                            # Interface visual do usuário
-    ├── components/                 # Componentes reutilizáveis de UI
-    ├── pages/                      # Páginas da aplicação Streamlit
-    └── map/                        # Renderizadores de mapas (Folium)
+FONTE
+  │
+  ├── documento / dataset / arquivo
+  │
+  ▼
+EVIDÊNCIA
+  │  página / seção / trecho / identificador
+  ▼
+CLAIM (afirmação atômica)
+  │
+  ├── apoia
+  ├── contesta
+  ├── matiza
+  └── menciona
+  │
+  ▼
+EVENTO / ENTIDADE / RELAÇÃO
+  │
+  ├── temporalidade
+  ├── território
+  ├── organizações
+  └── pessoas
+  │
+  ▼
+ANÁLISE
+  │
+  ▼
+VISUALIZAÇÃO / MAPA / LINHA DO TEMPO
 ```
 
----
+## Temporalidade
 
-## 🚀 4. Instalação e Execução
+A expressão original nunca deve ser apagada. Por exemplo, `1978` não é armazenado como se o fato tivesse ocorrido em `01/01/1978`: ele representa o intervalo de 01/01/1978 a 31/12/1978 com precisão `ano`.
 
-### 1. Criar e Ativar o Ambiente Virtual
+A aplicação distingue `dia`, `mes`, `ano`, `decada`, `aproximado` e `desconhecido`.
+
+## Geografia
+
+Coordenadas não documentadas não são inventadas. Centroides de polígonos são representações cartográficas e não devem ser interpretados como local exato de um evento.
+
+Qualquer camada territorial externa deve possuir fonte, período de referência, versão e metadados suficientes para reconstrução.
+
+## Estrutura
+
+```text
+app/                 Aplicação e interface
+app/models/          Modelo relacional e entidades
+app/schemas/         Contratos e validações Pydantic
+app/services/        Regras de domínio e consultas
+src/                 Normalização e utilitários reutilizáveis
+data/               Dados brutos, derivados e geoespaciais
+docs/                Metodologia, arquitetura e documentação
+research/            Perguntas, fichamentos e cadernos de pesquisa
+tests/               Testes automatizados
+```
+
+## Execução
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-```
-
-### 2. Instalar Dependências
-
-```powershell
 pip install -r requirements.txt
-```
-
-### 3. Configurar Variáveis de Ambiente
-
-```powershell
-cp .env.example .env
-```
-
-### 4. Verificar Conexão com o Banco de Dados
-
-```powershell
-python -m scripts.validation.check_db
-```
-
-### 5. Demonstrar as Regras de Normalização
-
-```powershell
-python -m scripts.cleaning.normalize_text
-```
-
-### 6. Executar os Testes Automatizados
-
-```powershell
 pytest -v
+streamlit run app/ui/app.py
 ```
 
----
+## Critério de qualidade científica
 
-## 📚 5. Documentação Metodológica
+O projeto deve privilegiar **auditabilidade sobre aparência**. Antes de publicar uma conclusão, deve ser possível responder:
 
-Consulte os guias metodológicos padronizados em `docs/metodologia/`:
-* [01. Princípios de Dados e Epistemologia](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/01_principios_dados.md)
-* [02. Normalização de Nomes e Regra ZERO vs. NULL](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/02_normalizacao.md)
-* [03. Metodologia de Proveniência Estrita](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/03_proveniencia.md)
-* [04. Confiabilidade e Gestão de Conflitos](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/04_confiabilidade.md)
-* [05. Política e Modelagem Temporal](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/05_temporalidade.md)
-* [06. Metodologia Geográfica e Gestão de Incerteza](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/06_geografia.md)
-* [07. Isolamento de Dados Técnicos DEMO vs. Histórico Real](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/metodologia/07_demo_vs_real.md)
-* [Proposta de ERD Relacional](file:///C:/Users/dani/Documents/Daniel%20Systems/docs/arquitetura/erd_proposta.md)
-* [Cronograma Detalhado do Projeto](file:///C:/Users/dani/Documents/Daniel%20Systems/cronograma_projeto.md)
+1. Qual é exatamente a afirmação?
+2. Qual documento sustenta essa afirmação?
+3. Onde no documento está a evidência?
+4. A fonte é independente ou reproduz outra?
+5. Existem fontes que contestam ou matizam a afirmação?
+6. Qual é a precisão temporal e espacial real?
+7. Quais limitações e lacunas permanecem?
+8. Outra pessoa consegue reproduzir a transformação que levou da fonte ao resultado?
+
+## Status
+
+O projeto está em fase de construção. A arquitetura atual já contém entidades de eventos, claims, fontes, pessoas, organizações e regiões, mas a prioridade das próximas fases é transformar esses campos em um **protocolo de pesquisa executável e verificável**, e não apenas em metadados decorativos.
