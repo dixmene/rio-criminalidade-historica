@@ -1,0 +1,89 @@
+{
+  "audit_date": "2026-09-15T03:11:57.584754+00:00",
+  "scope": "producao_apenas",
+  "total_checks": 13,
+  "passed_checks": 13,
+  "failed_checks": 0,
+  "warning_checks": 0,
+  "checks": {
+    "1_events_without_sources": {
+      "title": "Eventos sem Fontes Documentais",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    },
+    "2_events_without_temporal_intervals": {
+      "title": "Eventos sem Intervalos Temporais Explícitos",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    },
+    "3_claims_without_sources": {
+      "title": "Claims sem Fontes Associadas",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    },
+    "4_claims_without_excerpts": {
+      "title": "Claims sem Citação Literal (Excerpt)",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    },
+    "5_audiovisual_claims_without_timestamps": {
+      "title": "Claims Audiovisuais sem Timestamp",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    },
+    "6_false_triangulation_violations": {
+      "title": "Falsa Triangulação de Fontes",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    },
+    "7_demo_contamination_in_prod": {
+      "title": "Isolamento Estrito de Dados Demo vs Produção",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    },
+    "8_impossible_chronology_dates": {
+      "title": "Consistência Cronológica de Intervalos",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    },
+    "9_geospatial_zero_as_null_violations": {
+      "title": "Rigor Geoespacial (Zero != NULL)",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    },
+    "10_derived_sources_missing_parent": {
+      "title": "Integridade Referencial da Genealogia",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    },
+    "11_circular_derivation_dependencies": {
+      "title": "Aciclicidade da Árvore Genealógica (DAG)",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    },
+    "12_unhashed_transcripts": {
+      "title": "Integridade Criptográfica das Transcrições (SHA-256)",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    },
+    "13_unanchored_controversial_claims": {
+      "title": "Fundamentação Epistemológica de Controvérsias",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": []
+    }
+  },
+  "integrity_score": 100.0
+}

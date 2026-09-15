@@ -58,6 +58,9 @@ from app.map import (
 )
 from scripts.classifier_pautas import classify_legislative_text, TAXONOMIA_PAUTAS_SENSIVEIS
 from app.ui.isp_lab import render_isp_analytics_laboratory
+from app.ui.epistemological_dossier import render_epistemological_dossier
+from app.services.genealogy_service import GenealogyService
+from app.services.verification_service import VerificationService
 
 # Garante criação de tabelas em ambientes efêmeros
 Base.metadata.create_all(bind=engine)
@@ -1091,76 +1094,7 @@ def render_view_map(service, events, filtros):
                 ev = service.get_event_by_id(ev_id)
 
                 if ev:
-                    # Inferencia de Nível de Evidência
-                    from app.map.builder import _infer_evidence_level
-                    ev_lvl = _infer_evidence_level(ev)
-                    ev_info = EVIDENCE_LEVELS.get(ev_lvl, EVIDENCE_LEVELS["C"])
-
-                    st.markdown(f"""
-                    <div class="archive-dossier">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                            <span class="badge-editorial" style="background:{ev_info['color']}; color:#fff; border:none;">{ev_info['label']}</span>
-                            <span class="archive-tag">{ev.date_display} · {format_mode_badge(ev.is_demo)}</span>
-                        </div>
-                        <div class="archive-title">{ev.title}</div>
-                        <div style="margin-bottom: 0.8rem;">
-                            {format_badge(ev.confidence_level)}
-                        </div>
-                        <div style="font-size: 0.92rem; color: #20201E; line-height: 1.6; margin-bottom: 0.8rem;">
-                            {ev.description}
-                        </div>
-                        {f"<div style='font-size: 0.85rem; color: #5A564F; font-style: italic; border-left: 2px solid #D8D3C9; padding-left: 8px; margin-bottom: 10px;'>Contexto Histórico: {ev.historical_context}</div>" if ev.historical_context else ""}
-                        <div style="font-size: 0.82rem; color: #4A4740; border-top: 1px solid #E5E0D8; padding-top: 8px;">
-                            <b>Território:</b> {', '.join(r.original_name for r in ev.regions) or 'Não delimitado'}<br>
-                            <b>Organizações:</b> {', '.join(o.original_name for o in ev.organizations) or 'Nenhuma citada'}<br>
-                            <b>Pessoas:</b> {', '.join(p.original_name for p in ev.people) or 'Nenhuma citada'}
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-
-                    # Controvérsias e Claims
-                    if hasattr(ev, "claims") and ev.claims:
-                        st.markdown("<div style='font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em; margin-top:0.8rem;'>Afirmações Históricas & Divergências (Claims)</div>", unsafe_allow_html=True)
-                        for cl in ev.claims:
-                            divergencia_aviso = '<span class="badge-editorial badge-conflitante">Divergência Registrada</span>' if cl.is_disputed else ''
-                            st.markdown(f"""
-                            <div class="claim-box">
-                                <b>Proposição:</b> {cl.statement} {divergencia_aviso}<br>
-                                {f"<small style='color:#6F6B63;'><i>Nota epistemológica: {cl.epistemological_notes}</i></small><br>" if cl.epistemological_notes else ""}
-                            </div>
-                            """, unsafe_allow_html=True)
-                            for csl in cl.source_links:
-                                st_css = f"stance-{csl.stance.lower()}"
-                                st.markdown(f"""
-                                <div style="margin-left: 14px; font-size: 0.82rem; margin-top: 4px;">
-                                    <span class="{st_css}">[{csl.stance.upper()}]</span> <b>{csl.source.title}</b> (p. {csl.page or 'N/A'}):<br>
-                                    <span style="font-style:italic; color:#3A3833;">\"{csl.excerpt}\"</span>
-                                </div>
-                                """, unsafe_allow_html=True)
-
-                    # Fontes e Citações Literais
-                    st.markdown("<div style='font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em; margin-top:1rem;'>Fontes Documentais Comprobatórias</div>", unsafe_allow_html=True)
-                    if ev.source_links:
-                        for idx, sl in enumerate(ev.source_links, start=1):
-                            src = sl.source
-                            st.markdown(f"""
-                            <div class="source-citation-block">
-                                <div style="display:flex; justify-content:space-between; align-items:center;">
-                                    <b>{idx:02d}. {src.title}</b>
-                                    {format_badge(sl.validation_status)}
-                                </div>
-                                <div class="source-meta">
-                                    {src.citation}<br>
-                                    Tipo: {src.source_type} · Ref: {sl.page_or_section or sl.page or 'N/A'} {f'· Acervo: {src.archive_ref}' if src.archive_ref else ''}
-                                </div>
-                                <div class="source-excerpt">
-                                    \"{sl.excerpt}\"
-                                </div>
-                                {f"<div style='font-size:0.78rem; color:#6F6B63;'><b>Avaliação Historiográfica:</b> {sl.confidence_notes or sl.assessment_notes}</div>" if (sl.confidence_notes or sl.assessment_notes) else ""}
-                            </div>
-                            """, unsafe_allow_html=True)
-                    else:
-                        st.error("Alerta: Registro sem sustentação em fonte documentada.")
+                    render_epistemological_dossier(ev, service)
 
     with tab_inspecao:
         st.markdown("### Catálogo Territorial & Consulta Vetorial (1.671 Áreas)")
@@ -1469,11 +1403,15 @@ def render_view_methodology(service, events, filtros):
     </div>
     """, unsafe_allow_html=True)
 
-    tab_regras, tab_zero, tab_normaliza, tab_custodia = st.tabs([
+    tab_regras, tab_zero, tab_normaliza, tab_custodia, tab_genealogia, tab_fila, tab_corpus, tab_auditoria = st.tabs([
         "Regras Epistemológicas",
         "Regra 1: Zero vs. NULL",
         "Normalização Onomástica",
-        "Auditoria Criptográfica (SHA-256)"
+        "Custódia (SHA-256)",
+        "Genealogia & Falsa Triangulação",
+        "Fila de Verificação (Queue)",
+        "Corpus YouTube & Transcrições",
+        "Auditoria de Integridade (13/13)"
     ])
 
     with tab_regras:
@@ -1484,6 +1422,7 @@ def render_view_methodology(service, events, filtros):
         3. **Isolamento de Testes**: Registros marcados como `[DEMO]` servem exclusivamente para testes técnicos e são filtrados por padrão do corpus historiográfico.
         4. **Proveniência Obrigatória**: Acontecimentos históricos reais rejeitam gravação se não acompanhados de trecho literal (`excerpt`) e localização dentro da fonte.
         5. **Registro de Divergências**: Historiografia não é consenso forçado. Versões divergentes são expostas como Claims com posturas opostas.
+        6. **Anti-Falsa Triangulação**: Fontes que derivam ou reproduzem a mesma obra/inquérito são resolvidas à sua raiz comum e NÃO contam como evidências independentes.
         """)
 
     with tab_zero:
@@ -1520,6 +1459,112 @@ def render_view_methodology(service, events, filtros):
                 st.success(f"Autenticidade confirmada: O arquivo corresponde exatamente ao hash de custódia ({digest_calculado[:24]}...).")
             else:
                 st.error(f"Divergência detectada:\nCalculado: {digest_calculado}\nEsperado: {hash_esperado}")
+
+    with tab_genealogia:
+        st.markdown("### Genealogia Documental & Anti-Falsa Triangulação")
+        st.caption("Resolução sistemática da árvore de dependência entre fontes para evitar consenso aparente.")
+        st.markdown("""
+        Em plataformas digitais e redes de mídia, uma mesma versão policial ou narrativa de livro frequentemente se multiplica em dezenas de artigos, posts e vídeos no YouTube.
+        
+        **O Algoritmo de Genealogia Documental (`GenealogyService`):**
+        - Rastreia o grafo acíclico direcionado (DAG) de dependências documentais (`SourceDerivation`).
+        - Mapeia cada fonte citada até sua **fonte raiz primordial** (`root_source`).
+        - Exige no mínimo **2 raízes documentais independentes** para que uma afirmação atinja o status de *Confirmado*.
+        """)
+
+    with tab_fila:
+        st.markdown("### Fila de Verificação de Veracidade (Verification Queue)")
+        st.caption("Monitoramento contínuo das claims que demandam validação empírica ou ancoragem primária.")
+        queue_path = Path("data/verification_queue.json")
+        if queue_path.exists():
+            with open(queue_path, "r", encoding="utf-8") as f:
+                qdata = json.load(f)
+            counts = qdata.get("summary_by_priority", {})
+            c_q1, c_q2, c_q3, c_q4 = st.columns(4)
+            with c_q1:
+                st.metric("Total de Claims", qdata.get("total_claims_audited", 0))
+            with c_q2:
+                st.metric("Disputas Críticas", counts.get("CRITICA", 0))
+            with c_q3:
+                st.metric("Falsa Triangulação", qdata.get("false_triangulations_detected", 0))
+            with c_q4:
+                st.metric("Sem Fonte Primária", qdata.get("unanchored_secondary_claims", 0))
+
+            itens = qdata.get("queue", [])
+            if itens:
+                df_queue = pd.DataFrame([
+                    {
+                        "Prioridade": it["priority"],
+                        "Acontecimento": it["event_title"],
+                        "Afirmação (Statement)": it["statement"],
+                        "Raízes Indep.": it["independent_root_count"],
+                        "Fontes Primárias": it["primary_source_count"],
+                        "Ação Recomendada": it["recommended_action"]
+                    }
+                    for it in itens
+                ])
+                st.dataframe(df_queue, use_container_width=True, hide_index=True)
+        else:
+            st.info("Fila de verificação ainda não gerada. Execute 'scripts/verification/manage_verification_queue.py'.")
+
+    with tab_corpus:
+        st.markdown("### Corpus Audiovisual: 'Histórias do Rio de Janeiro' (YouTube)")
+        st.caption("Acervo sistemático de episódios históricos catalogados do canal Iconografia da História.")
+        cat_path = Path("data/catalogo_playlist_youtube_historias_rio.json")
+        if cat_path.exists():
+            with open(cat_path, "r", encoding="utf-8") as f:
+                cat = json.load(f)
+            vids = cat.get("videos", [])
+            transcritos = sum(1 for v in vids if v.get("transcript_status") in ("generated", "exact", "manually_verified"))
+            c_c1, c_c2, c_c3 = st.columns(3)
+            with c_c1:
+                st.metric("Vídeos Catalogados", len(vids))
+            with c_c2:
+                st.metric("Transcrições com Hash", transcritos)
+            with c_c3:
+                st.metric("Canal de Origem", cat.get("channel_name", "Iconografia da História"))
+
+            df_corpus = pd.DataFrame([
+                {
+                    "ID": v.get("id"),
+                    "Título": v.get("title"),
+                    "Duração": v.get("duration") or "S/D",
+                    "Transcrição": v.get("transcript_status"),
+                    "Hash SHA-256": (v.get("transcript_hash")[:16] + "...") if v.get("transcript_hash") else "Pendente",
+                    "Link": v.get("youtube_url")
+                }
+                for v in vids[:25]
+            ])
+            st.dataframe(df_corpus, use_container_width=True, hide_index=True)
+        else:
+            st.info("Catálogo audiovisual não localizado em data/catalogo_playlist_youtube_historias_rio.json.")
+
+    with tab_auditoria:
+        st.markdown("### Relatório Oficial de Integridade Histórica (13/13)")
+        st.caption("Resultado automatizado dos 13 testes de conformidade metodológica do projeto.")
+        rep_path = Path("reports/research_integrity_report.json")
+        if rep_path.exists():
+            with open(rep_path, "r", encoding="utf-8") as f:
+                rdata = json.load(f)
+            c_a1, c_a2, c_a3 = st.columns(3)
+            with c_a1:
+                st.metric("Índice de Integridade", f"{rdata.get('integrity_score', 0)}%")
+            with c_a2:
+                st.metric("Checagens Aprovadas", f"{rdata.get('passed_checks', 0)} / {rdata.get('total_checks', 13)}")
+            with c_a3:
+                st.metric("Violações Críticas", rdata.get("failed_checks", 0))
+
+            checks = rdata.get("checks", {})
+            rows_checks = []
+            for k, val in sorted(checks.items()):
+                rows_checks.append({
+                    "Pilar Metodológico": val["title"],
+                    "Status": val["status"],
+                    "Violações": val["violations_count"]
+                })
+            st.dataframe(pd.DataFrame(rows_checks), use_container_width=True, hide_index=True)
+        else:
+            st.info("Relatório de integridade não encontrado. Execute 'scripts/audit_research_integrity.py'.")
 
 
 # =============================================================================

@@ -6,7 +6,7 @@
   "total_cataloged": 100,
   "source_type": "audiovisual_youtube",
   "version": "1.0.0",
-  "last_updated": "2026-09-15T00:00:00Z",
+  "last_updated": "2026-09-15T03:09:10.988863+00:00",
   "videos": [
     {
       "id": "YTRIO-0001",
@@ -16,14 +16,14 @@
       "channel_name": "Iconografia da História",
       "title": "A HISTÓRIA DE BRASILEIRINHO, O \"MASCOTE\" DOS CHEFES DA ROCINHA",
       "publication_date": null,
-      "duration": null,
+      "duration": "10:35",
       "description": null,
-      "transcript_status": "unavailable",
-      "transcript_source": null,
-      "transcript_hash": null,
+      "transcript_status": "generated",
+      "transcript_source": "youtube_transcript_api",
+      "transcript_hash": "24a9db2142de3bdac4c43e2c652375f056be206ad99307b754cd1930c7b94c62",
       "extraction_date": null,
       "extraction_version": "1.0.0",
-      "processing_status": "cataloged"
+      "processing_status": "transcribed"
     },
     {
       "id": "YTRIO-0002",
@@ -33,14 +33,14 @@
       "channel_name": "Iconografia da História",
       "title": "JORGE LUIZ DE ACARI, THE MAN WHO TOOK OVER THE LARGEST DRUG TRAFFICKING SPOT IN RIO DE JANEIRO",
       "publication_date": null,
-      "duration": null,
+      "duration": "11:59",
       "description": null,
-      "transcript_status": "unavailable",
-      "transcript_source": null,
-      "transcript_hash": null,
+      "transcript_status": "generated",
+      "transcript_source": "youtube_transcript_api",
+      "transcript_hash": "3d739f987071fa98afc467b82f30d3957c8b20e51cadb0e13b8dc05ba7c14d1b",
       "extraction_date": null,
       "extraction_version": "1.0.0",
-      "processing_status": "cataloged"
+      "processing_status": "transcribed"
     },
     {
       "id": "YTRIO-0003",
@@ -50,14 +50,14 @@
       "channel_name": "Iconografia da História",
       "title": "A HISTÓRIA DE BEM-TE-VI: O TRAFICANTE DA PISTOLA DE OURO",
       "publication_date": null,
-      "duration": null,
+      "duration": "23:03",
       "description": null,
-      "transcript_status": "unavailable",
-      "transcript_source": null,
-      "transcript_hash": null,
+      "transcript_status": "generated",
+      "transcript_source": "youtube_transcript_api",
+      "transcript_hash": "5fd34146339dbbccdb8beaa9b084cbe88d0fcc260675d1a747c4f4abb15feeb3",
       "extraction_date": null,
       "extraction_version": "1.0.0",
-      "processing_status": "cataloged"
+      "processing_status": "transcribed"
     },
     {
       "id": "YTRIO-0004",
@@ -67,14 +67,14 @@
       "channel_name": "Iconografia da História",
       "title": "THE STORY OF MADAME SATÃ: THE FEARED ROGUE OF CARIOCA'S ALLEYS WHO EVEN BEAT THE POLICE",
       "publication_date": null,
-      "duration": null,
+      "duration": "14:19",
       "description": null,
-      "transcript_status": "unavailable",
-      "transcript_source": null,
-      "transcript_hash": null,
+      "transcript_status": "generated",
+      "transcript_source": "youtube_transcript_api",
+      "transcript_hash": "4c896d63b45aa4ddd28bcf29b0442c77f62274a424a7fb8ef6314eba833faeaf",
       "extraction_date": null,
       "extraction_version": "1.0.0",
-      "processing_status": "cataloged"
+      "processing_status": "transcribed"
     },
     {
       "id": "YTRIO-0005",
@@ -84,14 +84,14 @@
       "channel_name": "Iconografia da História",
       "title": "JOGO DO BICHO: THE COMPLETE AND DETAILED STORY #history #riodejaneiro #crime",
       "publication_date": null,
-      "duration": null,
+      "duration": "19:29",
       "description": null,
-      "transcript_status": "unavailable",
-      "transcript_source": null,
-      "transcript_hash": null,
+      "transcript_status": "generated",
+      "transcript_source": "youtube_transcript_api",
+      "transcript_hash": "ed5eee3cf8f8223a3e6911c7ab429ae104b314c8a28d8f240b0775459197f835",
       "extraction_date": null,
       "extraction_version": "1.0.0",
-      "processing_status": "cataloged"
+      "processing_status": "transcribed"
     },
     {
       "id": "YTRIO-0006",
@@ -101,14 +101,14 @@
       "channel_name": "Iconografia da História",
       "title": "A TRAIÇÃO DE UÊ E A VINGANÇA MAIS FAMOSA DA HISTÓRIA DO RIO DE JANEIRO",
       "publication_date": null,
-      "duration": null,
+      "duration": "13:36",
       "description": null,
-      "transcript_status": "unavailable",
-      "transcript_source": null,
-      "transcript_hash": null,
+      "transcript_status": "generated",
+      "transcript_source": "youtube_transcript_api",
+      "transcript_hash": "1cd7691b15d2c58bbdf1ec1caec2ef46971504ce1c7963fa4aa5fd988f88448a",
       "extraction_date": null,
       "extraction_version": "1.0.0",
-      "processing_status": "cataloged"
+      "processing_status": "transcribed"
     },
     {
       "id": "YTRIO-0007",
@@ -118,14 +118,14 @@
       "channel_name": "Iconografia da História",
       "title": "ELIAS MALUCO: THE MOST BLOODTHIRSTY CRIMINAL IN CV HISTORY #history #crime",
       "publication_date": null,
-      "duration": null,
+      "duration": "10:32",
       "description": null,
-      "transcript_status": "unavailable",
-      "transcript_source": null,
-      "transcript_hash": null,
+      "transcript_status": "generated",
+      "transcript_source": "youtube_transcript_api",
+      "transcript_hash": "430391f34d99b6e788679328ec972ca2e4e021cd349f51fe3051c243a09eaeeb",
       "extraction_date": null,
       "extraction_version": "1.0.0",
-      "processing_status": "cataloged"
+      "processing_status": "transcribed"
     },
     {
       "id": "YTRIO-0008",
@@ -135,14 +135,14 @@
       "channel_name": "Iconografia da História",
       "title": "ADRIANO DA NÓBREGA: ONE OF THE MOST VIOLENT POLICE OFFICERS IN THE HISTORY OF RIO DE JANEIRO",
       "publication_date": null,
-      "duration": null,
+      "duration": "12:30",
       "description": null,
-      "transcript_status": "unavailable",
-      "transcript_source": null,
-      "transcript_hash": null,
+      "transcript_status": "generated",
+      "transcript_source": "youtube_transcript_api",
+      "transcript_hash": "3fac597d0db12904c047f713f48941e5dbf6e6cc069f41f3712023df0ab054e4",
       "extraction_date": null,
       "extraction_version": "1.0.0",
-      "processing_status": "cataloged"
+      "processing_status": "transcribed"
     },
     {
       "id": "YTRIO-0009",
@@ -152,14 +152,14 @@
       "channel_name": "Iconografia da História",
       "title": "THE HISTORY OF THE RIO DE JANEIRO KILLER CONSORTIUM",
       "publication_date": null,
-      "duration": null,
+      "duration": "11:11",
       "description": null,
-      "transcript_status": "unavailable",
-      "transcript_source": null,
-      "transcript_hash": null,
+      "transcript_status": "generated",
+      "transcript_source": "youtube_transcript_api",
+      "transcript_hash": "d1132e300a67181c631569425b54947c5027fbf361f573565395d962b367fe92",
       "extraction_date": null,
       "extraction_version": "1.0.0",
-      "processing_status": "cataloged"
+      "processing_status": "transcribed"
     },
     {
       "id": "YTRIO-0010",
@@ -169,14 +169,14 @@
       "channel_name": "Iconografia da História",
       "title": "The story of Rio de Janeiro's militias as you've never seen it before.",
       "publication_date": null,
-      "duration": null,
+      "duration": "23:13",
       "description": null,
-      "transcript_status": "unavailable",
-      "transcript_source": null,
-      "transcript_hash": null,
+      "transcript_status": "generated",
+      "transcript_source": "youtube_transcript_api",
+      "transcript_hash": "7ca6bbb36482730b3e90e505d072a9aa96d1a5ab11b613ca361dd0de93549176",
       "extraction_date": null,
       "extraction_version": "1.0.0",
-      "processing_status": "cataloged"
+      "processing_status": "transcribed"
     },
     {
       "id": "YTRIO-0011",

@@ -1,0 +1,65 @@
+{
+  "generated_at": "2026-09-15T03:10:37.485841+00:00",
+  "total_files_analyzed": 1,
+  "total_claims_evaluated": 2,
+  "accepted_claims_count": 2,
+  "rejected_claims_count": 0,
+  "files_results": [
+    {
+      "file": "extracao_yt006_traicao_ue.json",
+      "video_id": "z-6FAKUvUUc",
+      "title": "A TRAIÇÃO DE UÊ E A VINGANÇA MAIS FAMOSA DA HISTÓRIA DO RIO DE JANEIRO",
+      "has_transcript": true,
+      "transcript_hash": "1cd7691b15d2c58bbdf1ec1caec2ef46971504ce1c7963fa4aa5fd988f88448a",
+      "total_claims": 2,
+      "accepted_claims": [
+        {
+          "index": 0,
+          "statement": "Uê atraiu Orlando Jogador simulando pagamento de resgate ou reunião de cúpula e ordenou a execução do aliado no Morro do Adeus.",
+          "claim_type": "fato",
+          "timestamp": "08:30",
+          "tipo_discurso": "narracao_documental",
+          "excerpt": "homens de ue avisar a Orlando jogador é o seguinte o e foi sequestrado pelo BOPE pelo... então Orlando foi entregado o dinheiro no local marcado e o ex estava no local com o dobro de homens de Orlando todos fortemente armados também quando Orlando entregou o dinheiro os homens atiraram e tiraram a vida de Orlando e seus comparsas foi um banho de sangue",
+          "confidence_level": "confirmado",
+          "errors": [],
+          "warnings": [],
+          "excerpt_validation": {
+            "valid": true,
+            "match_type": "multi_clause_ellipsis",
+            "similarity": 1.0,
+            "error": null
+          },
+          "timestamp_validation": {
+            "valid": true,
+            "seconds": 510.0,
+            "error": null
+          }
+        },
+        {
+          "index": 1,
+          "statement": "Fernandinho Beira-Mar liderou a invasão da ala de Uê em Bangu 1 em setembro de 2002 alegando antecipar-se a um plano de Uê.",
+          "claim_type": "relacao_estado",
+          "timestamp": "11:00",
+          "tipo_discurso": "narracao_documental",
+          "excerpt": "segundo Amorim Beira Mar Descobriu um plano de ue pra tirar a... conseguiu adquirir pistolas automáticas... Beira Marcia adiantou no plano que o e tinha segundo... trânsito julgado né então a gente pode usar essa versão beira mar se uniu a 30 homens",
+          "confidence_level": "confirmado",
+          "errors": [],
+          "warnings": [],
+          "excerpt_validation": {
+            "valid": true,
+            "match_type": "multi_clause_ellipsis",
+            "similarity": 1.0,
+            "error": null
+          },
+          "timestamp_validation": {
+            "valid": true,
+            "seconds": 660.0,
+            "error": null
+          }
+        }
+      ],
+      "rejected_claims": [],
+      "warnings": []
+    }
+  ]
+}

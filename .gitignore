@@ -45,8 +45,9 @@ wheels/
 *.db
 !data/rio_historico.db
 !data/geospatial/seeds/*.db
-data/raw/
+data/raw/*
 !data/raw/.gitkeep
+!data/raw/audiovisual/
 data/geo/
 data/staging/
 !data/staging/.gitkeep

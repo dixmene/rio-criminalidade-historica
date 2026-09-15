@@ -1,0 +1,92 @@
+{
+  "source_meta": {
+    "video_id": "z-6FAKUvUUc",
+    "title": "A TRAIÇÃO DE UÊ E A VINGANÇA MAIS FAMOSA DA HISTÓRIA DO RIO DE JANEIRO",
+    "channel": "Iconografia da História",
+    "url": "https://www.youtube.com/watch?v=z-6FAKUvUUc",
+    "periodo_historico_coberto": {
+      "date_display": "julho de 1994 a setembro de 2002",
+      "date_start": "1994-07-01",
+      "date_end": "2002-09-30",
+      "temporal_precision": "intervalo",
+      "date_is_estimated": false
+    },
+    "fontes_secundarias_citadas": [
+      {
+        "nome": "Carlos Amorim",
+        "tipo_relacao": "reproduz"
+      }
+    ]
+  },
+  "entidades": {
+    "pessoas": [
+      {
+        "nome": "Orlando da Conceição",
+        "alias": "Orlando Jogador",
+        "role": "lideranca_criminosa"
+      },
+      {
+        "nome": "Ernaldo Pinto Medeiros",
+        "alias": "Uê",
+        "role": "lideranca_criminosa"
+      },
+      {
+        "nome": "Luiz Fernando da Costa",
+        "alias": "Fernandinho Beira-Mar",
+        "role": "lideranca_criminosa"
+      }
+    ],
+    "organizacoes": [
+      {
+        "nome": "Comando Vermelho",
+        "acronym": "CV",
+        "org_type": "faccao_trafico"
+      },
+      {
+        "nome": "Amigos dos Amigos",
+        "acronym": "ADA",
+        "org_type": "faccao_trafico"
+      }
+    ],
+    "territorios": [
+      {
+        "nome": "Morro do Adeus / Complexo do Alemão",
+        "municipio": "Rio de Janeiro",
+        "status": "disputa"
+      },
+      {
+        "nome": "Bangu 1",
+        "municipio": "Rio de Janeiro",
+        "status": "controle"
+      }
+    ]
+  },
+  "claims": [
+    {
+      "claim_type": "fato",
+      "statement": "Uê atraiu Orlando Jogador simulando pagamento de resgate ou reunião de cúpula e ordenou a execução do aliado no Morro do Adeus.",
+      "timestamp": "08:30",
+      "excerpt": "homens de ue avisar a Orlando jogador é o seguinte o e foi sequestrado pelo BOPE pelo... então Orlando foi entregado o dinheiro no local marcado e o ex estava no local com o dobro de homens de Orlando todos fortemente armados também quando Orlando entregou o dinheiro os homens atiraram e tiraram a vida de Orlando e seus comparsas foi um banho de sangue",
+      "tipo_discurso": "narracao_documental",
+      "confidence_level": "confirmado",
+      "stance": "apoia",
+      "epistemological_notes": "A emboscada do Morro do Adeus é fato histórico amplamente documentado em inquérito policial e reconstituído na obra de Carlos Amorim."
+    },
+    {
+      "claim_type": "relacao_estado",
+      "statement": "Fernandinho Beira-Mar liderou a invasão da ala de Uê em Bangu 1 em setembro de 2002 alegando antecipar-se a um plano de Uê.",
+      "timestamp": "11:00",
+      "excerpt": "segundo Amorim Beira Mar Descobriu um plano de ue pra tirar a... conseguiu adquirir pistolas automáticas... Beira Marcia adiantou no plano que o e tinha segundo... trânsito julgado né então a gente pode usar essa versão beira mar se uniu a 30 homens",
+      "tipo_discurso": "narracao_documental",
+      "confidence_level": "confirmado",
+      "stance": "apoia",
+      "epistemological_notes": "O narrador do canal Iconografia da História cita explicitamente a narrativa de Carlos Amorim sobre a rebelião de Bangu 1 em 2002."
+    }
+  ],
+  "evento_relacionado": {
+    "id_existente": 83,
+    "titulo_sugerido": "Execução de Orlando Jogador por Uê",
+    "ano": 1994,
+    "date_display": "12 de junho de 1994"
+  }
+}
