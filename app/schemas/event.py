@@ -1,7 +1,9 @@
 from datetime import date
 from typing import List, Optional, Union
+
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
-from src.normalization.rules import normalize_date
+
+from src.normalization.rules import normalize_temporal_expression
 from app.schemas.claim import ClaimCreate, ClaimResponse
 
 
@@ -54,13 +56,13 @@ class EventRegionLinkInput(BaseModel):
 class EventBase(BaseModel):
     title: str = Field(..., min_length=3, description="Título do evento")
     event_type: str = Field("acontecimento_geral", description="Classificação do evento histórico")
-    date_display: str = Field(..., description="Data exatamente como informada pela fonte (ex: 'maio de 1978', '1975', '15/03/1983')")
-    date_start: Optional[Union[date, str]] = Field(None, description="Data normalizada de início (Date ou ISO YYYY-MM-DD)")
-    date_end: Optional[Union[date, str]] = Field(None, description="Data de fim (Date ou ISO YYYY-MM-DD se intervalo)")
+    date_display: str = Field(..., description="Data exatamente como informada pela fonte")
+    date_start: Optional[Union[date, str]] = Field(None, description="Limite temporal inicial normalizado")
+    date_end: Optional[Union[date, str]] = Field(None, description="Limite temporal final normalizado")
     year: Optional[int] = Field(None, description="Ano de referência para linha do tempo")
-    temporal_precision: str = Field("dia", description="Precisão temporal: dia, mes, ano, decada, intervalo, aproximado, desconhecido")
+    temporal_precision: str = Field("desconhecido", description="dia, mes, ano, decada, intervalo, aproximado, desconhecido")
     exact_date: bool = Field(False, description="True somente se dia, mês e ano forem exatos")
-    date_is_estimated: bool = Field(False, description="True se os limites de date_start/date_end foram inferidos/estimados")
+    date_is_estimated: bool = Field(False, description="True se os limites foram estimados a partir de linguagem aproximativa")
     description: str = Field(..., min_length=10, description="Descrição detalhada dos fatos documentados")
     historical_context: Optional[str] = Field(None, description="Contexto social/político ampliado")
     confidence_level: str = Field("confirmado", description="Nível de confiança geral do evento")
@@ -90,22 +92,27 @@ class EventCreate(EventBase):
 
     @model_validator(mode="after")
     def validate_provenance_and_temporality(self):
-        # 1. Regra de Proveniência Estrita:
-        # Eventos históricos reais (is_demo=False) JAMAIS podem ser cadastrados sem fontes vinculadas.
         if not self.is_demo and len(self.sources) == 0:
             raise ValueError(
                 "Regra de Proveniência Violada: Nenhum evento histórico real pode ser cadastrado sem pelo menos uma fonte documentada."
             )
 
-        # 2. Auto-preenchimento temporal inteligente a partir de date_display se não fornecido
-        if self.year is None and self.date_display:
-            dt, yr, exact = normalize_date(self.date_display)
-            if self.date_start is None and dt:
-                self.date_start = dt
+        # Só preenche campos derivados quando o pesquisador não os informou.
+        # A expressão original permanece em date_display para auditoria.
+        if self.date_display:
+            parsed = normalize_temporal_expression(self.date_display)
+            if self.date_start is None:
+                self.date_start = parsed["date_start"]
+            if self.date_end is None:
+                self.date_end = parsed["date_end"]
             if self.year is None:
-                self.year = yr
+                self.year = parsed["year"]
+            if self.temporal_precision == "desconhecido":
+                self.temporal_precision = parsed["temporal_precision"]
             if not self.exact_date:
-                self.exact_date = exact
+                self.exact_date = parsed["exact_date"]
+            if not self.date_is_estimated:
+                self.date_is_estimated = parsed["date_is_estimated"]
 
         return self
 
