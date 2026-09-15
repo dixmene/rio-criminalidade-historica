@@ -1,117 +1,147 @@
 # 🏛️ Atlas Histórico, Territorial e Antropológico da Criminalidade no Rio de Janeiro
 
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/)
-[![Tests](https://img.shields.io/badge/testes-54%2F54%20aprovados-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/testes-69%2F69%20aprovados-brightgreen.svg)](tests/)
 [![Streamlit](https://img.shields.io/badge/interface-Streamlit-red.svg)](https://streamlit.io/)
 [![Folium & PyDeck](https://img.shields.io/badge/cartografia-Folium%20%7C%20PyDeck%203D-darkcyan.svg)](app/map/)
 [![GeoParquet](https://img.shields.io/badge/dados-GeoParquet%20%7C%20GeoJSON-orange.svg)](database/)
 [![Custódia Digital](https://img.shields.io/badge/cust%C3%B3dia-SHA--256-darkred.svg)](data/raw/)
 [![Finalidade](https://img.shields.io/badge/finalidade-pesquisa%20historiogr%C3%A1fica-lightgrey.svg)](#-aviso-ético-e-finalidade)
 
-Projeto multidisciplinar de pesquisa científica, histórica, sociológica e criminológica dedicado a investigar e mapear as dinâmicas de controle territorial armado, governança criminal, mercados ilícitos e instituições públicas no estado do Rio de Janeiro entre **1950 e 2026**.
+Projeto multidisciplinar de pesquisa científica, histórica, sociológica, antropológica e geoespacial sobre a evolução do crime organizado, das dinâmicas de controle territorial armado e das instituições de segurança pública no estado do Rio de Janeiro entre **1950 e 2026**.
 
-O projeto alia **rigor historiográfico estrito** (cadeia de custódia com SHA-256, citação textual literal e confrontação de fontes conflitantes) a uma **cartografia moderna de alta performance** baseada em malhas oficiais abertas e processamento vetorial colunar (**GeoParquet + DuckDB/PyArrow**).
+O objetivo não é produzir um dashboard genérico de ocorrências, mas uma **infraestrutura de pesquisa auditável**: cada afirmação deve poder ser rastreada até a evidência documental que a sustenta, contesta ou contextualiza.
 
 ---
 
-## 🗺️ O Mapa como Carro-Chefe
+## 🎯 O que o projeto pretende responder
 
-A cartografia é o coração analítico da plataforma. A interface substitui painéis convencionais por um **Atlas Editorial com visual escuro tático (*CartoDB Dark Matter*)**, garantindo máxima legibilidade para perímetros territoriais complexos e sobreposição de camadas oficiais:
+* **Gênese e Dinâmica Organizacional:** Como facções, milícias e esquadrões da morte surgiram, se estruturaram, fragmentaram ou desapareceram?
+* **Transformação Territorial e Cartografia Histórica:** Como disputas, alianças e fronteiras armadas se alteraram no espaço urbano ao longo das décadas?
+* **Relações Institucionais e o Estado:** Como o sistema penitenciário, as polícias, a política urbana e os poderes constituídos interagiram com essas dinâmicas?
+* **Crítica de Fontes e Conflitos Historiográficos:** Como diferentes fontes descrevem os mesmos fatos e por que suas versões divergem?
+* **Estatística vs. Realidade Criminológica:** Ocorrência policial registrada $\neq$ incidência real $\neq$ evento histórico $\neq$ narrativa sobre o fato.
+* **Transparência Epistemológica:** O que sabemos com certeza documental, o que é inferência historiográfica e o que permanece lacuna ou desconhecido?
+
+---
+
+## 🔬 Princípio Central: O Claim como Unidade de Conhecimento
+
+A unidade fundamental de conhecimento do projeto é a **afirmação atômica (`Claim`)**. Um acontecimento histórico pode conter múltiplas afirmações, e cada uma delas pode possuir fontes independentes, posturas de concordância (`apoia`), divergência (`contesta`) ou matização (`matiza`).
+
+```text
+FONTE DOCUMENTAL / DATASET
+  │  (custódia digital com hash SHA-256)
+  ▼
+EVIDÊNCIA LOCALIZADA
+  │  (página / seção / trecho literal obrigatório)
+  ▼
+CLAIM (Afirmação Atômica)
+  │  ├── [APOIA]
+  │  ├── [CONTESTA]
+  │  └── [MATIZA]
+  ▼
+ACONTECIMENTO HISTÓRICO / ENTIDADE
+  │  ├── Temporalidade explícita (intervalos sem falsa precisão)
+  │  ├── Território & Geografia histórica (sem coordenadas inventadas)
+  │  ├── Organizações & Atores
+  │  └── Ficha Epistemológica
+  ▼
+LABORATÓRIO ANALÍTICO & ATLAS CARTOGRÁFICO
+```
+
+O sistema preserva estritamente:
+* **Grafia original** e forma normalizada das entidades e topônimos;
+* **Expressão temporal original** da fonte (`date_display`), distinguindo `dia`, `mes`, `ano`, `decada`, `aproximado` e `desconhecido`;
+* **Incerteza geográfica documentada** (sem imputar centroides como locais pontuais exatos de ocorrências);
+* **Distinção estrita entre ausência de dado (`NULL`) e valor zero (`0`)**;
+* **Isolamento de dados técnicos de teste (`is_demo=True`)** em relação ao acervo histórico real.
+
+---
+
+## 🔍 Critério de Qualidade Científica (As 8 Perguntas de Auditabilidade)
+
+O projeto prioriza **auditabilidade sobre estética superficial**. Antes de apresentar qualquer conclusão ou visualização, a plataforma deve permitir responder:
+
+1. **Qual é exatamente a afirmação?** (Proposição atômica não ambígua).
+2. **Qual documento primário ou secundário sustenta essa afirmação?**
+3. **Onde no documento está a evidência?** (Página, seção e trecho literal transcrito).
+4. **As fontes são de fato independentes?** (Distinguir fontes primárias de múltiplos veículos citando o mesmo boletim ou relatório policial derivado).
+5. **Existem fontes que contestam ou matizam essa versão?**
+6. **Qual é a precisão temporal e espacial real?** (Não transformar "1978" em "01/01/1978").
+7. **Quais limitações, vieses institucionais e lacunas permanecem?**
+8. **Outro pesquisador consegue reproduzir a análise a partir dos dados abertos e dos scripts versionados?**
+
+---
+
+## 📚 Metodologia e Protocolo de Pesquisa
+
+* [`docs/metodologia/00_protocolo_de_pesquisa.md`](docs/metodologia/00_protocolo_de_pesquisa.md) — Protocolo científico completo: epistemologia, crítica de fontes, triangulação, anacronismo e salvaguardas éticas.
+* [`docs/metodologia/08_catalogo_de_proveniencia.md`](docs/metodologia/08_catalogo_de_proveniencia.md) — Catálogo de custódia e proveniência arquivística digital (SHA-256, metadados sidecar).
+* [`docs/research/agenda_pesquisa.md`](docs/research/agenda_pesquisa.md) — Agenda científica, eixos prioritários de investigação e cadernos de campo.
+* [`docs/fontes/bibliografia_nucleo.md`](docs/fontes/bibliografia_nucleo.md) — Bibliografia fundamental (obras de referência da sociologia urbana e criminologia do RJ).
+
+---
+
+## 🗺️ O Mapa e o Atlas Histórico Editorial
+
+A cartografia é o instrumento central de investigação e confronto espacial. A interface adota a estética de **Arquivo Histórico + Laboratório Analítico**, com tema escuro tático (*CartoDB Dark Matter*) de alto contraste e legibilidade:
 
 ```text
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────┐
-│  PAINEL DE CONTROLE CARTOGRÁFICO                                                                │
-│  [ Basemap: 🌑 Dark Matter ]   [ Motor: Folium / PyDeck 3D ]   [ Camadas: AISP + Favelas + Bairros ]│
+│  ATLAS HISTORIOGRÁFICO DO RIO DE JANEIRO — PAINEL DE EVIDÊNCIAS                                 │
+│  [ Modo: Folium / PyDeck 3D ]   [ Camadas: AISP PMERJ + 166 Bairros + 1.671 Áreas Faveladas ]   │
 ├───────────────────────────────────────────────────────┬─────────────────────────────────────────┤
-│                                                       │ DOSSIÊ DO REGISTRO SELECIONADO          │
+│                                                       │ FICHA EPISTEMOLÓGICA DO EVENTO          │
 │   MAPA INTERATIVO TÁTICO (TELA CHEIA)                 │                                         │
-│                                                       │ [NÍVEL A — OFICIAL / JUDICIAL]          │
+│                                                       │ [NÍVEL A — DOCUMENTO JUDICIAL/OFICIAL]  │
 │   • 166 Bairros Oficiais (PCRJ / IPP)                 │ [1979] Fundação do NuCOE / BOPE         │
-│   • 39 Batalhões PMERJ (AISP / ISP-RJ)                │ Confiabilidade: Confirmado Documental   │
+│   • 39 Batalhões PMERJ (AISP / ISP-RJ)                │ Precisão: Dia (Boletim nº 014)          │
 │   • 1.671 Perímetros de Facções & Milícias            │                                         │
-│     - ■ Comando Vermelho (CV)                         │ "Criado pelo Boletim da PM nº 014..."   │
-│     - ■ Terceiro Comando Puro (TCP)                   │                                         │
-│     - ■ Amigos dos Amigos (ADA)                       │ CUSTÓDIA DIGITAL (SHA-256):             │
-│     - ■ Liga da Justiça & Milícias                    │ e3b0c44298fc1c149afbf4c8996fb92427...  │
-│                                                       │                                         │
-│   • Pins Históricos com Selos de Evidência            │ AFIRMAÇÕES & CONTROVÉRSIAS (CLAIMS):    │
-│     [🟢 Nível A]  [🔵 Nível B]  [🟡 Nível C]  [🔴 Disputa]│ [APOIA] Histórico Oficial PMERJ         │
+│     - ■ Comando Vermelho (CV)                         │ O QUE SABEMOS:                          │
+│     - ■ Terceiro Comando Puro (TCP)                   │ Criação do núcleo de operações...       │
+│     - ■ Amigos dos Amigos (ADA)                       │                                         │
+│     - ■ Liga da Justiça & Milícias                    │ CUSTÓDIA DIGITAL (SHA-256):             │
+│                                                       │ 97b91fc1c855a9b891ec08d0a8...           │
+│   • Pins Históricos com Selos de Evidência            │                                         │
+│     [🟢 Nível A]  [🔵 Nível B]  [🟡 Nível C]  [🔴 Disputa]│ CLAIMS & CONFRONTOS HISTORIOGRÁFICOS:   │
+│                                                       │ [APOIA] Histórico Oficial SEPM-RJ       │
 ├───────────────────────────────────────────────────────┴─────────────────────────────────────────┤
-│  ⏱️ LINHA DO TEMPO COM PLAYBACK: [ 1958 ══════════════════════════════════════● 2026 ] [▶ PLAY]   │
-│  📥 EXPORTAÇÃO DIRETA: [ Baixar GeoJSON ]  [ Baixar CSV ]                                       │
+│  ⏱️ LINHA DO TEMPO CONTÍNUA: [ 1958 ══════════════════════════════════════════● 2026 ]          │
+│  📥 EXPORTAÇÃO REPRODUTÍVEL: [ GeoJSON ]  [ GeoParquet ]  [ CSV ]  [ JSON de Auditoria ]        │
 └─────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
----
-
-## ⚡ Principais Funcionalidades da Plataforma
-
-### 1. Visualização Cartográfica Multi-Camadas
-* **Tema Escuro Tático (*Dark Matter*):** Fundo preto/cinza grafite de alto contraste que realça a malha viária e as manchas de controle territorial dos grupos armados.
-* **Malhas Vetoriais Oficiais Integradas:**
-  * **39 Áreas Integradas de Segurança Pública (AISPs):** Limites geográficos oficiais de todos os batalhões da PMERJ (2º BPM a 41º BPM), com sedes, Regiões Integradas (RISP) e municípios.
-  * **166 Bairros Oficiais do Rio:** Limites administrativos do Instituto Pereira Passos (IPP / Data.Rio) com Regiões Administrativas e Áreas de Planejamento (AP).
-  * **1.671 Perímetros de Comunidades e Favelas:** Base vetorial em padrão RFC 7946 com centroides e codificação de facção hegemônica.
-* **Motor Híbrido Folium & PyDeck 3D:**
-  * Modo **Folium (Leaflet)**: Interatividade fina com popups enriquecidos, dossiê lateral e renderização clássica.
-  * Modo **PyDeck (WebGL / GPU)**: Aceleração de hardware para navegação tridimensional fluida em malhas com milhares de vértices.
-* **Linha do Tempo Dinâmica ("Playback Histórico"):** Slider contínuo de anos (1958 a 2026) que permite inspecionar o surgimento progressivo de facções, batalhões e acontecimentos históricos.
-* **Exportação Direta de Dados:** Botões integrados na tela para download do recorte filtrado em **GeoJSON** e **CSV**.
-
-### 2. Dossiê Historiográfico Lateral (Selo de Evidência & Custódia)
-Ao clicar ou selecionar qualquer acontecimento, abre-se uma ficha documental contendo:
-* **Selo de Nível de Evidência:**
-  * 🟢 **Nível A (Oficial / Judicial):** Decisões transitadas em julgado, denúncias do GAECO/MPRJ, relatórios de CPIs e publicações no Diário Oficial.
-  * 🔵 **Nível B (Acadêmico / Estatístico):** Artigos e teses de centros de pesquisa (UFRJ, UERJ, UFF, ISP-RJ, GENI/UFF, Fogo Cruzado).
-  * 🟡 **Nível C (Imprensa Histórica Checada):** Acervo da Hemeroteca Digital da Biblioteca Nacional e reportagens investigativas corroboradas.
-  * 🔴 **Conflitante (Divergência Historiográfica):** Casos em que versões oficiais ou acadêmicas colidem.
-* **Custódia Criptográfica:** Hash **SHA-256** do documento de suporte e link da fonte original.
-* **Decomposição em Claims Atômicos:** Cada proposição factual é atestada por fontes que assumem posturas historiográficas expressas: `[APOIA]`, `[CONTESTA]` ou `[MATIZA]`.
-* **Citações Literais Textuais:** Trechos originais transcritos entre aspas com indicação de página ou seção.
-
-### 3. Módulos de Investigação Especializada
-* **⚖️ O Desafio do "Arrego" (Evidências Formais da Corregedoria e GAECO):**  
-  Base catalogada com grandes operações contra desvios de conduta e corrupção policial militar (*Operação Calabar, Quarto Elemento, Os Intocáveis, Gárgula, Subúrbio, Fim da Linha*), vinculando número de processo judicial, batalhões afetados e hash SHA-256.
-* **🗳️ Cruzamento Eleitoral (TSE x AISP / Batalhões):**  
-  *Spatial Join* entre colégios eleitorais do Rio e as áreas de batalhão, com cálculo automatizado do **Índice Herfindahl-Hirschman (HHI)**:
-  $$\text{HHI} = \sum_{i=1}^{n} s_i^2$$
-  Detecção objetiva de anomalias de votação em territórios controlados por grupos armados (alerta de *curral eleitoral* para $\text{HHI} \ge 6.000$ ou candidato dominante $\ge 70\%$).
-* **📜 Classificador Legislativo de Pautas Sensíveis (CMRJ / ALERJ):**  
-  Motor de processamento de linguagem natural (NLP) baseado na taxonomia dos **5 eixos de negócios do crime organizado**:
-  1. *Transporte complementar e alternativo* (vans, kombis e mototáxis).
-  2. *Uso e ocupação do solo urbano* (desafetação, anistia a loteamentos e entraves a demolição em áreas de grilagem).
-  3. *Monopólios de utilidades* (gás GLP, água mineral e internet comunitária).
-  4. *Comércio de sucata e reciclagem* (ferros-velhos e receptação de fios de cobre).
-  5. *Moções de aplauso e condecorações* (homenagens a agentes posteriormente investigados).  
-  *Inclui Testador Interativo de Proposições em tempo real.*
+### Principais Módulos de Investigação Integrados:
+1. **Malhas Vetoriais Oficiais:**
+   * **39 Áreas Integradas de Segurança Pública (AISPs):** Batalhões da PMERJ com metadados ISP-RJ.
+   * **166 Bairros Oficiais do Rio:** Limites do Instituto Pereira Passos (IPP / Data.Rio).
+   * **1.671 Perímetros Favelados e Comunidades:** Base vetorial em padrão RFC 7946 com metadados sidecar.
+2. **⚖️ O Desafio do "Arrego" (Corregedoria & GAECO):** Grandes operações contra desvios de conduta policial com número de processo judicial e hash SHA-256.
+3. **🗳️ Cruzamento Eleitoral (TSE x Batalhões):** Spatial Join e cálculo automatizado do **Índice Herfindahl-Hirschman (HHI)** para detecção de anomalias e currais eleitorais.
+4. **📜 Processamento Legislativo (CMRJ & ALERJ):** Classificador NLP das pautas municipais e estaduais incidentes sobre os 5 eixos econômicos do crime organizado.
+5. **📊 Laboratório Quantitativo ISP-RJ:** Matrizes de correlação e testes de hipótese criminológica com séries temporais abertas.
 
 ---
 
-## 🏛️ As 6 Seções do Atlas
+## 🏛️ As Seções do Atlas
 
 ```mermaid
 graph LR
-    A["Atlas Histórico RJ"] --> B["1. Visão Geral"]
-    A --> C["2. Painel Analítico"]
-    A --> D["3. Mapa Histórico & Territórios (Carro-Chefe)"]
+    A["Atlas Histórico RJ"] --> B["1. Visão Geral & Escopo"]
+    A --> C["2. Painel Analítico & Qualidade"]
+    A --> D["3. Mapa Histórico & Territórios"]
     A --> E["4. Linha do Tempo Cronológica"]
-    A --> F["5. Acervo de Fontes"]
-    A --> G["6. Metodologia Histórica"]
+    A --> F["5. Acervo de Fontes & Custódia"]
+    A --> G["6. Protocolo Metodológico"]
     
     D --> D1["🗺️ Atlas Cartográfico Tático"]
     D --> D2["🔍 Inspeção Territorial (1.671 Áreas)"]
     D --> D3["🛡️ Batalhões PMERJ (39 AISPs)"]
-    D --> D4["⚖️ Atos da Corregedoria & GAECO"]
+    D --> D4["⚖️ Operações Corregedoria / GAECO"]
     D --> D5["🗳️ Cruzamento Eleitoral TSE (HHI)"]
     D --> D6["📜 Pautas Sensíveis no Legislativo"]
 ```
-
-1. **Visão Geral:** Introdução institucional, recortes temáticos, métricas globais e guia de navegação.
-2. **Painel Analítico:** Distribuição cronológica, proporção de facções, índices de resolução e cumprimento da Regra 1 (Zero Comprovado vs. NULL).
-3. **Mapa Histórico & Territórios:** O carro-chefe do projeto com mapas Dark/3D, camadas oficiais de AISP/Bairros/Favelas e as ferramentas de investigação do arrego, votos e leis.
-4. **Linha do Tempo Cronológica:** Visualização editorial agrupada por décadas (1950 a 2026) destacando marcos históricos.
-5. **Acervo de Fontes:** Biblioteca catalográfica completa com mais de 180 fontes, busca em texto integral, filtro por 25 eixos e fichamento ABNT.
-6. **Metodologia Histórica:** Os 6 pilares de rigor historiográfico, equações de cálculo e salvaguardas epistemológicas.
 
 ---
 
@@ -119,56 +149,61 @@ graph LR
 
 | Dimensão | Quantitativo Auditado | Padrão Metodológico |
 | :--- | :---: | :--- |
-| **Acontecimentos Históricos Documentados** | **46 eventos** | 100% com fontes e citações literais |
-| **Fontes Historiográficas e Jurídicas** | **188 referências** | 25 eixos temáticos e custody sidecars |
+| **Acontecimentos Históricos Documentados** | **46 eventos** | 100% com fontes, citações literais e claims |
+| **Fontes Historiográficas e Jurídicas** | **188 referências** | 25 eixos temáticos e sidecars de custódia |
 | **Polígonos de Comunidades e Facções** | **1.671 áreas** | GeoJSON RFC 7946 e GeoParquet |
 | **Batalhões da PMERJ Mapeados (AISP)** | **39 áreas** | Malha oficial ISP-RJ (100% do estado) |
 | **Bairros Oficiais do Rio de Janeiro** | **166 bairros** | Cartografia oficial PCRJ / IPP |
 | **Operações de Corregedoria / GAECO** | **6 grandes ações** | Processos judiciais e hashes SHA-256 |
 | **Locais de Votação com Índice HHI** | **Auditados** | Spatial join via Point-in-Polygon |
 | **Proposições Legislativas Classificadas** | **CMRJ & ALERJ** | Taxonomia dos 5 eixos econômicos |
-| **Testes Automatizados de Regressão** | **54 aprovados** | Pytest (cobertura total de UI, dados e DQ) |
+| **Testes Automatizados de Regressão** | **69 aprovados** | Pytest (cobertura de modelos, dados, temporalidade e UI) |
 
 ---
 
 ## 📂 Arquitetura do Repositório
 
 ```text
-├── database/
-│   ├── aisps_batalhoes.geojson          # Polígonos das 39 AISPs da PMERJ
-│   ├── aisps_batalhoes.parquet          # Malha compacta de AISPs (PyArrow)
-│   ├── bairros_rio.geojson              # Polígonos dos 166 bairros oficiais do Rio
-│   ├── bairros_rio.parquet              # Malha colunar compacta de bairros
-│   ├── locais_votacao_rio.parquet       # Colégios eleitorais com coordenadas, AISP e HHI
-│   ├── ocorrencias_corregedoria.json    # Eventos judiciais de arrego/desvios com SHA-256
-│   └── proposicoes_legislativas.csv     # PLs coletados da CMRJ/ALERJ classificados
+├── database/                        # Malhas e datasets derivados pré-processados
+│   ├── aisps_batalhoes.geojson      # Polígonos das 39 AISPs da PMERJ
+│   ├── aisps_batalhoes.parquet      # Malha compacta de AISPs (PyArrow)
+│   ├── bairros_rio.geojson          # Polígonos dos 166 bairros oficiais do Rio
+│   ├── bairros_rio.parquet          # Malha colunar compacta de bairros
+│   ├── locais_votacao_rio.parquet   # Colégios eleitorais com coordenadas, AISP e HHI
+│   ├── ocorrencias_corregedoria.json# Eventos judiciais de desvios com SHA-256
+│   └── proposicoes_legislativas.csv # PLs coletados da CMRJ/ALERJ classificados
 │
-├── app/
+├── app/                             # Aplicação e interface do usuário
 │   ├── ui/
-│   │   └── app.py                       # Aplicação Streamlit (Atlas Editorial)
+│   │   ├── app.py                   # Aplicação Streamlit (Atlas Editorial)
+│   │   └── isp_lab.py               # Laboratório quantitativo de séries históricas ISP
 │   ├── map/
-│   │   ├── styles.py                    # Tema Dark Matter, paletas e selos de evidência
-│   │   ├── layers.py                    # Loaders com cache para GeoJSON e GeoParquet
-│   │   └── builder.py                   # Construtores de Folium (Dark) e PyDeck 3D
-│   ├── models/                          # Modelos relacionais do banco (SQLAlchemy)
-│   └── services/                        # Camada de serviços (DataService, EventService)
+│   │   ├── styles.py                # Tema Dark Matter, paletas e selos de evidência
+│   │   ├── layers.py                # Loaders com cache para GeoJSON e GeoParquet
+│   │   └── builder.py               # Construtores de Folium (Dark) e PyDeck 3D
+│   ├── models/                      # Modelos relacionais do banco (SQLAlchemy)
+│   ├── schemas/                     # Contratos e validações Pydantic com intervalos
+│   └── services/                    # Camada de serviços (DataService, EventService)
 │
-├── scripts/
-│   ├── etl_tse_votacao.py               # Spatial Join TSE x AISP e cálculo do HHI
-│   ├── scraper_camara_rj.py             # Pipeline de extração legislativa
-│   ├── classifier_pautas.py             # Classificador NLP das pautas sensíveis
-│   └── geospatial/
-│       └── extract_official_layers.py   # Ingestão de dados do Data.Rio e ISP-RJ
+├── src/                             # Normalização e utilitários reutilizáveis
+│   └── normalization/               # Normalização temporal de intervalos e nomes
 │
-├── tests/
-│   ├── test_official_geospatial_layers.py            # Testes das camadas de AISP e Bairros
-│   ├── test_electoral_and_legislative_pipelines.py   # Testes de HHI, Corregedoria e NLP
-│   ├── test_architectural_foundations.py             # Invariantes temporais e epistêmicos
-│   └── test_ui_views.py                              # Testes de renderização da interface
+├── data/                            # Banco principal, acervo bruto e geoespacial
+│   ├── rio_historico.db             # Banco relacional SQLite principal
+│   ├── raw/                         # Documentos originais sob custódia digital
+│   └── geospatial/                  # Malhas vetoriais canônicas e metadados SHA-256
 │
-└── data/
-    ├── rio_historico.db                 # Banco relacional SQLite principal
-    └── geospatial/                      # Malhas vetoriais e metadados com SHA-256
+├── docs/                            # Protocolos científicos, arquitetura e notas
+│   ├── metodologia/                 # Protocolo de pesquisa, proveniência e confiabilidade
+│   └── research/                    # Agenda de pesquisa e cadernos de campo
+│
+├── scripts/                         # Pipelines automatizados de ingestão e DQ
+│   ├── dq/                          # Motor de auditoria em 8 dimensões
+│   ├── geospatial/                  # Ingestão de dados Data.Rio e ISP-RJ
+│   ├── etl_tse_votacao.py           # Spatial Join TSE x AISP e cálculo do HHI
+│   └── classifier_pautas.py         # Classificador NLP de proposições
+│
+└── tests/                           # Suíte de testes automatizados (69 testes)
 ```
 
 ---
@@ -189,13 +224,13 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 2. Rodar a Suíte de Testes Automatizados (54 Testes)
+### 2. Rodar a Suíte de Testes Automatizados (69 Testes)
 
 ```powershell
 python -m pytest -v
 ```
 
-### 3. Iniciar o Painel Cartográfico Interativo
+### 3. Iniciar o Atlas Histórico Interativo
 
 ```powershell
 streamlit run app/ui/app.py
@@ -204,22 +239,12 @@ streamlit run app/ui/app.py
 
 ---
 
-## 🔭 Roadmap: Possíveis Melhorias e Próximas Evoluções
+## 🔭 Próximos Passos de Pesquisa e Engenharia
 
-Para as próximas etapas de pesquisa e desenvolvimento:
-
-1. **Série Temporal Completa ISP-RJ (2003–2026 por Batalhão):**
-   - Ingerir a série mensal de homicídios dolosos, letalidade violenta, mortes por intervenção de agentes do Estado e apreensões de fuzis agregadas por AISP.
-   - Gerar gráficos temporais sincronizados com o clique em qualquer batalhão no mapa.
-2. **Integração com API do Fogo Cruzado & GENI/UFF:**
-   - Adicionar camada opcional de mapas de calor de tiroteios e disparos georreferenciados.
-   - Incorporar a evolução histórica anual das manchas do *Mapa dos Grupos Armados* (2006 a 2024).
-3. **Módulo de Análise de Disparidade de Atuação Policial:**
-   - Cruzar operações policiais em áreas de diferentes facções dentro do mesmo batalhão para gerar métricas objetivas de assimetria operacional.
-4. **Extração Automática Contínua do Diário Oficial da ALERJ/CMRJ:**
-   - Webhooks ou rotinas agendadas para alertar novas proposições de lei que incidam sobre os 5 eixos de negócios do crime.
-5. **Busca Semântica Vetorial (RAG / Embeddings no Acervo):**
-   - Inserir busca por similaridade semântica nos PDFs dos documentos históricos usando embeddings locais.
+1. **Auditoria Integral do Banco de Dados:** Saneamento de derivação entre fontes em eventos históricos.
+2. **Modelo Territorial Histórico & Versionado:** Diferenciação semântica entre presença, controle, influência e disputa, com vigência temporal de malhas (GENI/UFF, IBGE censitário).
+3. **Ficha Epistemológica por Evento:** Exibição estruturada na interface ("O que sabemos", "O que a fonte afirma", "O que é interpretação", "O que é contestado", "Incerteza temporal/espacial").
+4. **Estatísticas Criminais Desacopladas:** Tratamento de subnotificação e separação estrita entre ocorrências registradas e hipóteses históricas.
 
 ---
 
@@ -233,4 +258,4 @@ Este projeto possui finalidade **estritamente acadêmica, historiográfica e de 
 
 ---
 
-**Registro de Versão**: Setembro de 2026 | Branch `preview-designer` | 54/54 Testes Aprovados
+**Registro de Versão**: Setembro de 2026 | Versão `v0.2.1` | 69/69 Testes Aprovados
