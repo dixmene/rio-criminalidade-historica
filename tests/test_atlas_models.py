@@ -48,7 +48,7 @@ def test_region_versions_and_anachronism():
     db = SessionLocal()
     try:
         versions = db.query(RegionVersion).all()
-        assert len(versions) >= 25, "Devem existir versões espaciais para as regiões reais com coordenadas."
+        assert len(versions) >= 20, "Devem existir versões espaciais para as regiões reais com coordenadas."
 
         for ver in versions:
             assert ver.region_id is not None

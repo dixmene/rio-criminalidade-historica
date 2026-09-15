@@ -1,0 +1,184 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "year": 1991,
+    "month": null,
+    "datasets_referenced": [
+      "Malha Vetorial de Bairros Oficiais do Município do Rio de Janeiro"
+    ],
+    "total_features": 6,
+    "territories_count": 2,
+    "facilities_count": 4,
+    "flows_count": 0,
+    "events_count": 0,
+    "anachronistic_features_count": 2,
+    "epistemological_warning": "Atenção historiográfica: 2 polígonos contemporâneos estão sendo exibidos para o ano de 1991. Suas fronteiras são ilustrativas e sinalizadas cartograficamente com padrão hachurado cinza."
+  },
+  "coverage": {
+    "year": 1991,
+    "total_known_regions": 22,
+    "regions_with_coverage": 2,
+    "evidence_density_index": 0.091,
+    "coverage_status": "lacunar"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "territory_1",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -44.1925,
+          -23.1856
+        ]
+      },
+      "properties": {
+        "feature_id": "territory_1",
+        "layer": "territories",
+        "relation_id": 1,
+        "region_id": 73,
+        "region_name": "Ilha Grande - Instituto Penal Cândido Mendes",
+        "relation_type": "controle",
+        "organization_id": 44,
+        "organization_name": "Comando Vermelho (Falange Vermelha / CVRL)",
+        "organization_acronym": "CV",
+        "color_hex": "#DC2626",
+        "evidence_strength": "documentada_primaria",
+        "independent_root_count": 2,
+        "is_contested": false,
+        "is_anachronistic": true,
+        "anachronism_note": "Malha de 2022/2024 aplicada como referência contemporânea — fronteira ilustrativa, não histórica para períodos anteriores.",
+        "dataset_name": "Malha Vetorial de Bairros Oficiais do Município do Rio de Janeiro",
+        "dataset_provider": "Instituto Pereira Passos (IPP) / PCRJ / Data.Rio",
+        "notes": "Hegemonia prisional consolidada no Cândido Mendes após a eliminação das lideranças da Falange Jacaré em 17/09/1979 até a implosão do presídio em 1994."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "territory_4",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -43.402,
+          -22.889
+        ]
+      },
+      "properties": {
+        "feature_id": "territory_4",
+        "layer": "territories",
+        "relation_id": 4,
+        "region_id": 76,
+        "region_name": "Quartel do CFAP / Sulacap - Sede de Fundação do NuCOE",
+        "relation_type": "presenca_estatal",
+        "organization_id": 54,
+        "organization_name": "Batalhão de Operações Policiais Especiais (BOPE / NuCOE)",
+        "organization_acronym": "BOPE",
+        "color_hex": "#1D4ED8",
+        "evidence_strength": "documentada_primaria",
+        "independent_root_count": 2,
+        "is_contested": false,
+        "is_anachronistic": true,
+        "anachronism_note": "Malha de 2022/2024 aplicada como referência contemporânea — fronteira ilustrativa, não histórica para períodos anteriores.",
+        "dataset_name": "Malha Vetorial de Bairros Oficiais do Município do Rio de Janeiro",
+        "dataset_provider": "Instituto Pereira Passos (IPP) / PCRJ / Data.Rio",
+        "notes": "Presença militar institucional oficial fundacional do NuCOE nas dependências do CFAP."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "facility_1",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -44.1925,
+          -23.1856
+        ]
+      },
+      "properties": {
+        "feature_id": "facility_1",
+        "layer": "facilities",
+        "facility_id": 1,
+        "name": "Instituto Penal Cândido Mendes (Colônia Penal de Dois Rios)",
+        "facility_type": "presidio",
+        "opened_at": "1903-01-01",
+        "closed_at": "1994-04-03",
+        "capacity": 1200,
+        "is_operational": true,
+        "notes": "Colônia correcional e presídio de segurança máxima da Ilha Grande. Berço da convivência entre presos políticos e comuns sob a LSN (1969-1979) e da gênese da Falange Vermelha. Desativado e implodido em abril de 1994.",
+        "source_citation": "AMORIM, Carlos. Comando Vermelho: A história secreta do crime organizado. Rio de Janeiro: Editora Record, 1993."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "facility_2",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -43.483,
+          -22.855
+        ]
+      },
+      "properties": {
+        "feature_id": "facility_2",
+        "layer": "facilities",
+        "facility_id": 2,
+        "name": "Penitenciária Laércio da Costa Pellegrino (Bangu 1)",
+        "facility_type": "presidio_seguranca_maxima",
+        "opened_at": "1988-03-01",
+        "closed_at": null,
+        "capacity": 48,
+        "is_operational": true,
+        "notes": "Primeiro presídio de segurança máxima construído no Complexo de Gericinó (Bangu), projetado para abrigar lideranças de facções criminosas em isolamento estrito celular.",
+        "source_citation": "AMORIM, Carlos. Comando Vermelho: A história secreta do crime organizado. Rio de Janeiro: Editora Record, 1993."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "facility_3",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -43.193,
+          -22.911
+        ]
+      },
+      "properties": {
+        "feature_id": "facility_3",
+        "layer": "facilities",
+        "facility_id": 3,
+        "name": "Complexo Penitenciário da Rua Frei Caneca (Hélio Gomes / Milton Dias Moreira)",
+        "facility_type": "complexo_penitenciario",
+        "opened_at": "1928-01-01",
+        "closed_at": "2006-03-25",
+        "capacity": 2500,
+        "is_operational": true,
+        "notes": "Conjunto prisional histórico localizado na região central/Estácio. Cenário de rebeliões e transferências fundamentais na década de 1980. Implodido em 2006 para moradia popular.",
+        "source_citation": "AMORIM, Carlos. Comando Vermelho: A história secreta do crime organizado. Rio de Janeiro: Editora Record, 1993."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "facility_4",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -43.402,
+          -22.889
+        ]
+      },
+      "properties": {
+        "feature_id": "facility_4",
+        "layer": "facilities",
+        "facility_id": 4,
+        "name": "Núcleo da Cia. de Operações Especiais — NuCOE / BOPE (Sede Fundacional)",
+        "facility_type": "batalhao_pmerj",
+        "opened_at": "1978-01-19",
+        "closed_at": null,
+        "capacity": null,
+        "is_operational": true,
+        "notes": "Sede fundacional do NuCOE nas instalações do Centro de Formação e Aperfeiçoamento de Praças (CFAP) em Jardim Sulacap, embrião do moderno BOPE.",
+        "source_citation": "AMORIM, Carlos. Comando Vermelho: A história secreta do crime organizado. Rio de Janeiro: Editora Record, 1993."
+      }
+    }
+  ]
+}

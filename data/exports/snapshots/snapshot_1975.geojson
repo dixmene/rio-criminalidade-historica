@@ -1,0 +1,122 @@
+{
+  "type": "FeatureCollection",
+  "metadata": {
+    "year": 1975,
+    "month": null,
+    "datasets_referenced": [],
+    "total_features": 4,
+    "territories_count": 0,
+    "facilities_count": 2,
+    "flows_count": 0,
+    "events_count": 2,
+    "anachronistic_features_count": 0,
+    "epistemological_warning": null
+  },
+  "coverage": {
+    "year": 1975,
+    "total_known_regions": 22,
+    "regions_with_coverage": 0,
+    "evidence_density_index": 0.0,
+    "coverage_status": "lacunar"
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "id": "facility_1",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -44.1925,
+          -23.1856
+        ]
+      },
+      "properties": {
+        "feature_id": "facility_1",
+        "layer": "facilities",
+        "facility_id": 1,
+        "name": "Instituto Penal Cândido Mendes (Colônia Penal de Dois Rios)",
+        "facility_type": "presidio",
+        "opened_at": "1903-01-01",
+        "closed_at": "1994-04-03",
+        "capacity": 1200,
+        "is_operational": true,
+        "notes": "Colônia correcional e presídio de segurança máxima da Ilha Grande. Berço da convivência entre presos políticos e comuns sob a LSN (1969-1979) e da gênese da Falange Vermelha. Desativado e implodido em abril de 1994.",
+        "source_citation": "AMORIM, Carlos. Comando Vermelho: A história secreta do crime organizado. Rio de Janeiro: Editora Record, 1993."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "facility_3",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -43.193,
+          -22.911
+        ]
+      },
+      "properties": {
+        "feature_id": "facility_3",
+        "layer": "facilities",
+        "facility_id": 3,
+        "name": "Complexo Penitenciário da Rua Frei Caneca (Hélio Gomes / Milton Dias Moreira)",
+        "facility_type": "complexo_penitenciario",
+        "opened_at": "1928-01-01",
+        "closed_at": "2006-03-25",
+        "capacity": 2500,
+        "is_operational": true,
+        "notes": "Conjunto prisional histórico localizado na região central/Estácio. Cenário de rebeliões e transferências fundamentais na década de 1980. Implodido em 2006 para moradia popular.",
+        "source_citation": "AMORIM, Carlos. Comando Vermelho: A história secreta do crime organizado. Rio de Janeiro: Editora Record, 1993."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event_127",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -43.1824,
+          -22.9035
+        ]
+      },
+      "properties": {
+        "feature_id": "event_127",
+        "layer": "events",
+        "event_id": 127,
+        "title": "Acordo de Partilha Territorial e Caixa Único da Contravenção",
+        "event_type": "institucionalizacao_contravencao",
+        "date_display": "1975–1980",
+        "date_start": "1975-01-01",
+        "confidence_level": "confirmado",
+        "coordinate_source": "Instituto Pereira Passos (IPP) / Data.Rio - Centroide de Bairro",
+        "buffer_meters": null,
+        "source_count": 2,
+        "primary_source": "MISSE, Michel. Malandros, marginais e vagabundos: a acumulação social da violência no Rio de Janeiro. Tese de Doutorado em Sociologia. IUPERJ, 1999."
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "event_141",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -43.1824,
+          -22.9035
+        ]
+      },
+      "properties": {
+        "feature_id": "event_141",
+        "layer": "events",
+        "event_id": 141,
+        "title": "Instalação do Novo Estado do Rio de Janeiro Pós-Fusão",
+        "event_type": "reforma_institucional_politica",
+        "date_display": "15 de março de 1975",
+        "date_start": "1975-03-15",
+        "confidence_level": "confirmado",
+        "coordinate_source": "Instituto Pereira Passos (IPP) / Data.Rio - Centroide de Bairro",
+        "buffer_meters": null,
+        "source_count": 2,
+        "primary_source": "BRASIL. Presidência da República. Lei Complementar nº 20, de 1º de julho de 1974. Dispõe sobre a criação de Estados e Territórios e dá outras providências (Fusão Guanabara-Rio de Janeiro). Brasília, DF: Diário Oficial da União, 2 jul. 1974."
+      }
+    }
+  ]
+}

@@ -53,8 +53,10 @@ data/staging/
 !data/staging/.gitkeep
 data/processed/
 !data/processed/.gitkeep
-data/exports/
+data/exports/*
 !data/exports/.gitkeep
+!data/exports/snapshots/
+!data/exports/snapshots/**
 
 # Relatórios de testes e coverage
 .pytest_cache/
