@@ -60,6 +60,36 @@ def _infer_evidence_level(ev) -> str:
     return "C"
 
 
+CANONICAL_FACTION_COLORS: Dict[str, str] = {
+    "CV": "#EF4444",      # Vermelho vibrante (Comando Vermelho)
+    "TCP": "#3B82F6",     # Azul vibrante (Terceiro Comando Puro)
+    "ADA": "#10B981",     # Verde esmeralda (Amigos dos Amigos)
+    "MIL": "#4B5563",     # Cinza escuro / Grafite (Milícia Geral)
+    "LJ": "#374151",      # Grafite escuro (Liga da Justiça / CL220)
+    "MNI": "#4B5563",     # Cinza escuro (Milícia de Nova Iguaçu)
+    "NEU": "#9CA3AF",     # Cinza neutro (Área Neutra / Disputada)
+}
+
+
+def get_canonical_faction_color(props: Dict[str, Any]) -> str:
+    """Retorna cor vibrante e de alto contraste conforme a facção controladora."""
+    sigla = (props.get("faccao_sigla") or props.get("organization_acronym") or "").strip().upper()
+    if sigla in CANONICAL_FACTION_COLORS:
+        return CANONICAL_FACTION_COLORS[sigla]
+
+    nome = (props.get("faccao_nome") or props.get("organization_name") or "").strip().upper()
+    if "COMANDO VERMELHO" in nome or "FALANGE" in nome:
+        return "#EF4444"
+    if "TERCEIRO" in nome or "TCP" in nome:
+        return "#3B82F6"
+    if "AMIGOS" in nome or "ADA" in nome:
+        return "#10B981"
+    if "MIL" in nome or "LIGA" in nome or "JUSTICA" in nome:
+        return "#374151"
+
+    return props.get("cor_hex") or props.get("color_hex") or "#8C97A3"
+
+
 def build_historical_folium_map(
     events,
     show_polygons: bool = False,
@@ -76,14 +106,24 @@ def build_historical_folium_map(
     """
     # Configuração de Basemap (Dark Matter por padrão)
     tile_config = MAP_TILES.get(theme, MAP_TILES["dark"])
-    
+
     fmap = folium.Map(
         location=DEFAULT_MAP_CENTER,
         zoom_start=DEFAULT_MAP_ZOOM,
         tiles=tile_config["tiles"],
         attr=tile_config.get("attr"),
-        subdomains=tile_config.get("subdomains", "abc")
+        subdomains=tile_config.get("subdomains", "abc"),
+        control_scale=True,
+        prefer_canvas=True
     )
+
+    # Plugin de Tela Cheia
+    plugins.Fullscreen(
+        position="topright",
+        title="Expandir Mapa para Tela Cheia",
+        title_cancel="Sair da Tela Cheia",
+        force_separate_button=True
+    ).add_to(fmap)
 
     # 1. Camada de Bairros Oficiais (Prefeitura do Rio / IPP)
     if show_bairros:
@@ -137,25 +177,36 @@ def build_historical_folium_map(
         if geo_data is None:
             geo_data = load_faction_polygons()
         if geo_data:
+            sample_props = geo_data.get("features", [{}])[0].get("properties", {}) if geo_data.get("features") else {}
+            tooltip_fields = ["nome", "faccao_nome"]
+            tooltip_aliases = ["Comunidade:", "Domínio Territorial:"]
+            if "faccao_sigla" in sample_props:
+                tooltip_fields.append("faccao_sigla")
+                tooltip_aliases.append("Sigla:")
+
             folium.GeoJson(
                 geo_data,
                 name="Controle Territorial (1.671 Áreas)",
                 style_function=lambda ft: {
-                    "fillColor": ft.get("properties", {}).get("cor_hex", "#8C97A3"),
-                    "color": ft.get("properties", {}).get("cor_hex", "#8C97A3"),
-                    "weight": STYLE_FACTION_POLYGON_DARK["weight"],
-                    "fillOpacity": STYLE_FACTION_POLYGON_DARK["fillOpacity"],
-                    "opacity": STYLE_FACTION_POLYGON_DARK["opacity"]
+                    "fillColor": get_canonical_faction_color(ft.get("properties", {})),
+                    "color": get_canonical_faction_color(ft.get("properties", {})),
+                    "weight": STYLE_FACTION_POLYGON_DARK.get("weight", 1.2),
+                    "fillOpacity": 0.40,
+                    "opacity": STYLE_FACTION_POLYGON_DARK.get("opacity", 0.85)
                 },
                 highlight_function=lambda ft: {
                     "weight": 2.5,
-                    "fillOpacity": 0.6
+                    "fillOpacity": 0.70,
+                    "color": "#FFFFFF"
                 },
                 tooltip=folium.GeoJsonTooltip(
-                    fields=["nome", "faccao_nome"],
-                    aliases=["Comunidade:", "Domínio Territorial:"]
+                    fields=tooltip_fields,
+                    aliases=tooltip_aliases
                 )
             ).add_to(fmap)
+
+    # Controle de Camadas Interativo
+    folium.LayerControl(collapsed=True).add_to(fmap)
 
     sem_geometria = []
     plotados = 0
@@ -163,9 +214,19 @@ def build_historical_folium_map(
     # 4. Marcadores de Acontecimentos Históricos com Selo de Evidência
     for ev in events:
         tem_ponto = False
+        
+        # Suporta tanto region_links quanto regions diretamente
+        target_regions = []
         region_links = getattr(ev, "region_links", [])
-        for link in region_links:
-            reg = getattr(link, "region", None)
+        if region_links:
+            for link in region_links:
+                reg = getattr(link, "region", None)
+                if reg:
+                    target_regions.append(reg)
+        elif hasattr(ev, "regions") and ev.regions:
+            target_regions = list(ev.regions)
+
+        for reg in target_regions:
             if reg and getattr(reg, "has_coordinates", False):
                 lat = getattr(reg, "latitude", None)
                 lng = getattr(reg, "longitude", None)
@@ -184,24 +245,36 @@ def build_historical_folium_map(
 
                     ev_title_safe = (ev.title or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                     reg_name_safe = (reg.original_name or "").replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                    date_display_safe = (getattr(ev, "date_display", "") or str(getattr(ev, "year", "") or "")).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
                     fontes_count = len(ev.sources) if hasattr(ev, "sources") else len(getattr(ev, "source_links", []))
+                    
+                    desc = getattr(ev, "description", "") or ""
+                    desc_snippet = ""
+                    if desc:
+                        clean_desc = desc[:130].replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+                        if len(desc) > 130:
+                            clean_desc += "..."
+                        desc_snippet = f'<div style="font-size: 10px; color: #555; border-top: 1px solid #EEE; padding-top: 4px; margin-top: 4px;">{clean_desc}</div>'
 
                     popup_html = f"""
-                    <div style="font-family: 'Source Sans 3', sans-serif; width: 240px; color: #111;">
-                        <div style="display:inline-block; padding: 2px 6px; font-size: 10px; font-weight: bold; border-radius: 3px; background-color: {ev_meta['color']}; color: #fff; margin-bottom: 4px;">
-                            {ev_meta['label']}
+                    <div style="font-family: 'Source Sans 3', sans-serif; width: 250px; color: #111; line-height: 1.35;">
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                            <span style="display:inline-block; padding: 2px 6px; font-size: 10px; font-weight: 700; border-radius: 3px; background-color: {ev_meta['color']}; color: #fff;">
+                                {ev_meta['label']}
+                            </span>
+                            <span style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7A2E2E; font-weight: 700;">{date_display_safe}</span>
                         </div>
-                        <div style="font-family: 'JetBrains Mono', monospace; font-size: 11px; color: #7A2E2E; font-weight: 700;">{ev.date_display}</div>
-                        <div style="font-family: 'Libre Baskerville', serif; font-weight: 700; font-size: 13px; margin: 3px 0;">{ev_title_safe}</div>
-                        <div style="font-size: 11px; color: #444;"><b>Território:</b> {reg_name_safe}</div>
-                        <div style="font-size: 11px; color: #444;"><b>Custódia:</b> {fontes_count} fontes documentadas</div>
+                        <div style="font-family: 'Libre Baskerville', Georgia, serif; font-weight: 700; font-size: 13px; margin: 3px 0 5px 0; color: #111;">{ev_title_safe}</div>
+                        <div style="font-size: 11px; color: #333;"><b>📍 Território:</b> {reg_name_safe}</div>
+                        <div style="font-size: 11px; color: #333;"><b>📜 Custódia:</b> {fontes_count} fonte(s) catalogada(s)</div>
+                        {desc_snippet}
                     </div>
                     """
 
                     folium.Marker(
                         [lat_f, lng_f],
-                        popup=folium.Popup(popup_html, max_width=260),
-                        tooltip=f"[{ev_meta['label'][:7]}] [{ev.date_display}] {ev_title_safe}",
+                        popup=folium.Popup(popup_html, max_width=270),
+                        tooltip=f"[{ev_meta['label'][:7]}] [{date_display_safe}] {ev_title_safe}",
                         icon=folium.Icon(
                             color=ev_meta["marker_color"],
                             icon=ev_meta.get("icon", "record"),

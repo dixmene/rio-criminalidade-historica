@@ -32,13 +32,13 @@ MAP_TILES = {
 
 # Paleta canônica de cores para Facções e Grupos Armados no Rio de Janeiro
 FACTION_COLORS: Dict[str, str] = {
-    "CV": "#E0342C",      # Vermelho vivo (Comando Vermelho)
-    "TCP": "#2FA46B",     # Verde esmeralda (Terceiro Comando Puro)
-    "ADA": "#EDB72B",     # Amarelo/Dourado (Amigos dos Amigos)
-    "MIL": "#4E9DE0",     # Azul tático (Milícia Geral)
-    "LJ": "#2B5BC7",      # Azul escuro/aço (Liga da Justiça / CL220)
-    "MNI": "#9B6BD6",     # Roxo (Milícia de Nova Iguaçu)
-    "NEU": "#8C97A3",     # Cinza neutro (Área Neutra / Disputada)
+    "CV": "#EF4444",      # Vermelho vibrante (Comando Vermelho)
+    "TCP": "#3B82F6",     # Azul vibrante (Terceiro Comando Puro)
+    "ADA": "#10B981",     # Verde esmeralda (Amigos dos Amigos)
+    "MIL": "#4B5563",     # Cinza escuro / Grafite (Milícia Geral)
+    "LJ": "#374151",      # Grafite escuro (Liga da Justiça / CL220)
+    "MNI": "#4B5563",     # Cinza escuro (Milícia de Nova Iguaçu)
+    "NEU": "#9CA3AF",     # Cinza neutro (Área Neutra / Disputada)
 }
 
 FACTION_NAMES: Dict[str, str] = {

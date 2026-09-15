@@ -9,9 +9,9 @@ from pathlib import Path
 from typing import Optional, Dict, Any, List
 import pandas as pd
 
-# Caminhos canônicos
-DATA_GEO_DIR = Path("data/geospatial")
-DATABASE_DIR = Path("database")
+PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+DATA_GEO_DIR = Path("data/geospatial") if Path("data/geospatial").exists() else PROJECT_ROOT / "data" / "geospatial"
+DATABASE_DIR = Path("database") if Path("database").exists() else PROJECT_ROOT / "database"
 
 PATH_FACTIONS_GEOJSON = DATA_GEO_DIR / "faccoes_rj_1671_poligonos.geojson"
 PATH_AISP_GEOJSON = DATA_GEO_DIR / "aisps_batalhoes_pmerj.geojson"

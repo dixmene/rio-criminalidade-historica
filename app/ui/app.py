@@ -65,6 +65,13 @@ from app.services.atlas_service import AtlasService
 from app.services.coverage_service import CoverageService
 from app.services.ethics_guard import EthicsGuard
 from app.ui.components.atlas_map import render_maplibre_atlas
+from app.ui.components.video_corpus_explorer import render_video_corpus_explorer
+from app.ui.styles.modern_theme import apply_modern_theme
+from app.ui.components.modern_ui import (
+    render_hero_header,
+    render_kpi_dashboard,
+    render_event_card,
+)
 
 # Garante criação de tabelas em ambientes efêmeros
 Base.metadata.create_all(bind=engine)
@@ -77,335 +84,10 @@ st.set_page_config(
 )
 
 # =============================================================================
-# DESIGN SYSTEM — ATLAS EDITORIAL (Papel Claro & Vinho Histórico)
+# DESIGN SYSTEM — TEMA MODERNO OBSIDIAN / CYBER-OSINT (Alta Resolução)
 # =============================================================================
-st.markdown("""
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:ital,wght@0,400;0,500;0,600;0,700;1,400&family=JetBrains+Mono:wght@400;500&display=swap');
+apply_modern_theme(theme="dark")
 
-    :root {
-        --bg-canvas: #F5F3EE;
-        --bg-surface: #FFFFFF;
-        --bg-subtle: #EBE7DF;
-        --border-subtle: #D8D3C9;
-        --border-strong: #B5AEA0;
-        --text-primary: #1C1B18;
-        --text-secondary: #5A564F;
-        --text-tertiary: #827D72;
-        --accent-action: #7A2E2E;
-        --accent-action-hover: #5C2222;
-        --accent-subtle: #F7EBEB;
-        --status-error-text: #9E2A2B;
-        --status-error-bg: #FDF2F2;
-        --status-success-text: #2D5A27;
-        --status-success-bg: #F0F6F0;
-        --status-warning-text: #8C580E;
-        --status-warning-bg: #FEF9EE;
-    }
-
-    /* Travamento do contêiner principal para evitar espalhamento em monitores ultrawide */
-    .main .block-container {
-        max-width: 1280px;
-        margin: 0 auto;
-        padding-top: 1.5rem;
-        padding-bottom: 3rem;
-        padding-left: 1.5rem;
-        padding-right: 1.5rem;
-    }
-
-    /* Fundo e tipografia geral */
-    .stApp {
-        background-color: var(--bg-canvas);
-        color: var(--text-primary);
-        font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
-        line-height: 1.6;
-    }
-
-    h1, h2, h3, h4, .serif-font {
-        font-family: 'Libre Baskerville', Georgia, serif;
-        font-weight: 700;
-        color: var(--text-primary);
-        letter-spacing: -0.01em;
-    }
-
-    /* Sidebar com estética de fichário de arquivo */
-    section[data-testid="stSidebar"] {
-        background-color: #EDEAE2;
-        border-right: 1px solid #D8D3C9;
-        padding-top: 1.5rem;
-    }
-    section[data-testid="stSidebar"] * {
-        color: #20201E;
-    }
-    section[data-testid="stSidebar"] .stRadio label {
-        font-size: 0.92rem;
-        font-weight: 500;
-        color: #3A3833;
-    }
-
-    /* Cabeçalho Editorial */
-    .editorial-header {
-        border-bottom: 2px solid #D8D3C9;
-        padding-bottom: 1.4rem;
-        margin-bottom: 1.6rem;
-    }
-    .editorial-kicker {
-        font-family: 'Source Sans 3', sans-serif;
-        font-size: 0.78rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.18em;
-        color: #7A2E2E;
-        margin-bottom: 0.4rem;
-    }
-    .editorial-title {
-        font-size: 2.2rem;
-        color: #20201E;
-        margin: 0 0 0.5rem 0;
-        line-height: 1.2;
-    }
-    .editorial-lead {
-        font-size: 1.05rem;
-        color: #5A564F;
-        max-width: 75ch;
-        margin-bottom: 1rem;
-    }
-
-    /* Faixa Estatística Editorial */
-    .editorial-stats-band {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 1.2rem;
-        padding: 0.75rem 0;
-        border-top: 1px solid #D8D3C9;
-        border-bottom: 1px solid #D8D3C9;
-        font-size: 0.92rem;
-        color: #4A4740;
-    }
-    .editorial-stats-band b {
-        color: #7A2E2E;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 1.05rem;
-    }
-    .editorial-stats-band .sep {
-        color: #B5B0A4;
-    }
-
-    /* Ficha Arquivística (Painel de Evidência) */
-    .archive-dossier {
-        background-color: #FFFFFF;
-        border: 1px solid #D8D3C9;
-        border-top: 3px solid #7A2E2E;
-        border-radius: 2px;
-        padding: 1.4rem 1.5rem;
-        margin-bottom: 1.2rem;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.03);
-    }
-    .archive-tag {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.78rem;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: #7A2E2E;
-        font-weight: 600;
-        margin-bottom: 0.3rem;
-    }
-    .archive-title {
-        font-family: 'Libre Baskerville', Georgia, serif;
-        font-size: 1.3rem;
-        color: #20201E;
-        margin-bottom: 0.6rem;
-        line-height: 1.3;
-    }
-
-    /* Fontes e Citações Literais */
-    .source-citation-block {
-        background-color: #FAF9F5;
-        border-left: 3px solid #7A2E2E;
-        padding: 0.9rem 1.1rem;
-        margin-top: 0.8rem;
-        margin-bottom: 0.8rem;
-        font-size: 0.9rem;
-        color: #33312B;
-    }
-    .source-excerpt {
-        font-family: 'Libre Baskerville', Georgia, serif;
-        font-style: italic;
-        color: #20201E;
-        background: #FFFFFF;
-        border-left: 2px solid #D8D3C9;
-        padding: 0.6rem 0.9rem;
-        margin: 0.6rem 0;
-        font-size: 0.88rem;
-        line-height: 1.55;
-    }
-    .source-meta {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.78rem;
-        color: #6F6B63;
-    }
-
-    /* Claims e Posturas Historiográficas */
-    .claim-box {
-        background-color: #FAF8F5;
-        border: 1px solid #E5E0D8;
-        padding: 0.75rem 1rem;
-        margin-top: 0.6rem;
-        font-size: 0.88rem;
-    }
-    .stance-apoia {
-        color: #2D5A27;
-        font-weight: 700;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.75rem;
-    }
-    .stance-contesta {
-        color: #8C2D2D;
-        font-weight: 700;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.75rem;
-    }
-    .stance-matiza {
-        color: #8C6A1E;
-        font-weight: 700;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.75rem;
-    }
-
-    /* Badges Sóbrias */
-    .badge-editorial {
-        display: inline-block;
-        padding: 2px 8px;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.72rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-        border: 1px solid #D8D3C9;
-        border-radius: 2px;
-        background: #FFFFFF;
-        color: #3A3833;
-    }
-    .badge-real {
-        background-color: #EAF2E8;
-        color: #1E4620;
-        border-color: #C2DCC0;
-    }
-    .badge-demo {
-        background-color: #FCF4E6;
-        color: #7D4C0A;
-        border-color: #EED4A8;
-    }
-    .badge-conflitante {
-        background-color: #F8ECEC;
-        color: #7A2E2E;
-        border-color: #E6C2C2;
-    }
-
-    /* Linha do Tempo Editorial */
-    .timeline-node {
-        position: relative;
-        padding-left: 1.8rem;
-        margin-bottom: 1.8rem;
-        border-left: 2px solid #D8D3C9;
-    }
-    .timeline-node::before {
-        content: "";
-        position: absolute;
-        left: -6px;
-        top: 4px;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
-        background-color: #7A2E2E;
-        border: 2px solid #F5F3EE;
-    }
-    .timeline-year {
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.85rem;
-        font-weight: 700;
-        color: #7A2E2E;
-    }
-    .timeline-title {
-        font-family: 'Libre Baskerville', Georgia, serif;
-        font-size: 1.15rem;
-        font-weight: 700;
-        color: #20201E;
-        margin: 0.2rem 0;
-    }
-    .timeline-meta {
-        font-size: 0.85rem;
-        color: #6F6B63;
-    }
-
-    /* Aviso Ético de Rodapé */
-    .ethical-notice {
-        background-color: #EDEAE2;
-        border-left: 4px solid #7A2E2E;
-        padding: 0.9rem 1.2rem;
-        font-size: 0.85rem;
-        color: #4A4740;
-        margin-top: 2rem;
-        line-height: 1.5;
-    }
-
-    /* Formulários e Inputs */
-    .stTextInput input, .stSelectbox div[data-baseweb="select"] > div {
-        background-color: #FFFFFF !important;
-        border: 1px solid #D8D3C9 !important;
-        color: #1C1B18 !important;
-        border-radius: 3px !important;
-    }
-    .stSelectbox div[data-baseweb="select"] span {
-        color: #1C1B18 !important;
-    }
-    .stSelectbox label, .stTextInput label, .stSlider label {
-        color: #1C1B18 !important;
-        font-family: 'Source Sans 3', sans-serif !important;
-        font-weight: 600 !important;
-        font-size: 0.9rem !important;
-    }
-
-    /* Botões editoriais explícitos com alto contraste */
-    .stButton > button {
-        background-color: #FFFFFF !important;
-        color: #1C1B18 !important;
-        border: 1px solid #B5AEA0 !important;
-        border-radius: 3px !important;
-        font-family: 'Source Sans 3', sans-serif !important;
-        font-weight: 600 !important;
-        padding: 8px 18px !important;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
-        transition: all 0.15s ease-in-out !important;
-    }
-    .stButton > button:hover {
-        background-color: #F7EBEB !important;
-        border-color: #7A2E2E !important;
-        color: #7A2E2E !important;
-    }
-    .stButton > button:active {
-        background-color: #7A2E2E !important;
-        color: #FFFFFF !important;
-    }
-    div[data-testid="stMetric"] {
-        background-color: #FFFFFF;
-        border: 1px solid #D8D3C9;
-        border-radius: 2px;
-        padding: 10px 14px;
-    }
-    div[data-testid="stMetric"] label {
-        color: #6F6B63 !important;
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-    }
-    div[data-testid="stMetric"] div {
-        color: #20201E !important;
-        font-family: 'Libre Baskerville', serif;
-    }
-</style>
-""", unsafe_allow_html=True)
 
 # As 6 Seções do Site
 SECOES = [
@@ -673,27 +355,14 @@ def render_view_overview(service):
     n_people = len(service.list_people(is_demo=False))
     n_claims = len(service.list_claims()) if hasattr(service, "list_claims") else 0
 
-    st.markdown(f"""
-    <div class="editorial-header">
-        <div class="editorial-kicker">Observatório Documental · 1950—2026</div>
-        <h1 class="editorial-title">Atlas Histórico da Criminalidade no Rio de Janeiro</h1>
-        <p class="editorial-lead">
-            Publicação científica, historiográfica e geográfica sobre as dinâmicas territoriais,
-            organizações armadas, facções prisionais, contravenção e políticas de segurança pública no Estado do Rio de Janeiro.
-        </p>
-        <div class="editorial-stats-band">
-            <span><b>{n_real}</b> acontecimentos documentados</span>
-            <span class="sep">·</span>
-            <span><b>{n_sources}</b> fontes catalogadas</span>
-            <span class="sep">·</span>
-            <span><b>{n_people}</b> figuras históricas</span>
-            <span class="sep">·</span>
-            <span><b>1.671</b> perímetros cartográficos</span>
-            <span class="sep">·</span>
-            <span><b>100%</b> com citação literal</span>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
+    render_hero_header()
+    render_kpi_dashboard({
+        "territorios": "1.671",
+        "eventos": f"{n_real}+",
+        "fontes": f"{n_sources}",
+        "audiovisual": "100+",
+        "integridade": "100%",
+    })
 
     c_left, c_right = st.columns([3, 2])
 
@@ -713,7 +382,7 @@ def render_view_overview(service):
         """)
 
         st.markdown("<br>", unsafe_allow_html=True)
-        col_btn1, col_btn2, col_btn3 = st.columns(3)
+        col_btn1, col_btn2, col_btn3, col_btn4 = st.columns(4)
         with col_btn1:
             if st.button("Painel Analítico →", use_container_width=True):
                 st.session_state.nav_view = "Painel Analítico"
@@ -725,6 +394,10 @@ def render_view_overview(service):
         with col_btn3:
             if st.button("Linha do Tempo →", use_container_width=True):
                 st.session_state.nav_view = "Linha do Tempo"
+                st.rerun()
+        with col_btn4:
+            if st.button("Acervo (100 Docs) →", use_container_width=True):
+                st.session_state.nav_view = "Acervo de Fontes"
                 st.rerun()
 
     with c_right:
@@ -738,12 +411,20 @@ def render_view_overview(service):
                     <div style="font-family:'Libre Baskerville',serif; font-size:1.4rem; color:#7A2E2E; font-weight:700;">{n_real}</div>
                 </div>
                 <div>
-                    <div style="font-size:0.8rem; color:#6F6B63;">Claims Atomizados</div>
-                    <div style="font-family:'Libre Baskerville',serif; font-size:1.4rem; color:#20201E; font-weight:700;">{n_claims}</div>
+                    <div style="font-size:0.8rem; color:#6F6B63;">Documentários YouTube</div>
+                    <div style="font-family:'Libre Baskerville',serif; font-size:1.4rem; color:#7A2E2E; font-weight:700;">100</div>
+                </div>
+                <div>
+                    <div style="font-size:0.8rem; color:#6F6B63;">Transcrições SHA-256</div>
+                    <div style="font-family:'Libre Baskerville',serif; font-size:1.4rem; color:#20201E; font-weight:700;">10</div>
                 </div>
                 <div>
                     <div style="font-size:0.8rem; color:#6F6B63;">Fontes Bibliográficas</div>
                     <div style="font-family:'Libre Baskerville',serif; font-size:1.4rem; color:#20201E; font-weight:700;">{n_sources}</div>
+                </div>
+                <div>
+                    <div style="font-size:0.8rem; color:#6F6B63;">Figuras Históricas</div>
+                    <div style="font-family:'Libre Baskerville',serif; font-size:1.4rem; color:#20201E; font-weight:700;">{n_people}</div>
                 </div>
                 <div>
                     <div style="font-size:0.8rem; color:#6F6B63;">Polígonos Vetoriais</div>
@@ -751,7 +432,7 @@ def render_view_overview(service):
                 </div>
             </div>
             <div style="border-top: 1px solid #D8D3C9; margin-top: 14px; padding-top: 10px; font-size: 0.82rem; color: #5A564F;">
-                Recorte cronológico coberto: <b>1958 — 2026</b> (68 anos de transformações institucionais documentadas).
+                Recorte cronológico coberto: <b>1950 — 2026</b> (76 anos de transformações institucionais documentadas).
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -1037,7 +718,10 @@ def render_view_map(service, events, filtros):
                     comparison_world_state=comp_ws,
                     theme=tema_mapa,
                     mode=modo_analitico,
-                    height=620
+                    height=650,
+                    show_factions=exibir_perimetros,
+                    show_aisps=exibir_aisp,
+                    show_bairros=exibir_bairros,
                 )
                 sem_geometria = [e for e in events_filtrados_tempo if not any(getattr(r.region, "has_coordinates", False) for r in getattr(e, "region_links", []))]
                 plotados = len(events_filtrados_tempo) - len(sem_geometria)
@@ -1049,7 +733,7 @@ def render_view_map(service, events, filtros):
                     show_bairros=exibir_bairros,
                     theme=tema_mapa
                 )
-                st_folium(fmap, width="100%", height=580)
+                st_folium(fmap, use_container_width=True, height=650)
             else:
                 deck = build_pydeck_map(
                     events_filtrados_tempo,
@@ -1073,10 +757,10 @@ def render_view_map(service, events, filtros):
                 <span style="color:#EF4444; font-weight:700;">🔴 Conflitante</span>
                 <span style="color:#6F6B63;">|</span>
                 <span><b>Domínio:</b></span>
-                <span style="color:#E0342C; font-weight:700;">■ CV</span>
-                <span style="color:#2FA46B; font-weight:700;">■ TCP</span>
-                <span style="color:#EDB72B; font-weight:700;">■ ADA</span>
-                <span style="color:#2B5BC7; font-weight:700;">■ Milícias</span>
+                <span style="color:#EF4444; font-weight:700;">■ CV</span>
+                <span style="color:#3B82F6; font-weight:700;">■ TCP</span>
+                <span style="color:#10B981; font-weight:700;">■ ADA</span>
+                <span style="color:#374151; font-weight:700;">■ Milícias</span>
                 <span style="color:#00E5FF; font-weight:700;">- - AISP (PMERJ)</span>
             </div>
             """, unsafe_allow_html=True)
@@ -1349,96 +1033,105 @@ def render_view_timeline(service, events):
 def render_view_sources(service, filtros):
     st.markdown("""
     <div style="margin-bottom: 1.4rem;">
-        <h2 style="margin: 0; font-size: 1.6rem;">Acervo Geral de Fontes Documentais</h2>
-        <div style="font-size: 0.9rem; color: #6F6B63;">Catálogo completo de livros acadêmicos, inquéritos judiciais, relatórios policiais e hemeroteca histórica.</div>
+        <h2 style="margin: 0; font-size: 1.6rem;">Acervo Geral de Fontes & Documentação</h2>
+        <div style="font-size: 0.9rem; color: #6F6B63;">Repositório documental unificado: 100 documentários audiovisuais transcritos e acervo de fontes bibliográficas, oficiais e judiciais.</div>
     </div>
     """, unsafe_allow_html=True)
 
-    is_demo_val = filtros.get("is_demo") if isinstance(filtros, dict) else None
-    fontes = service.list_sources(is_demo=is_demo_val)
-    if not fontes:
-        st.info("Nenhuma fonte cadastrada para a seleção atual.")
-        return
+    tab_videos, tab_bibliografia = st.tabs([
+        "🎬 Documentários Históricos (Corpus YouTube - 100 Episódios)",
+        "📚 Fontes Bibliográficas, Oficiais & Hemeroteca"
+    ])
 
-    def extrair_eixo(src):
-        if src.archive_ref and "(" in src.archive_ref:
-            return src.archive_ref.split("(")[0].strip()
-        if src.notes and "Eixo Temático:" in src.notes:
-            return src.notes.split("Eixo Temático:")[1].split("|")[0].strip()
-        return "Geral"
+    with tab_videos:
+        render_video_corpus_explorer()
 
-    c1, c2, c3 = st.columns([2, 1, 2])
-    with c1:
-        todos_eixos = ["Todos os Eixos"] + sorted({extrair_eixo(s) for s in fontes})
-        sel_eixo = st.selectbox("Eixo de Pesquisa:", todos_eixos)
-    with c2:
-        tipologias = ["Todas as Tipologias"] + sorted({s.source_type for s in fontes if s.source_type})
-        sel_tipo = st.selectbox("Tipologia:", tipologias)
-    with c3:
-        termo_busca = st.text_input("Buscar por Título / Autor:", placeholder="Ex: Zaluar, Amorim, STF...")
+    with tab_bibliografia:
+        is_demo_val = filtros.get("is_demo") if isinstance(filtros, dict) else None
+        fontes = service.list_sources(is_demo=is_demo_val)
+        if not fontes:
+            st.info("Nenhuma fonte cadastrada para a seleção atual.")
+            return
 
-    fontes_filtradas = []
-    for s in fontes:
-        if sel_eixo != "Todos os Eixos" and sel_eixo.lower() not in extrair_eixo(s).lower():
-            continue
-        if sel_tipo != "Todas as Tipologias" and s.source_type != sel_tipo:
-            continue
-        if termo_busca:
-            bloco = f"{s.title} {s.author or ''} {s.publisher or ''} {s.notes or ''}".lower()
-            if termo_busca.lower() not in bloco:
+        def extrair_eixo(src):
+            if src.archive_ref and "(" in src.archive_ref:
+                return src.archive_ref.split("(")[0].strip()
+            if src.notes and "Eixo Temático:" in src.notes:
+                return src.notes.split("Eixo Temático:")[1].split("|")[0].strip()
+            return "Geral"
+
+        c1, c2, c3 = st.columns([2, 1, 2])
+        with c1:
+            todos_eixos = ["Todos os Eixos"] + sorted({extrair_eixo(s) for s in fontes})
+            sel_eixo = st.selectbox("Eixo de Pesquisa:", todos_eixos)
+        with c2:
+            tipologias = ["Todas as Tipologias"] + sorted({s.source_type for s in fontes if s.source_type})
+            sel_tipo = st.selectbox("Tipologia:", tipologias)
+        with c3:
+            termo_busca = st.text_input("Buscar por Título / Autor:", placeholder="Ex: Zaluar, Amorim, STF...")
+
+        fontes_filtradas = []
+        for s in fontes:
+            if sel_eixo != "Todos os Eixos" and sel_eixo.lower() not in extrair_eixo(s).lower():
                 continue
-        fontes_filtradas.append(s)
+            if sel_tipo != "Todas as Tipologias" and s.source_type != sel_tipo:
+                continue
+            if termo_busca:
+                bloco = f"{s.title} {s.author or ''} {s.publisher or ''} {s.notes or ''}".lower()
+                if termo_busca.lower() not in bloco:
+                    continue
+            fontes_filtradas.append(s)
 
-    # Faixa Resumo das Fontes
-    st.markdown(f"""
-    <div class="editorial-stats-band" style="margin-bottom: 1.2rem;">
-        <span><b>{len(fontes_filtradas)}</b> fontes exibidas</span>
-        <span class="sep">·</span>
-        <span><b>{sum(1 for s in fontes_filtradas if 'academico' in (s.source_type or ''))}</b> acadêmicas</span>
-        <span class="sep">·</span>
-        <span><b>{sum(1 for s in fontes_filtradas if s.source_type in ('documento_judicial', 'oficial_relatorio'))}</b> oficiais/judiciais</span>
-        <span class="sep">·</span>
-        <span><b>{sum(1 for s in fontes_filtradas if s.source_type in ('jornalismo_investigativo', 'historia_oral', 'jornalismo_hemeroteca'))}</b> hemeroteca/imprensa</span>
-    </div>
-    """, unsafe_allow_html=True)
+        # Faixa Resumo das Fontes
+        st.markdown(f"""
+        <div class="editorial-stats-band" style="margin-bottom: 1.2rem;">
+            <span><b>{len(fontes_filtradas)}</b> fontes exibidas</span>
+            <span class="sep">·</span>
+            <span><b>{sum(1 for s in fontes_filtradas if 'academico' in (s.source_type or ''))}</b> acadêmicas</span>
+            <span class="sep">·</span>
+            <span><b>{sum(1 for s in fontes_filtradas if s.source_type in ('documento_judicial', 'oficial_relatorio'))}</b> oficiais/judiciais</span>
+            <span class="sep">·</span>
+            <span><b>{sum(1 for s in fontes_filtradas if s.source_type in ('jornalismo_investigativo', 'historia_oral', 'jornalismo_hemeroteca'))}</b> hemeroteca/imprensa</span>
+        </div>
+        """, unsafe_allow_html=True)
 
-    if not fontes_filtradas:
-        st.info("Nenhuma fonte encontrada para os filtros selecionados.")
-        return
+        if not fontes_filtradas:
+            st.info("Nenhuma fonte encontrada para os filtros selecionados.")
+            return
 
-    # Ficha Catalográfica Selecionada
-    titulos = [f"{s.title} (ID {s.id})" for s in fontes_filtradas]
-    sel_titulo = st.selectbox("Examinar Ficha Catalográfica:", titulos)
-    sel_id = int(sel_titulo.split("(ID ")[-1].replace(")", ""))
-    src_sel = next(s for s in fontes_filtradas if s.id == sel_id)
+        # Ficha Catalográfica Selecionada
+        titulos = [f"{s.title} (ID {s.id})" for s in fontes_filtradas]
+        sel_titulo = st.selectbox("Examinar Ficha Catalográfica:", titulos)
+        sel_id = int(sel_titulo.split("(ID ")[-1].replace(")", ""))
+        src_sel = next(s for s in fontes_filtradas if s.id == sel_id)
 
-    url_html = f"<div style='margin-top:8px; font-size:0.85rem;'><b>Link de Acesso:</b> <a href='{src_sel.url}' target='_blank'>{src_sel.url}</a></div>" if src_sel.url else ""
-    notes_html = f"<div style='margin-top:6px; font-size:0.85rem; color:#6F6B63;'><b>Notas:</b> {src_sel.notes}</div>" if src_sel.notes else ""
-    hash_html = f"<code style='font-size:11px;'>{src_sel.file_hash_sha256[:24]}...</code>" if src_sel.file_hash_sha256 else "Registro Remoto"
+        url_html = f"<div style='margin-top:8px; font-size:0.85rem;'><b>Link de Acesso:</b> <a href='{src_sel.url}' target='_blank'>{src_sel.url}</a></div>" if src_sel.url else ""
+        notes_html = f"<div style='margin-top:6px; font-size:0.85rem; color:#6F6B63;'><b>Notas:</b> {src_sel.notes}</div>" if src_sel.notes else ""
+        hash_html = f"<code style='font-size:11px;'>{src_sel.file_hash_sha256[:24]}...</code>" if src_sel.file_hash_sha256 else "Registro Remoto"
 
-    st.markdown(
-        f"<div class='archive-dossier'>"
-        f"<div class='archive-tag'>{(src_sel.source_type or 'INDEFINIDO').upper().replace('_', ' ')} · PUBLICAÇÃO {src_sel.publication_year or 'S/D'}</div>"
-        f"<div class='archive-title'>{src_sel.title}</div>"
-        f"<div style='font-size:0.92rem; margin-bottom: 0.6rem;'><b>Citação Formal (ABNT):</b><br><i>{src_sel.citation}</i></div>"
-        f"<div style='font-size:0.85rem; color:#5A564F; display:grid; grid-template-columns: 1fr 1fr; gap: 8px;'>"
-        f"<div><b>Autoria:</b> {src_sel.author or 'Não informada'}</div>"
-        f"<div><b>Instituição / Veículo:</b> {src_sel.publisher or 'Não informada'}</div>"
-        f"<div><b>Acervo / Fundo:</b> {src_sel.archive_ref or 'Catálogo Geral'}</div>"
-        f"<div><b>Custódia Digital:</b> {hash_html}</div>"
-        f"</div>"
-        f"{url_html}"
-        f"{notes_html}"
-        f"</div>",
-        unsafe_allow_html=True
-    )
+        st.markdown(
+            f"<div class='archive-dossier'>"
+            f"<div class='archive-tag'>{(src_sel.source_type or 'INDEFINIDO').upper().replace('_', ' ')} · PUBLICAÇÃO {src_sel.publication_year or 'S/D'}</div>"
+            f"<div class='archive-title'>{src_sel.title}</div>"
+            f"<div style='font-size:0.92rem; margin-bottom: 0.6rem;'><b>Citação Formal (ABNT):</b><br><i>{src_sel.citation}</i></div>"
+            f"<div style='font-size:0.85rem; color:#5A564F; display:grid; grid-template-columns: 1fr 1fr; gap: 8px;'>"
+            f"<div><b>Autoria:</b> {src_sel.author or 'Não informada'}</div>"
+            f"<div><b>Instituição / Veículo:</b> {src_sel.publisher or 'Não informada'}</div>"
+            f"<div><b>Acervo / Fundo:</b> {src_sel.archive_ref or 'Catálogo Geral'}</div>"
+            f"<div><b>Custódia Digital:</b> {hash_html}</div>"
+            f"</div>"
+            f"{url_html}"
+            f"{notes_html}"
+            f"</div>",
+            unsafe_allow_html=True
+        )
 
-    if src_sel.event_links:
-        st.markdown("<div style='font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em; margin-bottom:0.4rem;'>Acontecimentos Sustentados por Esta Fonte</div>", unsafe_allow_html=True)
-        for el in src_sel.event_links:
-            st.markdown(f"- **[{el.event.date_display}] {el.event.title}** ({format_badge(el.validation_status)})")
-            if el.excerpt:
-                st.markdown(f"  > *\"{el.excerpt}\"*")
+        if src_sel.event_links:
+            st.markdown("<div style='font-size:0.75rem; font-weight:700; text-transform:uppercase; color:#7A2E2E; letter-spacing:0.08em; margin-bottom:0.4rem;'>Acontecimentos Sustentados por Esta Fonte</div>", unsafe_allow_html=True)
+            for el in src_sel.event_links:
+                st.markdown(f"- **[{el.event.date_display}] {el.event.title}** ({format_badge(el.validation_status)})")
+                if el.excerpt:
+                    st.markdown(f"  > *\"{el.excerpt}\"*")
 
 
 # =============================================================================
@@ -1561,35 +1254,8 @@ def render_view_methodology(service, events, filtros):
 
     with tab_corpus:
         st.markdown("### Corpus Audiovisual: 'Histórias do Rio de Janeiro' (YouTube)")
-        st.caption("Acervo sistemático de episódios históricos catalogados do canal Iconografia da História.")
-        cat_path = Path("data/catalogo_playlist_youtube_historias_rio.json")
-        if cat_path.exists():
-            with open(cat_path, "r", encoding="utf-8") as f:
-                cat = json.load(f)
-            vids = cat.get("videos", [])
-            transcritos = sum(1 for v in vids if v.get("transcript_status") in ("generated", "exact", "manually_verified"))
-            c_c1, c_c2, c_c3 = st.columns(3)
-            with c_c1:
-                st.metric("Vídeos Catalogados", len(vids))
-            with c_c2:
-                st.metric("Transcrições com Hash", transcritos)
-            with c_c3:
-                st.metric("Canal de Origem", cat.get("channel_name", "Iconografia da História"))
-
-            df_corpus = pd.DataFrame([
-                {
-                    "ID": v.get("id"),
-                    "Título": v.get("title"),
-                    "Duração": v.get("duration") or "S/D",
-                    "Transcrição": v.get("transcript_status"),
-                    "Hash SHA-256": (v.get("transcript_hash")[:16] + "...") if v.get("transcript_hash") else "Pendente",
-                    "Link": v.get("youtube_url")
-                }
-                for v in vids[:25]
-            ])
-            st.dataframe(df_corpus, use_container_width=True, hide_index=True)
-        else:
-            st.info("Catálogo audiovisual não localizado em data/catalogo_playlist_youtube_historias_rio.json.")
+        st.caption("Acervo sistemático de 100 documentários históricos catalogados do canal Iconografia da História com auditoria de transcrições e custódia digital.")
+        render_video_corpus_explorer(compact=True)
 
     with tab_auditoria:
         st.markdown("### Relatório Oficial de Integridade Histórica (13/13)")
