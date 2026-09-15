@@ -1,38 +1,87 @@
-# 📋 Protocolo de Extração Epistemológica de Vídeos Históricos
+# 📋 Protocolo de Extração: YouTube → Corpus Histórico Versionado
 
-**Finalidade**: Padronizar a ingestão de vídeos, entrevistas e minidocumentários da playlist *"Histórias do Rio de Janeiro"* (e outros acervos audiovisuais) no modelo de dados científico do projeto (`Source → Claim → Evidence → Event`).
-
----
-
-## 🎯 1. Princípios do Protocolo
-
-1. **Separação entre Fato, Afirmação e Interpretação**:
-   - **Fato Documentado**: Acontecimento com comprovação oficial ou judicial inequívoca (ex.: "Bangu 1 foi inaugurado em 1987").
-   - **Claim (Afirmação Factual)**: O que o narrador ou entrevistado declara ter ocorrido (ex.: "A facção X pagava propina mensal de R$ 50 mil ao batalhão Y").
-   - **Interpretação**: A tese explicativa que o vídeo propõe sobre o fato (ex.: "A criação da facção foi consequência direta do convívio com os presos políticos").
-2. **Citação Literal com Timestamp (`excerpt` + `timestamp`)**:
-   - Nenhuma afirmação pode ser salva sem a marcação temporal exata (`MM:SS`) e a transcrição literal de pelo menos uma frase representativa.
-3. **Rastreamento de Fontes Citadas (*Stemma Codicum*)**:
-   - Se o vídeo cita explicitamente um livro (ex.: Carlos Amorim, Caco Barcellos), uma CPI (ex.: CPI das Milícias de Freixo) ou uma matéria jornalística, esses dados devem ser registrados em `fontes_secundarias_citadas` para evitar falsa triangulação.
-4. **Intervalos Temporais sem Falsa Precisão**:
-   - Menções a anos ("em 1984") devem ser registradas como intervalos `1984-01-01` a `1984-12-31` com precisão `ano`, nunca `01/01/1984` como dia exato.
+**Finalidade**: Padronizar a transformação de acervos audiovisuais (como os 240 vídeos da playlist *"Histórias do Rio de Janeiro"* do canal *Iconografia da História*) em um **Corpus Histórico de Pesquisa Científica** perfeitamente integrado à cadeia `Source → Claim → Evidence → Event` do repositório.
 
 ---
 
-## 🤖 2. Prompt Estruturado de Extração (Template para Gemini / NotebookLM)
+## 🎯 1. Os 15 Pilares do Protocolo Epistemológico
+
+Para que um vídeo do YouTube não seja tratado como "conteúdo solto" nem como "verdade absoluta", cada episódio processado deve cumprir os seguintes 15 requisitos:
+
+| # | Dimensão do Protocolo | Requisito Metodológico | Modelo / Destino no Sistema |
+| :-: | :--- | :--- | :--- |
+| **1** | **Catálogo do Acervo** | Identificador estável do corpus (`YT-001` a `YT-240`) com rastreabilidade da playlist. | `data/catalogo_playlist_youtube_historias_rio.json` |
+| **2** | **Metadados Primários** | Título original, canal produtor, data de publicação, URL canônica e hash da transcrição. | [`Source`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/source.py) (`source_type="audiovisual_youtube"`) |
+| **3** | **Custódia da Transcrição** | Arquivo de texto integral da legenda/transcrição arquivado em `data/raw/audiovisual/` com hash SHA-256. | Sidecar de custódia digital (`*_meta.json`) |
+| **4** | **Timestamp de Cada Afirmação** | Ponto de partida em minutos e segundos (`MM:SS`) onde a proposição factual é narrada. | [`ClaimSource.section`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/associations.py) (`section="Timestamp 12:45"`) |
+| **5** | **Pessoas Mencionadas** | Identificação nominal, vulgo/alcunha e papel social (liderança, policial, autoridade, vítima). | [`Person`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/person.py) (`original_name`, `alias`, `role`) |
+| **6** | **Organizações Mencionadas** | Facções, milícias, esquadrões da morte, batalhões ou órgãos do Estado citados. | [`Organization`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/organization.py) (`original_name`, `acronym`, `org_type`) |
+| **7** | **Lugares e Territórios** | Favelas, bairros, presídios ou municípios com classificação semântica de controle. | [`Region`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/region.py) (`original_name`, `location_precision`) |
+| **8** | **Datas e Períodos Históricos** | Expressão original sem falsa precisão (`date_display`) convertida em limites (`date_start`, `date_end`). | [`Event`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/event.py) (Intervalos de conhecimento) |
+| **9** | **Acontecimentos Históricos** | Vinculação direta a um evento documentado existente ou proposta de novo registro. | [`Event`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/event.py) |
+| **10** | **Claims (Afirmações Atômicas)** | Decomposição em proposições factuais singulares, objetivas e auditáveis. | [`Claim`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/claim.py) (`statement`, `claim_type`) |
+| **11** | **Fontes Citadas no Vídeo** | Registro explícito de livros, CPIs, inquéritos ou matérias jornalísticas mencionadas no roteiro. | [`SourceDerivation`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/associations.py) (`reproduz`, `cita`, `resume`) |
+| **12** | **Tipologia do Discurso** | Distinção entre **fala do entrevistado**, **fala do pesquisador**, **narração**, **opinião** e **dado documental**. | [`ClaimSource.source_assessment`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/associations.py) |
+| **13** | **Grau de Certeza & Postura** | Nível de confiança (`confirmado`, `provavel`, `conflitante`) e postura (`apoia`, `contesta`, `matiza`). | [`Claim.confidence_level`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/claim.py), [`ClaimSource.stance`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/associations.py) |
+| **14** | **Relações entre Vídeos** | Mapeamento de múltiplos episódios que tratam da mesma guerra territorial ou figura biográfica. | Grafo de relações entre fontes |
+| **15** | **Detecção de Raiz Comum** | Identificação de que múltiplos vídeos derivam da mesma obra bibliográfica ou inquérito policial. | [`SourceDerivation.is_independent = False`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/associations.py) |
+
+---
+
+## 🔬 2. Tipologia do Discurso e Grafo de Derivação
+
+```mermaid
+flowchart TD
+    subgraph Raiz["Raiz Documental Primária / Canônica"]
+        L1["Livro: Carlos Amorim (1993)"]
+        P1["Inquérito Policial PCERJ"]
+    end
+
+    subgraph Videos["Corpus Audiovisual YouTube"]
+        V1["Vídeo YT-006: A Traição de Uê"]
+        V2["Vídeo YT-015: Beira-Mar"]
+        V3["Vídeo YT-026: Bangu 1"]
+    end
+
+    L1 -->|reproduz (is_independent=False)| V1
+    L1 -->|cita (is_independent=False)| V2
+    P1 -->|deriva_dado (is_independent=False)| V3
+
+    subgraph Claims["Decomposição em Claims com Tipo de Discurso"]
+        C1["Claim: Emboscada a Orlando Jogador"]
+        V1 -->|Timestamp 08:34 · Discurso: narracao_documental| C1
+        V1 -->|Timestamp 14:20 · Discurso: fala_entrevistado| C1
+    end
+
+    style Raiz fill:#2b2b2b,stroke:#7A2E2E,color:#fff
+    style Claims fill:#f5f3ee,stroke:#7A2E2E,color:#20201e
+```
+
+### Tipologia do Discurso (`tipo_discurso`):
+* `dado_documental`: Citação de boletim policial, certidão, laudo balístico ou decisão de sentença.
+* `fala_pesquisador`: Análise fundamentada por historiador, sociólogo ou jornalista investigativo creditado.
+* `narracao_documental`: Roteiro explicativo que sintetiza a cronologia dos fatos.
+* `fala_entrevistado`: Depoimento oral de testemunha, morador, policial ou envolvido direto.
+* `opiniao_editorial`: Juízo de valor ou interpretação subjetiva do produtor de conteúdo.
+
+---
+
+## 🤖 3. Prompt de Extração para Gemini / NotebookLM
 
 ```text
-Você é um pesquisador assistente sênior em História e Sociologia da Violência no Rio de Janeiro.
-Sua tarefa é analisar a transcrição integral do vídeo abaixo e produzir uma ficha epistemológica estritamente estruturada em formato JSON.
+Você é um pesquisador assistente sênior especializado em Historiografia e Sociologia Urbana do Rio de Janeiro.
+Analise a transcrição integral do vídeo indicado e extraia uma Ficha Epistemológica estritamente no formato JSON estruturado.
 
-REGRAS INEGOCIÁVEIS:
-1. NÃO invente fatos, pessoas, datas ou números. Se uma data ou local não for explicitamente mencionado, registre null.
-2. Cada afirmação extraída DEVE conter o timestamp de início (MM:SS) e a citação textual literal da transcrição ("excerpt").
-3. Distinga rigorosamente:
-   - "confirmado": fato amplamente estabelecido em fontes judiciais/acadêmicas citadas no vídeo.
-   - "provavel": alegação consistente, mas sem comprovação documental direta na fala.
-   - "conflitante": versão que colide com outras narrativas conhecidas ou contestada no próprio vídeo.
-4. Preserve a grafia original dos nomes e favelas citados.
+DIRETRIZES DE RIGOR METODOLÓGICO:
+1. NÃO invente fatos, pessoas, datas ou números. Se uma informação não for dita no vídeo, registre null.
+2. Cada afirmação atômica DEVE conter o timestamp de início (MM:SS) e a citação literal ("excerpt").
+3. Classifique o tipo_discurso estritamente entre:
+   - "dado_documental" (autos, certidões, sentenças citadas)
+   - "fala_pesquisador" (pesquisador acadêmico ou jornalista especializado)
+   - "narracao_documental" (narração que relata cronologia factual)
+   - "fala_entrevistado" (depoimento pessoal oral)
+   - "opiniao_editorial" (comentário subjetivo do canal)
+4. Identifique todas as fontes externas que o vídeo cita ou menciona (ex.: livros de Carlos Amorim, Caco Barcellos, reportagens de jornais, CPIs).
 
 METADADOS DO VÍDEO:
 - ID: {VIDEO_ID}
@@ -40,12 +89,12 @@ METADADOS DO VÍDEO:
 - Canal: {VIDEO_CHANNEL}
 - URL: {VIDEO_URL}
 
-TRANSCRIÇÃO DO VÍDEO:
+TRANSCRIÇÃO COMPLETA:
 \"\"\"
 {VIDEO_TRANSCRIPT}
 \"\"\"
 
-SAÍDA OBRIGATÓRIA (JSON VÁLIDO):
+FORMATO JSON DE SAÍDA:
 {
   "source_meta": {
     "video_id": "{VIDEO_ID}",
@@ -53,77 +102,68 @@ SAÍDA OBRIGATÓRIA (JSON VÁLIDO):
     "channel": "{VIDEO_CHANNEL}",
     "url": "{VIDEO_URL}",
     "periodo_historico_coberto": {
-      "date_display": "ex: anos 1980 a 1994",
+      "date_display": "Texto da data como falado (ex: junho de 1994)",
       "date_start": "YYYY-MM-DD",
       "date_end": "YYYY-MM-DD",
-      "temporal_precision": "ano | decada | dia | mes | intervalo",
-      "date_is_estimated": true | false
+      "temporal_precision": "dia | mes | ano | decada | aproximado",
+      "date_is_estimated": false
     },
-    "fontes_ou_autores_citados_no_video": ["ex: Carlos Amorim (1993)", "Jornal O Globo", "CPI das Milícias"]
+    "fontes_secundarias_citadas": [
+      {
+        "nome": "Carlos Amorim (1993)",
+        "tipo_relacao": "reproduz | cita | resume | deriva_dado"
+      }
+    ]
   },
-  "entidades_mencionadas": {
+  "entidades": {
     "pessoas": [
       {
-        "nome": "Nome completo ou grafia usada",
-        "vulgo": "Apelido conhecido ou null",
-        "papel": "lideranca_criminosa | policial | autoridade_publica | pesquisador | vitima | contraventor"
+        "nome": "Nome completo",
+        "alias": "Vulgo",
+        "role": "lideranca_criminosa | policial | autoridade | pesquisador | vitima"
       }
     ],
     "organizacoes": [
       {
-        "nome": "Nome da facção, milícia, batalhão ou instituição",
-        "sigla": "CV | TCP | ADA | PMERJ | PCERJ | BOPE | etc.",
-        "tipo": "faccao_trafico | grupo_paramilitar_milicia | cupula_contravencao | orgao_seguranca | orgao_justica"
+        "nome": "Comando Vermelho",
+        "acronym": "CV",
+        "org_type": "faccao_trafico"
       }
     ],
     "territorios": [
       {
-        "nome": "Nome da comunidade, favela ou bairro",
-        "municipio": "Rio de Janeiro | Duque de Caxias | etc.",
-        "status_mencionado": "presenca | controle | influencia | disputa"
+        "nome": "Morro do Adeus / Complexo do Alemão",
+        "municipio": "Rio de Janeiro",
+        "status": "controle | presenca | disputa"
       }
     ]
   },
   "claims": [
     {
-      "claim_type": "fato | data | autoria | territorio | baixa_letal | motivacao | relacao_estado",
-      "statement": "Enunciado factual atômico e objetivo.",
+      "statement": "Proposição factual atômica.",
       "timestamp": "MM:SS",
-      "excerpt": "Citação literal transcrita da fala no vídeo que sustenta a afirmação.",
+      "excerpt": "Citação literal transcrita da fala.",
+      "tipo_discurso": "narracao_documental | fala_entrevistado | dado_documental | fala_pesquisador",
       "confidence_level": "confirmado | provavel | conflitante",
       "stance": "apoia | contesta | matiza",
-      "epistemological_notes": "Análise crítica sobre a fonte primária dessa alegação ou possível viés."
+      "epistemological_notes": "Notas sobre possível dependência de fonte ou controvérsia."
     }
   ],
-  "acontecimento_central_sugerido": {
-    "title": "Título sintético para possível cadastro de Evento Histórico",
-    "year": 1994,
-    "date_display": "12 de junho de 1994",
-    "description": "Descrição factual resumida do acontecimento principal.",
-    "confidence_level": "confirmado | provavel | conflitante"
+  "evento_relacionado": {
+    "id_existente": null,
+    "titulo_sugerido": "Execução de Orlando Jogador por Uê no Complexo do Alemão",
+    "ano": 1994,
+    "date_display": "12 de junho de 1994"
   }
 }
 ```
 
 ---
 
-## 🔄 3. Mapeamento Direto com os Modelos SQLAlchemy do Repositório
+## 💻 4. Pipeline de Ingestão Automatizado no Repositório
 
-| Campo da Extração JSON | Modelo de Destino no Banco | Atributo / Coluna |
-| :--- | :--- | :--- |
-| `source_meta.title`, `url` | [`Source`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/source.py) | `title`, `url`, `source_type="audiovisual_youtube"` |
-| `source_meta.fontes_citadas` | [`Source`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/source.py) | `notes`, `derived_from_source_id` |
-| `claims[i].statement` | [`Claim`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/claim.py) | `statement`, `claim_type`, `confidence_level` |
-| `claims[i].excerpt`, `timestamp` | [`ClaimSource`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/claim.py) | `excerpt`, `section=f"Timestamp {timestamp}"`, `stance` |
-| `acontecimento_central` | [`Event`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/event.py) | `title`, `date_display`, `date_start`, `date_end`, `description` |
-| `entidades.pessoas` | [`Person`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/person.py) | `original_name`, `alias`, `role` |
-| `entidades.organizacoes` | [`Organization`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/organization.py) | `original_name`, `acronym`, `org_type` |
-| `entidades.territorios` | [`Region`](file:///C:/Users/dani/Documents/Daniel%20Systems/app/models/region.py) | `original_name`, `municipality`, `location_precision="aproximada"` |
-
----
-
-## 🛡️ 4. Critérios de Rejeição e Auditoria de Qualidade
-
-1. **Rejeição Automática de Alucinações**: Se o campo `excerpt` não existir ipsis litteris na transcrição do vídeo, a claim é descartada na validação Pydantic.
-2. **Salvaguarda contra Imputação Caluniosa**: Alegações sobre envolvimento de autoridades públicas ainda vivas sem citação explícita de condenação judicial transitada em julgado ou relatório oficial de CPI devem ser catalogadas estritamente com `confidence_level = "nao_verificado"` e notas explicativas.
-3. **Auditabilidade SHA-256 da Transcrição**: Cada arquivo de transcrição `.txt` ou `.json` ingerido gera um sidecar com cálculo de hash SHA-256 em `data/raw/audiovisual/` para garantia de integridade arquivística.
+O script [`scripts/ingestion/ingest_youtube_corpus.py`](file:///C:/Users/dani/Documents/Daniel%20Systems/scripts/ingestion/ingest_youtube_corpus.py) executa:
+1. Sincronização dos 240 episódios na tabela `sources`;
+2. Importação das fichas JSON geradas pelo Gemini / NotebookLM;
+3. Criação de registros `SourceDerivation` com `is_independent=False` quando obras já cadastradas (ex.: Carlos Amorim) forem citadas no vídeo;
+4. Povoamento atômico das tabelas `claims` e `claim_sources`.

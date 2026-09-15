@@ -26,7 +26,11 @@ def test_sources_catalog_coverage_and_metadata():
                 "jornalismo_investigativo",
                 "jornalismo_hemeroteca",
                 "historia_oral",
-                "cartografia_digital"
+                "cartografia_digital",
+                "audiovisual_youtube",
+                "video_youtube",
+                "entrevista",
+                "arquivo_digital",
             )
 
         # Verificar presença de eixos temáticos estruturantes
