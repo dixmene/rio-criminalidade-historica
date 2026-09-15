@@ -13,6 +13,14 @@ from app.models.associations import (
     EventRegion,
     ValidationStatusEnum,
 )
+from app.models.atlas import (
+    TerritorialDataset,
+    RegionVersion,
+    TerritorialRelation,
+    EventFootprint,
+    InstitutionalFacility,
+    MovementFlow,
+)
 
 __all__ = [
     "Base",
@@ -29,5 +37,11 @@ __all__ = [
     "EventPerson",
     "EventRegion",
     "ValidationStatusEnum",
+    "TerritorialDataset",
+    "RegionVersion",
+    "TerritorialRelation",
+    "EventFootprint",
+    "InstitutionalFacility",
+    "MovementFlow",
 ]
 

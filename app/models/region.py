@@ -49,8 +49,9 @@ class Region(Base):
     is_demo = Column(Boolean, default=False, nullable=False, index=True)
     created_at = Column(DateTime, default=utc_now)
 
-    # Relacionamento com eventos
+    # Relacionamento com eventos e versões espaço-temporais
     event_links = relationship("EventRegion", back_populates="region", cascade="all, delete-orphan")
+    versions = relationship("RegionVersion", back_populates="region", cascade="all, delete-orphan")
 
     @property
     def name(self) -> str:

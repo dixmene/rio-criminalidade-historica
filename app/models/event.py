@@ -12,20 +12,36 @@ def utc_now():
 class HistoricalDate(TypeDecorator):
     """
     Tipo temporal histórico robusto:
-    Aceita instâncias de datetime.date ou strings ISO 'YYYY-MM-DD',
-    convertendo transparentemente para datetime.date.
-    Garante integridade tanto no SQLite quanto no PostgreSQL sem quebrar chamadas.
+    Aceita instâncias de datetime.date, datetime.datetime ou strings ISO 'YYYY-MM-DD',
+    persistindo como string ISO (VARCHAR 50) para compatibilidade perfeita com SQLite
+    (evitando perda de precisão por afinidade NUMERIC do SQLite em CASTs) e expondo
+    instâncias de datetime.date no nível do modelo Python.
     """
-    impl = Date
+    impl = String(50)
     cache_ok = True
 
     def process_bind_param(self, value, dialect):
         if value is None:
             return None
-        if isinstance(value, date):
-            return value
         if isinstance(value, datetime):
-            return value.date()
+            return value.date().isoformat()
+        if isinstance(value, date):
+            return value.isoformat()
+        if isinstance(value, str):
+            val_str = value.strip()
+            if not val_str:
+                return None
+            try:
+                return date.fromisoformat(val_str[:10]).isoformat()
+            except Exception:
+                return val_str[:10]
+        return str(value)
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return None
+        if isinstance(value, date) and not isinstance(value, datetime):
+            return value
         if isinstance(value, str):
             val_str = value.strip()
             if not val_str:
@@ -34,17 +50,7 @@ class HistoricalDate(TypeDecorator):
                 return date.fromisoformat(val_str[:10])
             except Exception:
                 return None
-        return value
-
-    def process_result_value(self, value, dialect):
-        if value is None:
-            return None
-        if isinstance(value, str):
-            try:
-                return date.fromisoformat(value[:10])
-            except Exception:
-                return None
-        return value
+        return None
 
 
 class Event(Base):
@@ -95,6 +101,7 @@ class Event(Base):
     organization_links = relationship("EventOrganization", back_populates="event", cascade="all, delete-orphan")
     person_links = relationship("EventPerson", back_populates="event", cascade="all, delete-orphan")
     region_links = relationship("EventRegion", back_populates="event", cascade="all, delete-orphan")
+    footprints = relationship("EventFootprint", back_populates="event", cascade="all, delete-orphan")
 
     @property
     def sources(self):
