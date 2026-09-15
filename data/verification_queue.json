@@ -1,14 +1,14 @@
 {
-  "total_claims_audited": 14,
-  "queue_size": 14,
+  "total_claims_audited": 12,
+  "queue_size": 12,
   "summary_by_priority": {
     "CRITICA": 3,
     "ALTA": 0,
-    "MEDIA": 10,
+    "MEDIA": 8,
     "BAIXA": 1
   },
   "false_triangulations_detected": 0,
-  "unanchored_secondary_claims": 13,
+  "unanchored_secondary_claims": 11,
   "disputed_claims": 3,
   "queue": [
     {
@@ -359,66 +359,6 @@
       ]
     },
     {
-      "claim_id": 15,
-      "event_id": 83,
-      "event_title": "Execução de Orlando Jogador por Uê e a Cisão do Comando Vermelho Jovem (CVJ)",
-      "event_date": "12 de junho de 1994",
-      "statement": "Uê armou uma emboscada no Morro do Adeus simulando uma reunião de cúpula com Orlando Jogador e executou o aliado e seus seguranças.",
-      "claim_type": "fato",
-      "current_confidence": "confirmado",
-      "is_disputed": false,
-      "evidence_count": 1,
-      "independent_root_count": 1,
-      "primary_source_count": 0,
-      "secondary_source_count": 1,
-      "has_shared_roots": false,
-      "shared_roots": [],
-      "priority": "MEDIA",
-      "reasons": [
-        "Ausência de fonte primária: embasada exclusivamente em fontes secundárias ou audiovisuais."
-      ],
-      "recommended_action": "Pesquisar documentos judiciais, inquéritos policiais ou hemeroteca da época do evento.",
-      "sources_summary": [
-        {
-          "source_id": 287,
-          "title": "A TRAIÇÃO DE UÊ E A VINGANÇA MAIS FAMOSA DA HISTÓRIA DO RIO DE JANEIRO",
-          "type": "audiovisual_youtube",
-          "is_primary": false,
-          "is_root": false
-        }
-      ]
-    },
-    {
-      "claim_id": 16,
-      "event_id": 83,
-      "event_title": "Execução de Orlando Jogador por Uê e a Cisão do Comando Vermelho Jovem (CVJ)",
-      "event_date": "12 de junho de 1994",
-      "statement": "A execução de Orlando Jogador gerou a ruptura que originou a facção Amigos dos Amigos (ADA) e culminou na rebelião de Bangu 1 em 2002.",
-      "claim_type": "relacao_estado",
-      "current_confidence": "confirmado",
-      "is_disputed": false,
-      "evidence_count": 1,
-      "independent_root_count": 1,
-      "primary_source_count": 0,
-      "secondary_source_count": 1,
-      "has_shared_roots": false,
-      "shared_roots": [],
-      "priority": "MEDIA",
-      "reasons": [
-        "Ausência de fonte primária: embasada exclusivamente em fontes secundárias ou audiovisuais."
-      ],
-      "recommended_action": "Pesquisar documentos judiciais, inquéritos policiais ou hemeroteca da época do evento.",
-      "sources_summary": [
-        {
-          "source_id": 287,
-          "title": "A TRAIÇÃO DE UÊ E A VINGANÇA MAIS FAMOSA DA HISTÓRIA DO RIO DE JANEIRO",
-          "type": "audiovisual_youtube",
-          "is_primary": false,
-          "is_root": false
-        }
-      ]
-    },
-    {
       "claim_id": 17,
       "event_id": 83,
       "event_title": "Execução de Orlando Jogador por Uê e a Cisão do Comando Vermelho Jovem (CVJ)",
@@ -514,6 +454,6 @@
       ]
     }
   ],
-  "generated_at": "2026-09-15T03:11:15.499929+00:00",
+  "generated_at": "2026-09-15T03:20:33.429118+00:00",
   "output_file": "C:\\Users\\dani\\Documents\\Daniel Systems\\data\\verification_queue.json"
 }
