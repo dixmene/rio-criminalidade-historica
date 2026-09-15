@@ -1,0 +1,94 @@
+{
+  "audit_timestamp": "2026-09-15T03:58:36.595642+00:00",
+  "total_checks": 14,
+  "passed_checks": 14,
+  "failed_checks": 0,
+  "integrity_score": 100.0,
+  "is_fully_compliant": true,
+  "checks": {
+    "check_01_no_invented_coordinates": {
+      "title": "Zero Coordenadas Inventadas ou Anômalas",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "0 regiões com coordenadas inválidas."
+    },
+    "check_02_strict_null_preservation": {
+      "title": "Preservação Estrita de NULL (NULL != 0)",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "Regiões conceituais [89, 91, 124] preservadas como estritamente NULL sem geometrias fictícias."
+    },
+    "check_03_crs_validation": {
+      "title": "Validação de CRS Cartográfico Oficial",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "3 datasets validados sob CRS oficial homologado (WGS84 / SIRGAS2000)."
+    },
+    "check_04_sha256_cryptographic_hashes": {
+      "title": "Hashes Criptográficos SHA-256 de Camadas Oficiais",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "Todos os datasets cartográficos possuem hash SHA-256 auditável."
+    },
+    "check_05_region_version_dataset_link": {
+      "title": "Rastreabilidade Ininterrupta de Versões aos Datasets",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "20 versões espaciais rigorosamente vinculadas aos datasets de proveniência."
+    },
+    "check_06_temporal_validity_consistency": {
+      "title": "Consistência Lógica de Vigência Temporal",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "Intervalos de vigência espacial validados."
+    },
+    "check_07_anachronism_explicit_flagging": {
+      "title": "Sinalização Explícita de Anacronismo Cartográfico",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "20 versões contemporâneas sinalizadas com nota metodológica de anacronismo."
+    },
+    "check_08_strict_territorial_semantics": {
+      "title": "Semântica Estrita de Domínio Territorial",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "4 relações territoriais obedecem à taxonomia estrita homologada."
+    },
+    "check_09_disputed_territories_flagged": {
+      "title": "Sinalização de Conflito em Áreas sob Disputa",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "Todas as áreas sob disputa armada identificadas possuem marcação de controvérsia."
+    },
+    "check_10_facility_lifecycle_consistency": {
+      "title": "Consistência do Ciclo de Vida Institucional",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "4 equipamentos institucionais com cronologia de atividade validada."
+    },
+    "check_11_movement_flows_geometry_integrity": {
+      "title": "Integridade Geométrica de Fluxos Espaço-Temporais",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "2 fluxos de deslocamento validados com geometrias de origem/destino consistentes."
+    },
+    "check_12_snapshots_and_manifest_integrity": {
+      "title": "Integridade dos 69 Snapshots Anuais e Manifest Criptográfico",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "Snapshots pré-computados (1958-2026) validados com manifest.json."
+    },
+    "check_13_ethics_embargo_24_months": {
+      "title": "Embargo Ético de Granularidade Temporal (24 Meses)",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "Regra de salvaguarda de pessoas vivas ativamente aplicada sobre acontecimentos recentes."
+    },
+    "check_14_anti_operational_intelligence_filter": {
+      "title": "Filtro Rigoroso Anti-Inteligência Operacional",
+      "status": "PASS",
+      "violations_count": 0,
+      "details": "Nenhum termo de inteligência tática identificado nas saídas públicas do Atlas."
+    }
+  }
+}

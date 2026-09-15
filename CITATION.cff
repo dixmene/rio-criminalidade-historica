@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "Se você utilizar este atlas, base de dados ou metodologia em sua pesquisa acadêmica, por favor cite conforme abaixo."
+title: "Atlas Histórico da Criminalidade, Instituições e Territórios no Rio de Janeiro (1950–2026)"
+authors:
+  - family-names: "Farias"
+    given-names: "Daniel"
+    orcid: "https://orcid.org/0009-0000-0000-0000"
+repository-code: "https://github.com/dixmene/rio-criminalidade-historica"
+url: "https://github.com/dixmene/rio-criminalidade-historica"
+abstract: "Infraestrutura de pesquisa em história digital, cartografia espaço-temporal auditável e catálogo documental de proveniência sobre organizações armadas, instituições públicas e dinâmicas territoriais da violência no Rio de Janeiro."
+keywords:
+  - "história digital"
+  - "cartografia histórica"
+  - "segurança pública"
+  - "rio de janeiro"
+  - "crime organizado"
+  - "humanidades digitais"
+license: "MIT"
+version: "1.0.0"
+date-released: "2026-09-15"

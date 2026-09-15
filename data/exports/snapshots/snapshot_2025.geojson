@@ -12,7 +12,9 @@
     "flows_count": 0,
     "events_count": 1,
     "anachronistic_features_count": 3,
-    "epistemological_warning": "Atenção historiográfica: 3 polígonos contemporâneos estão sendo exibidos para o ano de 2025. Suas fronteiras são ilustrativas e sinalizadas cartograficamente com padrão hachurado cinza."
+    "epistemological_warning": "Atenção historiográfica: 3 polígonos contemporâneos estão sendo exibidos para o ano de 2025. Suas fronteiras são ilustrativas e sinalizadas cartograficamente com padrão hachurado cinza.",
+    "ethics_embargo_active": true,
+    "ethics_embargo_reason": "Embargo Ético de 24 Meses Ativo: Por imperativo de segurança, salvaguarda de pessoas vivas e prevenção contra o uso da pesquisa para inteligência operacional, acontecimentos dos últimos 24 meses têm suas coordenadas agregadas ao nível municipal ou de circunscrição policial (AISP)."
   },
   "coverage": {
     "year": 2025,
@@ -2373,7 +2375,7 @@
       "geometry": {
         "type": "Point",
         "coordinates": [
-          -43.1824,
+          -43.2096,
           -22.9035
         ]
       },
@@ -2389,7 +2391,10 @@
         "coordinate_source": "Instituto Pereira Passos (IPP) / Data.Rio - Centroide de Bairro",
         "buffer_meters": null,
         "source_count": 1,
-        "primary_source": "SUPREMO TRIBUNAL FEDERAL. Acórdão na Arguição de Descumprimento de Preceito Fundamental nº 635. Plenário. Relator Min. Edson Fachin. Julgamento final em 03/04/2025. Brasília: STF, 2025."
+        "primary_source": "SUPREMO TRIBUNAL FEDERAL. Acórdão na Arguição de Descumprimento de Preceito Fundamental nº 635. Plenário. Relator Min. Edson Fachin. Julgamento final em 03/04/2025. Brasília: STF, 2025.",
+        "location_precision": "agregado_municipal_embargo_etico",
+        "is_embargoed": true,
+        "embargo_note": "Coordenada exata suprimida preventivamente por embargo ético temporal (< 24 meses). Posição exibida representa o centroide do município."
       }
     }
   ]

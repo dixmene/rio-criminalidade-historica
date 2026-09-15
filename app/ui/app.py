@@ -61,6 +61,10 @@ from app.ui.isp_lab import render_isp_analytics_laboratory
 from app.ui.epistemological_dossier import render_epistemological_dossier
 from app.services.genealogy_service import GenealogyService
 from app.services.verification_service import VerificationService
+from app.services.atlas_service import AtlasService
+from app.services.coverage_service import CoverageService
+from app.services.ethics_guard import EthicsGuard
+from app.ui.components.atlas_map import render_maplibre_atlas
 
 # Garante criação de tabelas em ambientes efêmeros
 Base.metadata.create_all(bind=engine)
@@ -941,9 +945,13 @@ def render_view_map(service, events, filtros):
         with c_ctrl2:
             motor_mapa = st.selectbox(
                 "Motor de Visualização:",
-                options=["Folium (Interativo / Dossiê)", "PyDeck 3D (WebGL / Alta Performance)"],
+                options=[
+                    "MapLibre GL 4.x (Atlas Espaço-Temporal 60 FPS)",
+                    "Folium (Interativo / Dossiê)",
+                    "PyDeck 3D (WebGL / Alta Performance)"
+                ],
                 index=0,
-                help="PyDeck utiliza aceleração por GPU no navegador para visualização vetorial ultrarrápida."
+                help="MapLibre GL 4.x utiliza aceleração vetorial por GPU para navegação cartográfica fluida a 60 FPS."
             )
 
         with c_ctrl3:
@@ -957,6 +965,32 @@ def render_view_map(service, events, filtros):
                     "bairros": "🏙️ Malha de Bairros Oficiais (166 Bairros - PCRJ)"
                 }.get(x, x)
             )
+
+        # Barra de Modos Analíticos (9 Modos)
+        c_modo1, c_modo2 = st.columns([3, 1])
+        with c_modo1:
+            modo_analitico = st.selectbox(
+                "Cruzamento Analítico do Atlas (9 Modos Historiográficos):",
+                options=[
+                    "1. Tempo (Navegação Espaço-Temporal 1958-2026)",
+                    "2. Timeline Sincronizada (Acontecimento ↔ Território)",
+                    "3. Evidência (Ficha Epistemológica e Citação Literal)",
+                    "4. Organizações (Domínio e Metamorfose de Facções)",
+                    "5. Pessoas (Trajetórias de Liderança e Fugas)",
+                    "6. Instituições (Ciclo de Vida de Presídios e Batalhões)",
+                    "7. Estatística (ISP - Indicadores e Letalidade)",
+                    "8. Conflito Documental (Controvérsias e Disputas)",
+                    "9. Comparação Temporal (Dois Anos Lado a Lado)"
+                ],
+                index=0,
+                help="Permite cruzar a cartografia com diferentes eixos historiográficos de análise."
+            )
+        with c_modo2:
+            ano_comparacao = None
+            if "Comparação" in modo_analitico:
+                ano_comparacao = st.number_input("Ano de Comparação:", min_value=1958, max_value=2026, value=2025, step=1)
+            else:
+                st.caption(f"Eixo: **{modo_analitico.split('(')[0].strip()}**")
 
         # Barra de Playback Histórico
         c_play1, c_play2 = st.columns([3, 1])
@@ -992,7 +1026,22 @@ def render_view_map(service, events, filtros):
             exibir_aisp = "aisp" in camadas_sel
             exibir_bairros = "bairros" in camadas_sel
 
-            if motor_mapa == "Folium (Interativo / Dossiê)":
+            if motor_mapa.startswith("MapLibre"):
+                atlas_svc = AtlasService(service.db)
+                ws = atlas_svc.get_world_state(year=playback_teto, is_demo=filtros["is_demo"])
+                comp_ws = None
+                if ano_comparacao:
+                    comp_ws = atlas_svc.get_world_state(year=int(ano_comparacao), is_demo=filtros["is_demo"])
+                render_maplibre_atlas(
+                    ws,
+                    comparison_world_state=comp_ws,
+                    theme=tema_mapa,
+                    mode=modo_analitico,
+                    height=620
+                )
+                sem_geometria = [e for e in events_filtrados_tempo if not any(getattr(r.region, "has_coordinates", False) for r in getattr(e, "region_links", []))]
+                plotados = len(events_filtrados_tempo) - len(sem_geometria)
+            elif motor_mapa == "Folium (Interativo / Dossiê)":
                 fmap, sem_geometria, plotados = build_historical_folium_map(
                     events_filtrados_tempo,
                     show_polygons=exibir_perimetros,
@@ -1403,7 +1452,7 @@ def render_view_methodology(service, events, filtros):
     </div>
     """, unsafe_allow_html=True)
 
-    tab_regras, tab_zero, tab_normaliza, tab_custodia, tab_genealogia, tab_fila, tab_corpus, tab_auditoria = st.tabs([
+    tab_regras, tab_zero, tab_normaliza, tab_custodia, tab_genealogia, tab_fila, tab_corpus, tab_auditoria, tab_cartografia, tab_etica, tab_datapaper = st.tabs([
         "Regras Epistemológicas",
         "Regra 1: Zero vs. NULL",
         "Normalização Onomástica",
@@ -1411,7 +1460,10 @@ def render_view_methodology(service, events, filtros):
         "Genealogia & Falsa Triangulação",
         "Fila de Verificação (Queue)",
         "Corpus YouTube & Transcrições",
-        "Auditoria de Integridade (13/13)"
+        "Auditoria de Integridade (13/13)",
+        "Auditoria Cartográfica (14/14)",
+        "Ética & Embargo (24 Meses)",
+        "Data Paper & Como Citar"
     ])
 
     with tab_regras:
@@ -1565,6 +1617,55 @@ def render_view_methodology(service, events, filtros):
             st.dataframe(pd.DataFrame(rows_checks), use_container_width=True, hide_index=True)
         else:
             st.info("Relatório de integridade não encontrado. Execute 'scripts/audit_research_integrity.py'.")
+
+    with tab_cartografia:
+        st.markdown("### Auditoria Cartográfica Automatizada (14/14)")
+        st.caption("Verificação matemática e espacial das 14 salvaguardas da cartografia digital do Atlas.")
+        carto_rep_path = Path("reports/cartographic_integrity_report.json")
+        if carto_rep_path.exists():
+            with open(carto_rep_path, "r", encoding="utf-8") as f:
+                cdata = json.load(f)
+            c_c1, c_c2, c_c3 = st.columns(3)
+            with c_c1:
+                st.metric("Conformidade Cartográfica", f"{cdata.get('integrity_score', 0)}%")
+            with c_c2:
+                st.metric("Pilares Aprovados", f"{cdata.get('passed_checks', 0)} / {cdata.get('total_checks', 14)}")
+            with c_c3:
+                st.metric("Inconsistências", cdata.get("failed_checks", 0))
+
+            carto_checks = cdata.get("checks", {})
+            rows_carto = []
+            for k, val in sorted(carto_checks.items()):
+                rows_carto.append({
+                    "Pilar Cartográfico": val["title"],
+                    "Status": val["status"],
+                    "Violações": val["violations_count"],
+                    "Diagnóstico": val["details"]
+                })
+            st.dataframe(pd.DataFrame(rows_carto), use_container_width=True, hide_index=True)
+        else:
+            st.info("Relatório cartográfico não encontrado. Execute 'scripts/audit_cartographic_integrity.py'.")
+
+    with tab_etica:
+        st.markdown("### Salvaguardas Éticas & Embargo Temporal de 24 Meses")
+        st.caption("Diretrizes de salvaguarda de pessoas vivas, prevenção contra uso tático e limites do mapa.")
+        etica_file = Path("docs/metodologia/09_etica_e_limites_do_mapa.md")
+        if etica_file.exists():
+            st.markdown(etica_file.read_text(encoding="utf-8"))
+        else:
+            st.info("Documento de ética não localizado em docs/metodologia/09_etica_e_limites_do_mapa.md.")
+
+    with tab_datapaper:
+        st.markdown("### Data Paper & Como Citar")
+        st.caption("Especificação acadêmica, identificadores e instrução formal de citação científica.")
+        cff_file = Path("CITATION.cff")
+        if cff_file.exists():
+            st.markdown("#### Arquivo de Citação (CITATION.cff)")
+            st.code(cff_file.read_text(encoding="utf-8"), language="yaml")
+        dp_file = Path("docs/data_paper.md")
+        if dp_file.exists():
+            with st.expander("📄 Ler Data Paper Completo (Peer-Review Draft)"):
+                st.markdown(dp_file.read_text(encoding="utf-8"))
 
 
 # =============================================================================

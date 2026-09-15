@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-15T03:47:54.949829+00:00",
+  "generated_at": "2026-09-15T03:54:44.072850+00:00",
   "year_range": [
     1958,
     2026
@@ -883,8 +883,8 @@
     "2025": {
       "year": 2025,
       "filename": "snapshot_2025.geojson",
-      "sha256": "5e4d1e86517b17b26595110b86aa57cf483b516167ea14acbb8cdffeb0637bd8",
-      "size_bytes": 60523,
+      "sha256": "4b2c752e118606adeee065ec003f7134195fda83d015b22efd8a7a6aaf81648c",
+      "size_bytes": 61146,
       "total_features": 6,
       "territories_count": 3,
       "facilities_count": 2,
@@ -896,8 +896,8 @@
     "2026": {
       "year": 2026,
       "filename": "snapshot_2026.geojson",
-      "sha256": "3f7a112ec5d83b687d0ebe827573013dc06dfafc4e7361d41c2c5abb3a65150e",
-      "size_bytes": 60519,
+      "sha256": "f9ab66143a77d2eb32460806cb375ee301d2f84f9c5f1579fdc063e5403b85e4",
+      "size_bytes": 61144,
       "total_features": 6,
       "territories_count": 3,
       "facilities_count": 2,

@@ -117,7 +117,8 @@ class AtlasService:
         month: Optional[int] = None,
         org_filter: Optional[List[str]] = None,
         include_anachronistic: bool = True,
-        is_demo: bool = False
+        is_demo: bool = False,
+        apply_ethics_guard: bool = True
     ) -> WorldState:
         """
         Retorna o estado cartográfico do mundo para o ano `year` e opcionalmente mês `month`.
@@ -425,7 +426,7 @@ class AtlasService:
                 "epistemological_warning": warning
             }
 
-            return WorldState(
+            ws = WorldState(
                 year=year,
                 month=month,
                 territories=territory_features,
@@ -436,6 +437,12 @@ class AtlasService:
                 coverage=coverage,
                 metadata=metadata
             )
+
+            if apply_ethics_guard:
+                from app.services.ethics_guard import EthicsGuard
+                ws = EthicsGuard.apply_embargo(ws)
+
+            return ws
 
         finally:
             if close_db_after:
