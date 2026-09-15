@@ -15,7 +15,8 @@ class Source(Base):
 
     Diferenciação Conceitual:
     - O modelo Source registra a TIPOLOGIA DO DOCUMENTO e metadados de custódia.
-    - O modelo EventSource registra a AVALIAÇÃO DA AFIRMAÇÃO (confirmado, provável, conflitante).
+    - O modelo EventSource registra a AVALIAÇÃO DA AFIRMAÇÃO.
+    - SourceDerivation registra a linhagem documental entre fontes.
     """
     __tablename__ = "sources"
 
@@ -26,8 +27,9 @@ class Source(Base):
     publisher = Column(String(255), nullable=True)  # Editora, veículo ou órgão expedidor
     source_type = Column(String(100), nullable=False, default="oficial_relatorio")
     # tipos: academico_tese, academico_artigo, academico_livro, oficial_relatorio,
-    # documento_judicial, jornalismo_investigativo, jornalismo_hemeroteca, historia_oral
-    
+    # documento_judicial, jornalismo_investigativo, jornalismo_hemeroteca, historia_oral,
+    # video_youtube, entrevista, arquivo_digital
+
     publication_year = Column(Integer, nullable=True, index=True)
     publication_date = Column(String(50), nullable=True)
     document_date = Column(String(50), nullable=True)
@@ -41,6 +43,21 @@ class Source(Base):
     # Relacionamento de proveniência com eventos e afirmações (claims)
     event_links = relationship("EventSource", back_populates="source", cascade="all, delete-orphan")
     claim_links = relationship("ClaimSource", back_populates="source", cascade="all, delete-orphan")
+
+    # Genealogia documental: uma fonte pode derivar de várias fontes e ser
+    # reutilizada por várias outras fontes.
+    derived_sources = relationship(
+        "SourceDerivation",
+        foreign_keys="SourceDerivation.parent_source_id",
+        back_populates="parent_source",
+        cascade="all, delete-orphan",
+    )
+    source_derivations = relationship(
+        "SourceDerivation",
+        foreign_keys="SourceDerivation.derived_source_id",
+        back_populates="derived_source",
+        cascade="all, delete-orphan",
+    )
 
     def __repr__(self):
         return f"<Source(id={self.id}, title='{self.title[:30]}...', year={self.publication_year})>"
