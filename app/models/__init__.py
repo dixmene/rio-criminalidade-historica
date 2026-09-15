@@ -7,6 +7,7 @@ from app.models.event import Event
 from app.models.claim import Claim, ClaimSource
 from app.models.associations import (
     EventSource,
+    SourceDerivation,
     EventOrganization,
     EventPerson,
     EventRegion,
@@ -23,6 +24,7 @@ __all__ = [
     "Claim",
     "ClaimSource",
     "EventSource",
+    "SourceDerivation",
     "EventOrganization",
     "EventPerson",
     "EventRegion",
