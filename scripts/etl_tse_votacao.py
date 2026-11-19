@@ -4,15 +4,68 @@ Executa Spatial Join entre Locais de Votação (coordenadas geográficas) e os P
 Calcula o Índice de Herfindahl-Hirschman (HHI) para detecção de concentração eleitoral atípica ("currais eleitorais").
 """
 
-import os
+from __future__ import annotations
+
+from collections import OrderedDict
+from dataclasses import dataclass
 import json
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import Any, Dict, List, Optional
+
 import pandas as pd
+from shapely import STRtree
 from shapely.geometry import Point, shape
+
+from app.map.layers import load_aisp_polygons
 
 AISP_GEOJSON_PATH = Path("data/geospatial/aisps_batalhoes_pmerj.geojson")
 OUTPUT_PARQUET_PATH = Path("database/locais_votacao_rio.parquet")
+
+_MAX_SPATIAL_INDEX_CACHE = 4
+
+
+@dataclass
+class _AispSpatialIndex:
+    features_ref: List[Dict[str, Any]]
+    length: int
+    tree: STRtree
+    properties: List[Dict[str, Any]]
+
+
+_SPATIAL_INDEX_CACHE: "OrderedDict[int, _AispSpatialIndex]" = OrderedDict()
+
+
+def _get_spatial_index(aisp_features: List[Dict[str, Any]]) -> _AispSpatialIndex:
+    """
+    Constrói e cacheia índice espacial STRtree para a lista de features GeoJSON,
+    evitando reconstrução repetida de geometrias Shapely a cada consulta pontual.
+    """
+    key = id(aisp_features)
+    cached = _SPATIAL_INDEX_CACHE.get(key)
+    if (
+        cached is not None
+        and cached.features_ref is aisp_features
+        and cached.length == len(aisp_features)
+    ):
+        _SPATIAL_INDEX_CACHE.move_to_end(key)
+        return cached
+
+    geoms = []
+    props = []
+    for feat in aisp_features:
+        geoms.append(shape(feat["geometry"]))
+        props.append(feat.get("properties", {}))
+
+    idx = _AispSpatialIndex(
+        features_ref=aisp_features,
+        length=len(aisp_features),
+        tree=STRtree(geoms),
+        properties=props,
+    )
+    _SPATIAL_INDEX_CACHE[key] = idx
+    if len(_SPATIAL_INDEX_CACHE) > _MAX_SPATIAL_INDEX_CACHE:
+        _SPATIAL_INDEX_CACHE.popitem(last=False)
+    return idx
 
 
 def calculate_hhi(shares: List[float]) -> float:
@@ -27,22 +80,29 @@ def calculate_hhi(shares: List[float]) -> float:
     """
     if not shares:
         return 0.0
-    # Normalizar caso a soma não seja 100
     total = sum(shares)
     if total == 0:
         return 0.0
-    norm_pct = [(s / total) * 100.0 for s in shares]
-    return round(sum(p ** 2 for p in norm_pct), 2)
+    scale = 100.0 / total
+    return round(sum((s * scale) ** 2 for s in shares), 2)
 
 
-def match_point_to_aisp(lat: float, lon: float, aisp_features: List[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
-    """Executa point-in-polygon espacial determinístico para associar o local de votação ao batalhão."""
+def match_point_to_aisp(
+    lat: float,
+    lon: float,
+    aisp_features: List[Dict[str, Any]],
+) -> Optional[Dict[str, Any]]:
+    """Executa point-in-polygon espacial determinístico via índice STRtree para associar o local ao batalhão."""
+    if not aisp_features:
+        return None
+    spatial_idx = _get_spatial_index(aisp_features)
     pt = Point(lon, lat)
-    for feat in aisp_features:
-        geom = shape(feat["geometry"])
-        if geom.contains(pt):
-            return feat.get("properties", {})
-    return None
+    hits = spatial_idx.tree.query(pt, predicate="within")
+    if len(hits) == 0:
+        return None
+    # Preserva a ordem determinística da primeira feature correspondente
+    first_idx = int(hits.min())
+    return spatial_idx.properties[first_idx]
 
 
 def generate_baseline_locais_votacao() -> List[Dict[str, Any]]:
@@ -146,7 +206,7 @@ def generate_baseline_locais_votacao() -> List[Dict[str, Any]]:
             "percentual_lider": 19.0,
             "distribuicao_votos": [19.0, 16.0, 15.0, 14.0, 11.0, 9.0, 8.0, 8.0],
             "dominio_territorial_estimado": "Área Urbana Formal",
-        }
+        },
     ]
 
 
@@ -157,11 +217,12 @@ def run_etl_tse(output_path: Optional[Path] = None) -> pd.DataFrame:
 
     locais = generate_baseline_locais_votacao()
 
-    # Carregar AISP GeoJSON se existir
-    aisp_features = []
+    # Reutiliza camada AISP cacheada quando existir
+    aisp_features: List[Dict[str, Any]] = []
     if AISP_GEOJSON_PATH.exists():
-        with open(AISP_GEOJSON_PATH, "r", encoding="utf-8") as f:
-            aisp_features = json.load(f).get("features", [])
+        aisp_geo = load_aisp_polygons(str(AISP_GEOJSON_PATH))
+        if aisp_geo:
+            aisp_features = aisp_geo.get("features", [])
 
     rows = []
     for loc in locais:
@@ -169,12 +230,10 @@ def run_etl_tse(output_path: Optional[Path] = None) -> pd.DataFrame:
         lon = loc["longitude"]
         hhi = calculate_hhi(loc["distribuicao_votos"])
 
-        # Spatial Join
         aisp_info = match_point_to_aisp(lat, lon, aisp_features) if aisp_features else {}
         aisp_num = aisp_info.get("aisp") if aisp_info else None
         batalhao = aisp_info.get("batalhao") if aisp_info else None
 
-        # Fallback de enriquecimento se ponto não caiu na malha
         if aisp_num is None:
             if "Bangu" in loc["bairro"]:
                 aisp_num, batalhao = 14, "14º BPM"
@@ -207,9 +266,13 @@ def run_etl_tse(output_path: Optional[Path] = None) -> pd.DataFrame:
             "votos_lider": loc["votos_lider"],
             "percentual_lider": loc["percentual_lider"],
             "indice_hhi": hhi,
-            "classificacao_hhi": "Altamente Concentrado (Suspeita de Curral)" if alerta_curral else "Competição Democrática Normal",
+            "classificacao_hhi": (
+                "Altamente Concentrado (Suspeita de Curral)"
+                if alerta_curral
+                else "Competição Democrática Normal"
+            ),
             "dominio_territorial": loc["dominio_territorial_estimado"],
-            "alerta_curral_eleitoral": alerta_curral
+            "alerta_curral_eleitoral": alerta_curral,
         })
 
     df = pd.DataFrame(rows)

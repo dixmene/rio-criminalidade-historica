@@ -22,12 +22,14 @@ if sys.platform == "win32":
 
 
 def calculate_sha256(file_path: Path) -> str:
-    """Calcula o hash criptográfico SHA-256 para integridade e auditoria."""
-    hasher = hashlib.sha256()
+    """Calcula o hash criptográfico SHA-256 em streaming para integridade e auditoria."""
     with open(file_path, "rb") as f:
-        for chunk in iter(lambda: f.read(65536), b""):
+        if hasattr(hashlib, "file_digest"):
+            return hashlib.file_digest(f, "sha256").hexdigest()
+        hasher = hashlib.sha256()
+        for chunk in iter(lambda: f.read(1048576), b""):
             hasher.update(chunk)
-    return hasher.hexdigest()
+        return hasher.hexdigest()
 
 
 def ingest_file(
