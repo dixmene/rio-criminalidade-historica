@@ -7,12 +7,25 @@ Extende EventService provendo métricas, agregações e conversões estruturadas
 from collections import Counter
 import json
 from pathlib import Path
-from typing import Dict, List, Optional, Any
+from typing import Any, Dict, List, Optional, Tuple
+
 import pandas as pd
 from sqlalchemy.orm import Session
 
+from app.models import Claim, Event, Organization, Region, Source
 from app.services.event_service import EventService
-from app.models import Event, Source, Region, Organization, Claim
+
+# Cache keyed by (resolved_path, mtime_ns, size) for faction GeoJSON aggregation
+_FACTION_DIST_CACHE: Dict[Tuple[str, int, int], Dict[str, Any]] = {}
+
+
+def _clone_faction_summary(summary: Dict[str, Any]) -> Dict[str, Any]:
+    """Returns a shallow defensive copy so callers cannot mutate cached dicts."""
+    return {
+        "total_areas": summary["total_areas"],
+        "factions": dict(summary["factions"]),
+        "percentages": dict(summary["percentages"]),
+    }
 
 
 class DataService(EventService):
@@ -27,7 +40,7 @@ class DataService(EventService):
     def get_analytics_summary(
         self,
         events: Optional[List[Event]] = None,
-        is_demo: Optional[bool] = None
+        is_demo: Optional[bool] = None,
     ) -> Dict[str, Any]:
         """
         Calcula indicadores analíticos para um conjunto de eventos ou para a base inteira.
@@ -60,26 +73,27 @@ class DataService(EventService):
         without_coords = 0
         total_claims = 0
         disputed_claims = 0
+        events_with_sources = 0
         all_source_ids = set()
 
         for ev in events:
             # Década
-            if ev.year:
-                dec = (ev.year // 10) * 10
-                decades_counter[dec] += 1
+            yr = ev.year
+            if yr:
+                decades_counter[(yr // 10) * 10] += 1
             else:
                 decades_counter["S/D"] += 1
 
             # Confiança
             conf_counter[ev.confidence_level or "nao_verificado"] += 1
 
-            # Coordenadas
+            # Coordenadas e Regiões
             has_point = False
             for link in ev.region_links:
                 reg = link.region
-                if reg:
+                if reg is not None:
                     reg_counter[reg.original_name] += 1
-                    if reg.has_coordinates:
+                    if not has_point and reg.has_coordinates:
                         has_point = True
 
             if has_point:
@@ -89,20 +103,24 @@ class DataService(EventService):
 
             # Organizações
             for org_link in ev.organization_links:
-                if org_link.organization:
-                    org_counter[org_link.organization.original_name] += 1
+                org = org_link.organization
+                if org is not None:
+                    org_counter[org.original_name] += 1
 
             # Claims e Fontes
-            if hasattr(ev, "claims") and ev.claims:
-                total_claims += len(ev.claims)
-                disputed_claims += sum(1 for c in ev.claims if c.is_disputed)
+            claims = getattr(ev, "claims", None)
+            if claims:
+                total_claims += len(claims)
+                disputed_claims += sum(1 for c in claims if c.is_disputed)
 
-            for sl in ev.source_links:
-                if sl.source_id:
-                    all_source_ids.add(sl.source_id)
+            source_links = ev.source_links
+            if source_links:
+                events_with_sources += 1
+                for sl in source_links:
+                    if sl.source_id:
+                        all_source_ids.add(sl.source_id)
 
-        events_with_sources = sum(1 for ev in events if ev.source_links)
-        coverage_pct = round((events_with_sources / total_events) * 100, 1) if total_events > 0 else 0.0
+        coverage_pct = round((events_with_sources / total_events) * 100, 1)
 
         return {
             "total_events": total_events,
@@ -120,13 +138,16 @@ class DataService(EventService):
 
     def get_faction_distribution(
         self,
-        geojson_path: Optional[Path] = None
+        geojson_path: Optional[Path] = None,
     ) -> Dict[str, Any]:
         """
         Lê e resume a distribuição das 1.671 áreas de facções e milícias.
+        Utiliza cache validado por mtime e tamanho do arquivo.
         """
         if geojson_path is None:
             geojson_path = Path("data/geospatial/faccoes_rj_1671_poligonos.geojson")
+        else:
+            geojson_path = Path(geojson_path)
 
         if not geojson_path.exists():
             return {
@@ -134,6 +155,12 @@ class DataService(EventService):
                 "factions": {},
                 "percentages": {},
             }
+
+        stat = geojson_path.stat()
+        cache_key = (str(geojson_path.resolve()), stat.st_mtime_ns, stat.st_size)
+        cached = _FACTION_DIST_CACHE.get(cache_key)
+        if cached is not None:
+            return _clone_faction_summary(cached)
 
         with open(geojson_path, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -147,15 +174,19 @@ class DataService(EventService):
             fac = props.get("faccao_sigla") or props.get("faccao") or "NEU"
             f_counts[fac] += 1
 
-        percentages = {
-            k: round((v / total) * 100, 1) for k, v in f_counts.items()
-        } if total > 0 else {}
+        percentages = (
+            {k: round((v / total) * 100, 1) for k, v in f_counts.items()}
+            if total > 0
+            else {}
+        )
 
-        return {
+        result = {
             "total_areas": total,
             "factions": dict(f_counts),
             "percentages": percentages,
         }
+        _FACTION_DIST_CACHE[cache_key] = result
+        return _clone_faction_summary(result)
 
     def get_sources_summary(self, is_demo: Optional[bool] = None) -> Dict[str, Any]:
         """
@@ -182,51 +213,84 @@ class DataService(EventService):
         """
         Converte lista de eventos para DataFrame estruturado.
         """
-        cols = ["ID", "Ano", "Data Documentada", "Acontecimento", "Territórios", "Organizações", "Fontes", "Claims", "Confiabilidade", "Origem"]
+        cols = [
+            "ID",
+            "Ano",
+            "Data Documentada",
+            "Acontecimento",
+            "Territórios",
+            "Organizações",
+            "Fontes",
+            "Claims",
+            "Confiabilidade",
+            "Origem",
+        ]
         if events is None:
             events = self.list_events()
 
         if not events:
             return pd.DataFrame(columns=cols)
 
-        rows = []
-        for ev in events:
-            rows.append({
+        rows = [
+            {
                 "ID": ev.id,
                 "Ano": ev.year if ev.year else "S/D",
                 "Data Documentada": ev.date_display,
                 "Acontecimento": ev.title,
-                "Territórios": ", ".join(r.original_name for r in ev.regions) or "Geral / Não delimitado",
-                "Organizações": ", ".join(o.original_name for o in ev.organizations) or "—",
-                "Fontes": len(ev.sources) if hasattr(ev, "sources") else len(ev.source_links),
+                "Territórios": (
+                    ", ".join(rl.region.original_name for rl in ev.region_links if rl.region is not None)
+                    or "Geral / Não delimitado"
+                ),
+                "Organizações": (
+                    ", ".join(
+                        ol.organization.original_name
+                        for ol in ev.organization_links
+                        if ol.organization is not None
+                    )
+                    or "—"
+                ),
+                "Fontes": len(ev.source_links),
                 "Claims": len(ev.claims) if hasattr(ev, "claims") else 0,
                 "Confiabilidade": ev.confidence_level.capitalize() if ev.confidence_level else "—",
                 "Origem": "DEMO" if ev.is_demo else "Real",
-            })
+            }
+            for ev in events
+        ]
         return pd.DataFrame(rows)
 
     def sources_to_dataframe(self, sources: Optional[List[Source]] = None) -> pd.DataFrame:
         """
         Converte lista de fontes para DataFrame estruturado.
         """
-        cols = ["ID", "Título", "Autor", "Ano", "Tipologia", "Editora/Veículo", "Custódia SHA-256", "Origem"]
+        cols = [
+            "ID",
+            "Título",
+            "Autor",
+            "Ano",
+            "Tipologia",
+            "Editora/Veículo",
+            "Custódia SHA-256",
+            "Origem",
+        ]
         if sources is None:
             sources = self.list_sources()
 
         if not sources:
             return pd.DataFrame(columns=cols)
 
-        rows = []
-        for s in sources:
-            rows.append({
+        rows = [
+            {
                 "ID": s.id,
                 "Título": s.title,
                 "Autor": s.author or "Não informado",
                 "Ano": s.publication_year or "S/D",
                 "Tipologia": s.source_type,
                 "Editora/Veículo": s.publisher or "—",
-                "Custódia SHA-256": s.file_hash_sha256[:16] + "..." if s.file_hash_sha256 else "Remoto",
+                "Custódia SHA-256": (
+                    s.file_hash_sha256[:16] + "..." if s.file_hash_sha256 else "Remoto"
+                ),
                 "Origem": "DEMO" if s.is_demo else "Real",
-            })
+            }
+            for s in sources
+        ]
         return pd.DataFrame(rows)
-

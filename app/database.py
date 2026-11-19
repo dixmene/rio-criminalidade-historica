@@ -1,6 +1,9 @@
+from typing import Generator
+
 from sqlalchemy import create_engine, event
-from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.engine import Engine
+from sqlalchemy.orm import Session, declarative_base, sessionmaker
+
 from app.config import DATABASE_URL
 
 # SQLite requires check_same_thread=False for multithreaded environments like Streamlit
@@ -10,20 +13,29 @@ engine = create_engine(
     DATABASE_URL,
     connect_args=connect_args,
     echo=False,
-    future=True
+    future=True,
 )
 
+
 @event.listens_for(Engine, "connect")
-def set_sqlite_pragma(dbapi_connection, connection_record):
+def set_sqlite_pragma(dbapi_connection, connection_record) -> None:
+    """Apply integrity and read-performance PRAGMAs on SQLite connections."""
     if DATABASE_URL.startswith("sqlite"):
         cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
+        try:
+            cursor.execute("PRAGMA foreign_keys=ON")
+            cursor.execute("PRAGMA temp_store=MEMORY")
+            cursor.execute("PRAGMA cache_size=-16000")
+            cursor.execute("PRAGMA mmap_size=67108864")
+        finally:
+            cursor.close()
+
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-def get_db():
+
+def get_db() -> Generator[Session, None, None]:
     """Dependency helper to yield database sessions."""
     db = SessionLocal()
     try:
