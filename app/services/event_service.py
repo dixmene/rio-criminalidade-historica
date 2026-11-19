@@ -1,18 +1,37 @@
 from typing import List, Optional, Tuple
-from sqlalchemy.orm import Session, joinedload
+
+from sqlalchemy import func
+from sqlalchemy.orm import Session, joinedload, selectinload
+
 from app.models import (
-    Event,
     Claim,
     ClaimSource,
-    EventSource,
+    Event,
     EventOrganization,
     EventPerson,
     EventRegion,
-    Region,
+    EventSource,
     Organization,
     Person,
-    Source
+    Region,
+    Source,
 )
+
+
+def _event_eager_options() -> tuple:
+    """
+    Eager-loading strategy using selectinload for 1-to-N collections and
+    joinedload for N-to-1 leaf entities, avoiding SQL Cartesian-product blowup.
+    """
+    return (
+        selectinload(Event.source_links).joinedload(EventSource.source),
+        selectinload(Event.claims)
+        .selectinload(Claim.source_links)
+        .joinedload(ClaimSource.source),
+        selectinload(Event.organization_links).joinedload(EventOrganization.organization),
+        selectinload(Event.person_links).joinedload(EventPerson.person),
+        selectinload(Event.region_links).joinedload(EventRegion.region),
+    )
 
 
 class EventService:
@@ -34,13 +53,7 @@ class EventService:
         Consulta eventos aplicando filtros temporais, geográficos e de isolamento DEMO.
         Retorna os relacionamentos carregados por eager loading (fontes, claims, regiões, etc.).
         """
-        query = self.db.query(Event).options(
-            joinedload(Event.source_links).joinedload(EventSource.source),
-            joinedload(Event.claims).joinedload(Claim.source_links).joinedload(ClaimSource.source),
-            joinedload(Event.organization_links).joinedload(EventOrganization.organization),
-            joinedload(Event.person_links).joinedload(EventPerson.person),
-            joinedload(Event.region_links).joinedload(EventRegion.region),
-        )
+        query = self.db.query(Event).options(*_event_eager_options())
 
         if is_demo is not None:
             query = query.filter(Event.is_demo == is_demo)
@@ -57,12 +70,14 @@ class EventService:
                 (Event.title.ilike(search)) | (Event.description.ilike(search))
             )
 
-        if region_id:
-            query = query.join(Event.region_links).filter(EventRegion.region_id == region_id)
-        if organization_id:
-            query = query.join(Event.organization_links).filter(EventOrganization.organization_id == organization_id)
-        if person_id:
-            query = query.join(Event.person_links).filter(EventPerson.person_id == person_id)
+        if region_id is not None:
+            query = query.filter(Event.region_links.any(EventRegion.region_id == region_id))
+        if organization_id is not None:
+            query = query.filter(
+                Event.organization_links.any(EventOrganization.organization_id == organization_id)
+            )
+        if person_id is not None:
+            query = query.filter(Event.person_links.any(EventPerson.person_id == person_id))
 
         return query.order_by(Event.year.asc(), Event.date_display.asc()).all()
 
@@ -70,21 +85,19 @@ class EventService:
         """Recupera um evento por ID com todos os vínculos de fontes, afirmações (claims) e entidades."""
         return (
             self.db.query(Event)
-            .options(
-                joinedload(Event.source_links).joinedload(EventSource.source),
-                joinedload(Event.claims).joinedload(Claim.source_links).joinedload(ClaimSource.source),
-                joinedload(Event.organization_links).joinedload(EventOrganization.organization),
-                joinedload(Event.person_links).joinedload(EventPerson.person),
-                joinedload(Event.region_links).joinedload(EventRegion.region),
-            )
+            .options(*_event_eager_options())
             .filter(Event.id == event_id)
             .first()
         )
 
-    def list_claims(self, event_id: Optional[int] = None, is_disputed: Optional[bool] = None) -> List[Claim]:
+    def list_claims(
+        self,
+        event_id: Optional[int] = None,
+        is_disputed: Optional[bool] = None,
+    ) -> List[Claim]:
         """Lista afirmações históricas atomizadas, com filtro opcional por evento ou controvérsia."""
         query = self.db.query(Claim).options(
-            joinedload(Claim.source_links).joinedload(ClaimSource.source)
+            selectinload(Claim.source_links).joinedload(ClaimSource.source)
         )
         if event_id is not None:
             query = query.filter(Claim.event_id == event_id)
@@ -94,23 +107,34 @@ class EventService:
 
     def get_timeline_bounds(self, is_demo: Optional[bool] = None) -> Tuple[int, int]:
         """Retorna o ano mínimo e máximo dos eventos no banco para a visualização ativa."""
-        query = self.db.query(Event.year).filter(Event.year.isnot(None))
+        query = self.db.query(func.min(Event.year), func.max(Event.year)).filter(
+            Event.year.isnot(None)
+        )
         if is_demo is not None:
             query = query.filter(Event.is_demo == is_demo)
-        
-        min_year = query.order_by(Event.year.asc()).first()
-        max_year = query.order_by(Event.year.desc()).first()
-        if min_year and max_year:
-            return (min_year[0], max_year[0])
+
+        min_year, max_year = query.one()
+        if min_year is not None and max_year is not None:
+            return (int(min_year), int(max_year))
         return (1970, 1989)
 
     def count_real_events(self) -> int:
         """Conta eventos históricos reais (is_demo=False)."""
-        return self.db.query(Event).filter(Event.is_demo == False).count()
+        return (
+            self.db.query(func.count(Event.id))
+            .filter(Event.is_demo == False)
+            .scalar()
+            or 0
+        )
 
     def count_demo_events(self) -> int:
         """Conta eventos de teste técnico [DEMO] (is_demo=True)."""
-        return self.db.query(Event).filter(Event.is_demo == True).count()
+        return (
+            self.db.query(func.count(Event.id))
+            .filter(Event.is_demo == True)
+            .scalar()
+            or 0
+        )
 
     def list_regions(self, is_demo: Optional[bool] = None) -> List[Region]:
         query = self.db.query(Region)

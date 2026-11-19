@@ -189,86 +189,91 @@ def aggregate_isp_timeseries(df_cisp: pd.DataFrame) -> pd.DataFrame:
     """
     Gera agregações anual e mensal por AISP (Batalhão) e por Total Estadual.
     Retorna dataframe consolidado padronizado para gravação em Parquet.
+    Preserva integralmente a Regra ZERO vs NULL via sum(min_count=1) vetorizado.
     """
-    # Lista de colunas a somar (existentes no DataFrame)
     sum_cols = [col for col in METRIC_COLUMNS if col in df_cisp.columns]
+    max_ano = int(df_cisp["ano"].max())
 
-    # Função de soma que preserva NaN se todos os elementos forem NaN (min_count=1)
-    agg_funcs = {col: lambda s: s.sum(min_count=1) for col in sum_cols}
-
-    records = []
-
-    # 1. AISP Mensal
+    # 1. AISP Mensal (agregação vetorizada preservando NaN quando todo o grupo é NaN)
     print("[AGREGAÇÃO] Agregando AISP Mensal...")
-    aisp_mensal = df_cisp.groupby(["aisp", "ano", "mes"], as_index=False).agg(agg_funcs)
+    aisp_mensal = df_cisp.groupby(["aisp", "ano", "mes"], as_index=False)[sum_cols].sum(min_count=1)
     aisp_mensal["nivel_geografico"] = "aisp"
     aisp_mensal["periodicidade"] = "mensal"
-    aisp_mensal["data_referencia"] = aisp_mensal.apply(lambda r: f"{int(r['ano']):04d}-{int(r['mes']):02d}", axis=1)
+    aisp_mensal["data_referencia"] = (
+        aisp_mensal["ano"].astype(int).astype(str).str.zfill(4)
+        + "-"
+        + aisp_mensal["mes"].astype(int).astype(str).str.zfill(2)
+    )
     aisp_mensal["ano_completo"] = True
-    records.append(aisp_mensal)
 
-    # 2. AISP Anual
+    # 2. AISP Anual (reagrega a partir de aisp_mensal, preservando min_count=1 com muito menos linhas)
     print("[AGREGAÇÃO] Agregando AISP Anual...")
-    aisp_anual = df_cisp.groupby(["aisp", "ano"], as_index=False).agg(agg_funcs)
+    aisp_anual = aisp_mensal.groupby(["aisp", "ano"], as_index=False)[sum_cols].sum(min_count=1)
     aisp_anual["nivel_geografico"] = "aisp"
     aisp_anual["periodicidade"] = "anual"
     aisp_anual["mes"] = None
-    aisp_anual["data_referencia"] = aisp_anual["ano"].astype(str)
-    # 2026 possui dados parciais (atualmente até mês 7)
-    max_ano = int(df_cisp["ano"].max())
-    aisp_anual["ano_completo"] = aisp_anual["ano"].apply(lambda a: int(a) < max_ano)
-    records.append(aisp_anual)
+    aisp_anual["data_referencia"] = aisp_anual["ano"].astype(int).astype(str)
+    aisp_anual["ano_completo"] = aisp_anual["ano"] < max_ano
 
-    # 3. Estado Mensal
+    # 3. Estado Mensal (reagrega a partir de aisp_mensal)
     print("[AGREGAÇÃO] Agregando Estado Mensal...")
-    estado_mensal = df_cisp.groupby(["ano", "mes"], as_index=False).agg(agg_funcs)
+    estado_mensal = aisp_mensal.groupby(["ano", "mes"], as_index=False)[sum_cols].sum(min_count=1)
     estado_mensal["nivel_geografico"] = "estado"
     estado_mensal["periodicidade"] = "mensal"
     estado_mensal["aisp"] = None
-    estado_mensal["data_referencia"] = estado_mensal.apply(lambda r: f"{int(r['ano']):04d}-{int(r['mes']):02d}", axis=1)
+    estado_mensal["data_referencia"] = (
+        estado_mensal["ano"].astype(int).astype(str).str.zfill(4)
+        + "-"
+        + estado_mensal["mes"].astype(int).astype(str).str.zfill(2)
+    )
     estado_mensal["ano_completo"] = True
-    records.append(estado_mensal)
 
-    # 4. Estado Anual
+    # 4. Estado Anual (reagrega a partir de estado_mensal)
     print("[AGREGAÇÃO] Agregando Estado Anual...")
-    estado_anual = df_cisp.groupby(["ano"], as_index=False).agg(agg_funcs)
+    estado_anual = estado_mensal.groupby(["ano"], as_index=False)[sum_cols].sum(min_count=1)
     estado_anual["nivel_geografico"] = "estado"
     estado_anual["periodicidade"] = "anual"
     estado_anual["aisp"] = None
     estado_anual["mes"] = None
-    estado_anual["data_referencia"] = estado_anual["ano"].astype(str)
-    estado_anual["ano_completo"] = estado_anual["ano"].apply(lambda a: int(a) < max_ano)
-    records.append(estado_anual)
+    estado_anual["data_referencia"] = estado_anual["ano"].astype(int).astype(str)
+    estado_anual["ano_completo"] = estado_anual["ano"] < max_ano
 
     # Concatenação consolidada
-    consolidated = pd.concat(records, ignore_index=True)
+    consolidated = pd.concat([aisp_mensal, aisp_anual, estado_mensal, estado_anual], ignore_index=True)
 
-    # Enriquecimento com Metadados da AISP
-    def get_aisp_meta(aisp_val, key, default):
-        if pd.isna(aisp_val):
-            return default
-        aisp_int = int(aisp_val)
-        return AISP_INFO.get(aisp_int, {}).get(key, f"{aisp_int}º BPM" if key == "batalhao" else default)
+    # Enriquecimento vetorizado com Metadados da AISP (sem apply axis=1)
+    is_estado = consolidated["nivel_geografico"] == "estado"
+    aisp_num = pd.to_numeric(consolidated["aisp"], errors="coerce")
 
-    consolidated["batalhao"] = consolidated.apply(
-        lambda r: "Total Estadual" if r["nivel_geografico"] == "estado" else get_aisp_meta(r["aisp"], "batalhao", f"AISP {r['aisp']}"),
-        axis=1
+    batalhao_map = {k: v["batalhao"] for k, v in AISP_INFO.items()}
+    nome_map = {k: v["nome_completo"] for k, v in AISP_INFO.items()}
+    sede_map = {k: v["sede"] for k, v in AISP_INFO.items()}
+    risp_map = {k: v["risp"] for k, v in AISP_INFO.items()}
+    municipio_map = {k: v["municipio"] for k, v in AISP_INFO.items()}
+
+    fallback_bpm = aisp_num.map(lambda v: f"{int(v)}º BPM" if pd.notna(v) else "")
+    fallback_aisp = aisp_num.map(lambda v: f"AISP {int(v)}" if pd.notna(v) else "")
+
+    consolidated["batalhao"] = np.where(
+        is_estado,
+        "Total Estadual",
+        aisp_num.map(batalhao_map).fillna(fallback_bpm),
     )
-    consolidated["nome_completo"] = consolidated.apply(
-        lambda r: "Estado do Rio de Janeiro (Total)" if r["nivel_geografico"] == "estado" else get_aisp_meta(r["aisp"], "nome_completo", f"AISP {r['aisp']}"),
-        axis=1
+    consolidated["nome_completo"] = np.where(
+        is_estado,
+        "Estado do Rio de Janeiro (Total)",
+        aisp_num.map(nome_map).fillna(fallback_aisp),
     )
-    consolidated["sede"] = consolidated.apply(
-        lambda r: "Rio de Janeiro (Capital)" if r["nivel_geografico"] == "estado" else get_aisp_meta(r["aisp"], "sede", ""),
-        axis=1
+    consolidated["sede"] = np.where(
+        is_estado,
+        "Rio de Janeiro (Capital)",
+        aisp_num.map(sede_map).fillna(""),
     )
-    consolidated["risp"] = consolidated.apply(
-        lambda r: None if r["nivel_geografico"] == "estado" else get_aisp_meta(r["aisp"], "risp", None),
-        axis=1
-    )
-    consolidated["municipio"] = consolidated.apply(
-        lambda r: "Estado do Rio de Janeiro" if r["nivel_geografico"] == "estado" else get_aisp_meta(r["aisp"], "municipio", "Rio de Janeiro"),
-        axis=1
+    consolidated["risp"] = aisp_num.map(risp_map).where(~is_estado, other=None)
+    consolidated["municipio"] = np.where(
+        is_estado,
+        "Estado do Rio de Janeiro",
+        aisp_num.map(municipio_map).fillna("Rio de Janeiro"),
     )
 
     # Ordenação canônica
