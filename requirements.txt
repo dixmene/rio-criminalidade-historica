@@ -11,6 +11,8 @@ pydantic-settings>=2.2.0
 # Manipulação de Dados & Engenharia
 pandas>=2.2.0
 numpy>=1.26.0
+pyarrow>=15.0.0
+scipy>=1.13.0
 tqdm>=4.66.0
 
 # Banco de Dados & ORM
